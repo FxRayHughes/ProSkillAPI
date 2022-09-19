@@ -56,7 +56,7 @@ repositories {
 
 dependencies {
     implementation("com.comphenix.protocol:ProtocolLib:4.5.0")
-    compileOnly("org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     compileOnly("io.netty:netty-all:4.1.51.Final")
     compileOnly("LibsDisguises:LibsDisguises:10.0.21")
     compileOnly("me.clip:placeholderapi:2.10.9")

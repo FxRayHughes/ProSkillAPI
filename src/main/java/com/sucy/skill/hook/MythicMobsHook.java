@@ -25,7 +25,7 @@ public class MythicMobsHook {
         return MythicMobs.inst().getAPIHelper().castSkill(caster, skillName);
     }
 
-    public static boolean castSkill(LivingEntity caster, String skillName, Float power) {
-        return MythicMobs.inst().getAPIHelper().castSkill(caster, skillName, power);
+    public static void castSkill(LivingEntity caster, String skillName, Float power) {
+        MythicMobs.inst().getAPIHelper().castSkill(caster, skillName, power);
     }
 }
