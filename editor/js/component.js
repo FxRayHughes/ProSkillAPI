@@ -184,7 +184,8 @@ const Mechanic = {
     WOLF: {name: 'Wolf', container: true, construct: MechanicWolf},
     DATA_SET: {name: 'Data Set', container: false, construct: MechanicDataSet},
     DATA_EDIT: {name: 'Data Edit', container: false, construct: MechanicDataEdit},
-    MYTHIC_CAST: {name: 'Mythic CAST',container: false,construct:MechanicMythicCast}
+    MYTHIC_CAST: {name: 'Mythic CAST', container: false, construct: MechanicMythicCast},
+    SNOWSTORM: {name: "Snow Storm", container: false, construct: MechanicSnowStorm}
 };
 
 let saveIndex;
@@ -3033,6 +3034,42 @@ function MechanicMythicCast() {
     );
     this.data.push(new AttributeValue('Power', 'power', 0, 0)
         .setTooltip('技能等级')
+    );
+}
+
+extend('MechanicSnowStorm', 'Component');
+
+function MechanicSnowStorm() {
+    this.super('Snow Storm', Type.MECHANIC, false);
+
+    this.description = '播放一个雪暴粒子 [需要有龙之核心与外置包]';
+
+    this.data.push(new StringValue('特效名称', 'name', 'null')
+        .setTooltip('这里是特效名称不需要写.json')
+    );
+    this.data.push(new StringValue('ID', 'id', 'null')
+        .setTooltip('用来识别特效的ID,{uuid}会自动替换为施法者的UUID')
+    );
+    this.data.push(new AttributeValue('播放时间', 'time', 200, 0)
+        .setTooltip('即使播放时间结束 也不会让特效立即结束')
+    );
+    this.data.push(new ListValue('俯仰角生效', 'look', ['True', 'False'], 'False')
+        .setTooltip('开启后特效会随着玩家的视角改变而上下倾斜')
+    );
+    this.data.push(new AttributeValue('播放点X偏移', 'ax', 0.0, 0.0)
+        .setTooltip('播放特效的中心点将会向玩家前/后偏移')
+    );
+    this.data.push(new AttributeValue('播放点Y偏移', 'ay', 0.0, 0.0)
+        .setTooltip('播放特效的中心点将会向玩家上/下偏移')
+    );
+    this.data.push(new AttributeValue('播放点Z偏移', 'az', 0.0, 0.0)
+        .setTooltip('播放特效的中心点将会向玩家左/右偏移')
+    );
+    this.data.push(new AttributeValue('播放点俯仰角偏移', 'ayaw', 0.0, 0.0)
+        .setTooltip('额外的向左右进行偏移')
+    );
+    this.data.push(new AttributeValue('播放点偏航角偏移', 'apith', 0.0, 0.0)
+        .setTooltip('!需要开启偏航角生效! 对偏航角进行偏移')
     );
 }
 
