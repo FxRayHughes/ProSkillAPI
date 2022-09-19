@@ -33,6 +33,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.exception.SkillTreeException;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.language.GUINodes;
@@ -45,16 +46,17 @@ import org.bukkit.inventory.InventoryView;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A skill tree manager for classes
  */
-public abstract class InventoryTree extends SkillTree
-{
+public abstract class InventoryTree extends SkillTree {
     private static final String INVENTORY_KEY = "SAPI_ST";
 
-    protected final HashMap<Integer, Skill> skillSlots = new HashMap<Integer, Skill>();
+    protected final HashMap<Integer, Skill> skillSlots = new HashMap<>();
 
     protected int height;
 
@@ -63,8 +65,7 @@ public abstract class InventoryTree extends SkillTree
      *
      * @param api api reference
      */
-    public InventoryTree(SkillAPI api, RPGClass tree)
-    {
+    public InventoryTree(SkillAPI api, RPGClass tree) {
         super(api, tree);
     }
 
@@ -90,24 +91,32 @@ public abstract class InventoryTree extends SkillTree
     {
         GUITool.getSkillTree(tree);
         Inventory inv = InventoryManager.createInventory(
-            INVENTORY_KEY,
-            height,
-            SkillAPI.getLanguage().getMessage(
-                GUINodes.SKILL_TREE,
-                true,
-                FilterType.COLOR,
-                RPGFilter.CLASS.setReplacement(tree.getName()),
-                Filter.PLAYER.setReplacement(player.getPlayerName())
-            ).get(0)
+                INVENTORY_KEY,
+                height,
+                SkillAPI.getLanguage().getMessage(
+                        GUINodes.SKILL_TREE,
+                        true,
+                        FilterType.COLOR,
+                        RPGFilter.CLASS.setReplacement(tree.getName()),
+                        Filter.PLAYER.setReplacement(player.getPlayerName())
+                ).get(0)
         );
         Player p = player.getPlayer();
 
-        for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())
-        {
-            if (canShow(p, entry.getValue()))
-            {
+        for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet()) {
+            if (canShow(p, entry.getValue())) {
                 inv.setItem(entry.getKey(), entry.getValue().getIndicator(player.getSkill(entry.getValue().getName()), false));
             }
+        }
+
+        List<String> regs = skillSlots.values().stream()
+                .map(Skill::getKey)
+                .collect(Collectors.toList());
+        List<PlayerSkill> list = player.getSkills().stream().filter(playerSkill ->
+                !regs.contains(playerSkill.getData().getKey())
+        ).collect(Collectors.toList());
+        for (PlayerSkill playerSkill : list) {
+            inv.addItem(playerSkill.getData().getIndicator(playerSkill, false));
         }
 
         return inv;

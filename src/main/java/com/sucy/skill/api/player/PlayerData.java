@@ -29,7 +29,6 @@ package com.sucy.skill.api.player;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.config.parse.DataSection;
-import com.sucy.skill.api.target.TargetHelper;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
@@ -40,6 +39,7 @@ import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
+import com.sucy.skill.api.target.TargetHelper;
 import com.sucy.skill.cast.PlayerCastBars;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.PlayerEquips;
@@ -66,7 +66,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.*;
 
@@ -993,6 +992,8 @@ public class PlayerData {
 
         // Show skill tree of the class
         this.menuClass = playerClass.getData().getName();
+        HashMap<String, Skill> map = new HashMap<>();
+        skills.forEach((s, playerSkill) -> map.put(s, playerSkill.getData()));
         GUITool.getSkillTree(playerClass.getData()).show(
                 new SkillHandler(),
                 this,
@@ -1005,7 +1006,7 @@ public class PlayerData {
                         RPGFilter.CLASS.setReplacement(playerClass.getData().getName()),
                         Filter.PLAYER.setReplacement(getPlayerName())
                 ).get(0),
-                playerClass.getData().getSkillMap()
+                map
         );
         return true;
     }

@@ -12,13 +12,20 @@ public class MythicMobsHook {
     public static void taunt(final LivingEntity target, final LivingEntity source, final double amount) {
         if (amount > 0) {
             MythicMobs.inst().getAPIHelper().addThreat(target, source, amount);
-        }
-        else if (amount < 0) {
+        } else if (amount < 0) {
             MythicMobs.inst().getAPIHelper().reduceThreat(target, source, -amount);
         }
     }
 
     public static boolean isMonster(final LivingEntity target) {
         return MythicMobs.inst().getAPIHelper().isMythicMob(target);
+    }
+
+    public static boolean castSkill(LivingEntity caster, String skillName) {
+        return MythicMobs.inst().getAPIHelper().castSkill(caster, skillName);
+    }
+
+    public static boolean castSkill(LivingEntity caster, String skillName, Float power) {
+        return MythicMobs.inst().getAPIHelper().castSkill(caster, skillName, power);
     }
 }

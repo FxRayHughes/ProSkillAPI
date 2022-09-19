@@ -66,8 +66,7 @@ public abstract class SkillTree
      */
     public boolean canShow(Player player, Skill skill)
     {
-        return !(skill.canAutoLevel() && !skill.canCast() && !SkillAPI.getSettings().isShowingAutoSkills())
-            && skill.isAllowed(player);
+        return !(skill.canAutoLevel() && !skill.canCast() && !SkillAPI.getSettings().isShowingAutoSkills()) && skill.isAllowed(player);
     }
 
     /**

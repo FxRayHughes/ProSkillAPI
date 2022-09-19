@@ -183,7 +183,8 @@ const Mechanic = {
     WARP_VALUE: {name: 'Warp Value', container: false, construct: MechanicWarpValue},
     WOLF: {name: 'Wolf', container: true, construct: MechanicWolf},
     DATA_SET: {name: 'Data Set', container: false, construct: MechanicDataSet},
-    DATA_EDIT: {name: 'Data Edit', container: false, construct: MechanicDataEdit}
+    DATA_EDIT: {name: 'Data Edit', container: false, construct: MechanicDataEdit},
+    MYTHIC_CAST: {name: 'Mythic CAST',container: false,construct:MechanicMythicCast}
 };
 
 let saveIndex;
@@ -3018,6 +3019,20 @@ function MechanicDataEdit() {
     );
     this.data.push(new AttributeValue('Value', 'value', 1, 0)
         .setTooltip('数字内容')
+    );
+}
+extend('MechanicMythicCast', 'Component');
+
+function MechanicMythicCast() {
+    this.super('Mythic Cast', Type.MECHANIC, false);
+
+    this.description = '让目标释放Mythic的技能组';
+
+    this.data.push(new StringValue('SkillName', 'skillname', '技能名')
+        .setTooltip('唯一识别标签 {uuid} 会被进行替换为 施法者的UUID')
+    );
+    this.data.push(new AttributeValue('Power', 'power', 0, 0)
+        .setTooltip('技能等级')
     );
 }
 

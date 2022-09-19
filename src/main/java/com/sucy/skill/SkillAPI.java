@@ -355,7 +355,13 @@ public class SkillAPI extends JavaPlugin {
         if (name == null) {
             return null;
         }
-        return singleton().skills.get(name.toLowerCase());
+        Skill named = singleton().skills.get(name.toLowerCase());
+        if (named != null) {
+            return named;
+        }
+        return singleton().skills.values().stream().filter(i ->
+                name.toLowerCase().equals(i.getKey())
+        ).findFirst().orElse(null);
     }
 
     /**
