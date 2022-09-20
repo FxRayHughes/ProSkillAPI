@@ -40,19 +40,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlayerReadAttributeEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    @Getter
+
     private final PlayerData player;
 
-    @Getter
-    @Setter
     private String attribute;
 
-    @Getter
-    @Setter
     private Integer value;
 
-    @Getter
-    @Setter
     private ItemStack itemStack;
 
     private boolean cancelled = false;
@@ -85,5 +79,33 @@ public class PlayerReadAttributeEvent extends Event implements Cancellable {
     @Override
     public HandlerList getHandlers() {
         return handlers;
+    }
+
+    public PlayerData getPlayer() {
+        return player;
+    }
+
+    public String getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
+    }
+
+    public void setItemStack(ItemStack itemStack) {
+        this.itemStack = itemStack;
     }
 }

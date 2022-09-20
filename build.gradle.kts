@@ -65,7 +65,6 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.3")
     compileOnly("com.sk89q.worldedit:worldedit-core:7.1.0")
-    compileOnly("org.projectlombok:lombok:1.18.24")
     compileOnly(fileTree("lib"))
 }
 
