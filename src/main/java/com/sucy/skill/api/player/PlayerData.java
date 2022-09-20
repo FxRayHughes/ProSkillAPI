@@ -1396,6 +1396,9 @@ public class PlayerData {
             health += c.getHealth();
             maxMana += c.getMana();
         }
+        if (!SkillAPI.getSettings().isAttributesHeal()){
+            return;
+        }
         if (health == bonusHealth) {
             health += SkillAPI.getSettings().getDefaultHealth();
         }
@@ -1426,9 +1429,12 @@ public class PlayerData {
     public void addMaxHealth(double amount) {
         bonusHealth += amount;
         final Player player = getPlayer();
-        if (player != null) {
+        if (player != null && SkillAPI.getSettings().isAttributesHeal()) {
             if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
                 final AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                if (attribute == null) {
+                    return;
+                }
                 attribute.setBaseValue(attribute.getBaseValue() + amount);
             } else {
                 final double newHealth = player.getMaxHealth() + amount;

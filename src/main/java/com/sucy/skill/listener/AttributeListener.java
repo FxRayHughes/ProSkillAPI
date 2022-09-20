@@ -345,7 +345,10 @@ public class AttributeListener extends SkillAPIListener
         if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
             double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth(), 0, Double.MAX_VALUE);
-            data.addMaxHealth(change);
+
+            if (SkillAPI.getSettings().isAttributesHeal()){
+                data.addMaxHealth(change);
+            }
 
             change = updateStat(data, AttributeManager.MANA, data.getMaxMana(), 0, Double.MAX_VALUE);
             data.addMaxMana(change);

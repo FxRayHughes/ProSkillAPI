@@ -112,6 +112,9 @@ Classes:
   # Whether or not attributes can be refunded
   attributes-downgrade: false
   #
+  #关闭后skillapi将忽略自带的生命属性操作
+  attribute-heal: true
+  #
   # This casts the dynamic skill for the player when they level up,
   # allowing you to use dynamic mechanics for level up effects. If
   # there is no existing dynamic skill with the name, no effect

@@ -603,6 +603,7 @@ public class Settings {
     private static final String CLASS_SHOW = CLASS_BASE + "show-auto-skills";
     private static final String CLASS_ATTRIB = CLASS_BASE + "attributes-enabled";
     private static final String CLASS_REFUND = CLASS_BASE + "attributes-downgrade";
+    private static final String CLASS_HEAL = CLASS_BASE + "attributes-heal";
     private static final String CLASS_LEVEL = CLASS_BASE + "level-up-skill";
 
     private boolean modifyHealth;
@@ -610,6 +611,8 @@ public class Settings {
     private boolean showAutoSkills;
     private boolean attributesEnabled;
     private boolean attributesDowngrade;
+
+    private boolean attributesHeal;
     private String levelUpSkill;
 
     /**
@@ -657,6 +660,10 @@ public class Settings {
         return attributesDowngrade;
     }
 
+    public boolean isAttributesHeal() {
+        return attributesHeal;
+    }
+
     /**
      * Checks whether or not the plugin has a valid skill for
      * level up effects loaded.
@@ -683,6 +690,7 @@ public class Settings {
         showAutoSkills = config.getBoolean(CLASS_SHOW);
         attributesEnabled = config.getBoolean(CLASS_ATTRIB);
         attributesDowngrade = config.getBoolean(CLASS_REFUND);
+        attributesHeal = config.getBoolean(CLASS_HEAL);
         levelUpSkill = config.getString(CLASS_LEVEL);
     }
 
