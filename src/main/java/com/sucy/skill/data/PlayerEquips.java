@@ -30,21 +30,19 @@ import com.google.common.base.Objects;
 import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.event.PlayerReadAttributeEvent;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.util.Pair;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.sucy.skill.listener.ItemListener.ARMOR_TYPES;
 
@@ -268,23 +266,21 @@ public class PlayerEquips {
                                 attrReq.put(normalized, NumberParser.parseInt(lower.substring(text.length())));
                                 break;
                             }
-
-                            text = settings.getAttrGiveText(attr);
-                            if (lower.startsWith(text)) {
-                                if (attribs == null)
-                                    attribs = new HashMap<>();
-
-                                String normalized = SkillAPI.getAttributeManager().normalize(attr);
-                                int current = attribs.containsKey(attr) ? attribs.get(attr) : 0;
-                                int extra = NumberParser.parseInt(lower.substring(text.length()).replace("%", ""));
-                                attribs.put(normalized, current + extra);
-                                break;
+                        }
+                        //我知道这里其实是负优化 但是提高了拓展性
+                        Pair<String, Integer> attrs = PlayerEquipsUtils.getAttribute(lower);
+                        if (attrs != null) {
+                            PlayerReadAttributeEvent event = new PlayerReadAttributeEvent(player, item, attrs.getKey(), attrs.getLast());
+                            Bukkit.getPluginManager().callEvent(event);
+                            if (!event.isCancelled()) {
+                                attribs.put(event.getAttribute(), event.getValue());
                             }
                         }
                     }
                 }
             }
         }
+
 
         /**
          * Applies bonuse attributes for the item
