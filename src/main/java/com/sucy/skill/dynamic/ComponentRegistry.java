@@ -279,5 +279,7 @@ public class ComponentRegistry {
         register(new SnowStormMechanic());
         register(new DragonAnimationStartMechanic());
         register(new DragonAnimationStopMechanic());
+        register(new DragonAnimationBlockMechanic());
+        register(new DragonAnimationItemMechanic());
     }
 }

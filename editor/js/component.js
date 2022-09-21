@@ -187,7 +187,9 @@ const Mechanic = {
     MYTHIC_CAST: {name: 'Mythic CAST', container: false, construct: MechanicMythicCast},
     SNOWSTORM: {name: "Snow Storm", container: false, construct: MechanicSnowStorm},
     Dragon_Animation_Start: {name: "Dragon Animation Start", container: false, construct: MechanicDragonAnimationStart},
-    Dragon_Animation_Stop: {name: "Dragon Animation Stop", container: false, construct: MechanicDragonAnimationStop}
+    Dragon_Animation_Stop: {name: "Dragon Animation Stop", container: false, construct: MechanicDragonAnimationStop},
+    Dragon_Animation_Item: {name: "Dragon Animation Item", container: false, construct: MechanicDragonAnimationItem},
+    Dragon_Animation_Block: {name: "Dragon Animation Block", container: false, construct: MechanicDragonAnimationBlock}
 };
 
 let saveIndex;
@@ -3036,6 +3038,39 @@ function MechanicMythicCast() {
     );
     this.data.push(new AttributeValue('Power', 'power', 0, 0)
         .setTooltip('技能等级')
+    );
+}
+
+extend('MechanicDragonAnimationItem', 'Component');
+
+function MechanicDragonAnimationItem() {
+    this.super('Dragon Animation Item', Type.MECHANIC, false);
+
+    this.description = '播放目标身上的物品动画';
+
+    this.data.push(new StringValue('动作名称', 'name', '动作名称')
+        .setTooltip('这里直接写动作名称即可')
+    );
+}
+
+extend('MechanicDragonAnimationBlock', 'Component');
+
+function MechanicDragonAnimationBlock() {
+    this.super('Dragon Animation Block', Type.MECHANIC, false);
+
+    this.description = '播放特定位置的方块动画给目标';
+
+    this.data.push(new StringValue('动作名称', 'name', '动作名称')
+        .setTooltip('这里直接写动作名称即可')
+    );
+    this.data.push(new AttributeValue('X', 'x', 0, 0)
+        .setTooltip('方块的X')
+    );
+    this.data.push(new AttributeValue('Y', 'y', 0, 0)
+        .setTooltip('方块的Y')
+    );
+    this.data.push(new AttributeValue('Z', 'z', 0, 0)
+        .setTooltip('方块的Z')
     );
 }
 
