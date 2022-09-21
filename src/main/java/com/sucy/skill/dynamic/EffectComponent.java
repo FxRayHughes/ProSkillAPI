@@ -30,7 +30,7 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.mobs.MobManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
-import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorType;
@@ -136,9 +136,8 @@ public abstract class EffectComponent {
         double value = base + (level - 1) * scale;
 
         // Apply global modifiers
-        if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player) {
-            PlayerData data = SkillAPI.getPlayerData((Player) caster);
-            value = data.scaleDynamic(this, key, value);
+        if (SkillAPI.getSettings().isAttributesEnabled()) {
+            value = AttributeAPI.scaleDynamic(caster, this, key, value);
         }
 
         return value;

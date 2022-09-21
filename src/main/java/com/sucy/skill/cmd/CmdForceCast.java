@@ -31,8 +31,11 @@ import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.EntityCastSkillEvent;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.skills.SkillCastAPI;
 import com.sucy.skill.api.skills.SkillShot;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,7 +52,6 @@ public class CmdForceCast implements IFunction
     private static final Pattern INTEGER = Pattern.compile("-?[0-9]+");
 
     private static final String NOT_PLAYER    = "not-player";
-    private static final String WRONG_SKILL   = "wrong-skill";
     private static final String INVALID_SKILL = "invalid-skill";
 
     /**
@@ -61,52 +63,35 @@ public class CmdForceCast implements IFunction
      * @param args   argument list
      */
     @Override
-    public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
-    {
+    public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args) {
         // Only players have profession options
-        if (args.length < 2)
-        {
+        if (args.length < 2) {
             CommandManager.displayUsage(cmd, sender);
-        }
-        else
-        {
+        } else {
             Player player = VersionManager.getPlayer(args[0]);
-            if (player == null)
-            {
+            if (player == null) {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");
                 return;
             }
 
             String name = args[1];
             int level = 1;
-            for (int i = 2; i < args.length; i++)
-            {
-                if (i == args.length - 1 && SkillAPI.getSkill(name) != null && INTEGER.matcher(args[i]).matches())
-                {
+            for (int i = 2; i < args.length; i++) {
+                if (i == args.length - 1 && SkillAPI.getSkill(name) != null && INTEGER.matcher(args[i]).matches()) {
                     level = Integer.parseInt(args[i]);
-                }
-                else name += ' ' + args[i];
+                } else name += ' ' + args[i];
             }
-
             Skill skill = SkillAPI.getSkill(name);
-
             // Invalid class
-            if (skill == null)
-            {
+            if (skill == null) {
                 cmd.sendMessage(sender, INVALID_SKILL, ChatColor.RED + "That is not a valid skill");
             }
-
-            // Castable skill
-            else if (skill instanceof SkillShot)
-            {
-                ((SkillShot) skill).cast(player, level);
+            EntityCastSkillEvent events = new EntityCastSkillEvent(player, skill, level);
+            Bukkit.getPluginManager().callEvent(events);
+            if (events.isCancelled()) {
+                return;
             }
-
-            // Not castable
-            else
-            {
-                cmd.sendMessage(sender, WRONG_SKILL, ChatColor.RED + "Skills must be skill shot skills or dynamic skills to be cast this way.");
-            }
+            SkillCastAPI.cast(player,skill,level);
         }
     }
 }

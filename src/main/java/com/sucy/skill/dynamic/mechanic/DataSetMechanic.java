@@ -26,11 +26,11 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.data.DataSkill;
+import com.sucy.skill.hook.PlaceholderAPIHook;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -63,8 +63,19 @@ public class DataSetMechanic extends MechanicComponent {
 
         String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
         double amount = parseValues(caster, AMOUNT, level, 1);
+
         double tick = parseValues(caster, TICK, level, 1);
         for (LivingEntity target : targets) {
+            String getArmor = settings.getString(AMOUNT);
+            //Value: T%player_name% S%player_name%
+            if (getArmor.startsWith("T%") && target instanceof Player) {
+                String papi = PlaceholderAPIHook.format(getArmor.replace("T%", "%"), (Player) target);
+                amount = Double.parseDouble(papi);
+            }
+            if (getArmor.startsWith("S%") && caster instanceof Player) {
+                String papi = PlaceholderAPIHook.format(getArmor.replace("T%", "%"), (Player) caster);
+                amount = Double.parseDouble(papi);
+            }
             DataSkill.setValue(target.getUniqueId(), key, amount, (int) tick);
         }
         return true;

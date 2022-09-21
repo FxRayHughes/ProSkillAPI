@@ -32,6 +32,7 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.*;
 import com.sucy.skill.api.event.*;
@@ -82,7 +83,7 @@ public class PlayerData {
     private final HashMap<String, PlayerSkill> skills = new HashMap<>();
     private final HashMap<Material, PlayerSkill> binds = new HashMap<>();
     private final HashMap<String, Integer> attributes = new HashMap<>();
-    private final HashMap<String, Integer> bonusAttrib = new HashMap<>();
+    public final HashMap<String, Integer> bonusAttrib = new HashMap<>();
 
     public final HashMap<String, HashMap<String, Integer>> addAttrib = new HashMap<>();
 
@@ -295,24 +296,16 @@ public class PlayerData {
     /**
      * Gets the number of attribute points the player has
      * between invested and bonus sources.
+     * 现在走统一管理器进行获取属性了
      *
      * @param key attribute key
      * @return number of total points
      */
     public int getAttribute(String key) {
-        key = key.toLowerCase();
-        int total = 0;
-        if (attributes.containsKey(key)) {
-            total += attributes.get(key);
+        if (!getPlayer().isOnline()) {
+            return 0;
         }
-        if (bonusAttrib.containsKey(key)) {
-            total += bonusAttrib.get(key);
-        }
-        total += getAddAttribute(key);
-        for (PlayerClass playerClass : classes.values()) {
-            total += playerClass.getData().getAttribute(key, playerClass.getLevel());
-        }
-        return Math.max(0, total);
+        return AttributeAPI.getAttribute(getPlayer(), key);
     }
 
     public int getAddAttribute(String key) {
@@ -491,24 +484,7 @@ public class PlayerData {
      * @return modified value
      */
     public double scaleStat(final String stat, final double value) {
-        final AttributeManager manager = SkillAPI.getAttributeManager();
-        if (manager == null) {
-            return value;
-        }
-
-        final List<AttributeManager.Attribute> matches = manager.forStat(stat);
-        if (matches == null) {
-            return value;
-        }
-
-        double modified = value;
-        for (final AttributeManager.Attribute attribute : matches) {
-            int amount = getAttribute(attribute.getKey());
-            if (amount > 0) {
-                modified = attribute.modifyStat(stat, modified, amount);
-            }
-        }
-        return modified;
+        return AttributeAPI.scaleStat(getPlayer(), stat, value);
     }
 
     /**
@@ -520,23 +496,7 @@ public class PlayerData {
      * @return the modified value
      */
     public double scaleDynamic(EffectComponent component, String key, double value) {
-        final AttributeManager manager = SkillAPI.getAttributeManager();
-        if (manager == null) {
-            return value;
-        }
-
-        final List<AttributeManager.Attribute> matches = manager.forComponent(component, key);
-        if (matches == null) {
-            return value;
-        }
-
-        for (final AttributeManager.Attribute attribute : matches) {
-            int amount = getAttribute(attribute.getKey());
-            if (amount > 0) {
-                value = attribute.modify(component, key, value, amount);
-            }
-        }
-        return value;
+        return AttributeAPI.scaleDynamic(getPlayer(), component, key, value);
     }
 
     /**
@@ -1798,7 +1758,6 @@ public class PlayerData {
         if (skill == null) {
             throw new IllegalArgumentException("Skill cannot be null");
         }
-
         int level = skill.getLevel();
 
         // Not unlocked or on cooldown
@@ -1817,6 +1776,11 @@ public class PlayerData {
             return PlayerSkillCastFailedEvent.invoke(skill, SPECTATOR);
         }
 
+        EntityCastSkillEvent events = new EntityCastSkillEvent(this.getPlayer(), skill.getData(), level);
+        Bukkit.getPluginManager().callEvent(events);
+        if (events.isCancelled()) {
+            return false;
+        }
         // Skill Shots
         if (skill.getData() instanceof SkillShot) {
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);

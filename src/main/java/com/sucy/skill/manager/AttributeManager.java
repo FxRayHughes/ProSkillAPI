@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.manager.AttributeManager
+ * com.sucy.skill.manager.AttributeAPI
  *
  * The MIT License (MIT)
  *

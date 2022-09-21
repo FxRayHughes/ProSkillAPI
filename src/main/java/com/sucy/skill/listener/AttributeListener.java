@@ -28,6 +28,7 @@ package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
@@ -197,40 +198,22 @@ public class AttributeListener extends SkillAPIListener
     public void onPhysicalDamage(PhysicalDamageEvent event)
     {
         // Physical Damage
-        if (event.getDamager() instanceof Player)
-        {
-            Player player = (Player) event.getDamager();
-            if (CitizensHook.isNPC(player))
-                return;
-
-            PlayerData data = SkillAPI.getPlayerData(player);
-
-            double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
-            if (event.isProjectile()) {
-                newAmount = data.scaleStat(AttributeManager.PROJECTILE_DAMAGE, newAmount);
-            } else {
-                newAmount = data.scaleStat(AttributeManager.MELEE_DAMAGE, newAmount);
-            }
-            event.setDamage(newAmount);
+        double newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
+        if (event.isProjectile()) {
+            newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.PROJECTILE_DAMAGE, newAmount);
+        } else {
+            newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.MELEE_DAMAGE, newAmount);
         }
+        event.setDamage(newAmount);
 
         // Physical Defense
-        if (event.getTarget() instanceof Player)
-        {
-            Player player = (Player) event.getTarget();
-            if (CitizensHook.isNPC(player))
-                return;
-
-            PlayerData data = SkillAPI.getPlayerData(player);
-
-            double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
-            if (event.isProjectile()) {
-                newAmount = data.scaleStat(AttributeManager.PROJECTILE_DEFENSE, newAmount);
-            } else {
-                newAmount = data.scaleStat(AttributeManager.MELEE_DEFENSE, newAmount);
-            }
-            event.setDamage(newAmount);
+        double newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
+        if (event.isProjectile()) {
+            newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.PROJECTILE_DEFENSE, newAmount);
+        } else {
+            newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.MELEE_DEFENSE, newAmount);
         }
+        event.setDamage(newAmountD);
     }
 
     /**
@@ -239,44 +222,25 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onSkillDamage(final SkillDamageEvent event)
-    {
+    public void onSkillDamage(final SkillDamageEvent event) {
         // Skill Damage
-        if (event.getDamager() instanceof Player)
-        {
-            final Player player = (Player) event.getDamager();
-            if (CitizensHook.isNPC(player))
-                return;
-
-            final PlayerData data = SkillAPI.getPlayerData(player);
-
-            if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
-                event.setDamage(data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage()));
-            } else {
-                final String classified = AttributeManager.SKILL_DAMAGE + "-" + event.getClassification();
-                final double firstPass = data.scaleStat(classified, event.getDamage());
-                final double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, firstPass);
-                event.setDamage(newAmount);
-            }
+        if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
+            event.setDamage(AttributeAPI.scaleStat(event.getDamager(), AttributeManager.PHYSICAL_DAMAGE, event.getDamage()));
+        } else {
+            final String classified = AttributeManager.SKILL_DAMAGE + "-" + event.getClassification();
+            final double firstPass = AttributeAPI.scaleStat(event.getDamager(), classified, event.getDamage());
+            final double newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.SKILL_DAMAGE, firstPass);
+            event.setDamage(newAmount);
         }
 
         // Skill Defense
-        if (event.getTarget() instanceof Player)
-        {
-            final Player player = (Player) event.getTarget();
-            if (CitizensHook.isNPC(player))
-                return;
-
-            final PlayerData data = SkillAPI.getPlayerData(player);
-
-            if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
-                event.setDamage(data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage()));
-            } else {
-                final String classified = AttributeManager.SKILL_DEFENSE + "-" + event.getClassification();
-                final double firstPass = data.scaleStat(classified, event.getDamage());
-                final double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, firstPass);
-                event.setDamage(newAmount);
-            }
+        if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
+            event.setDamage(AttributeAPI.scaleStat(event.getTarget(), AttributeManager.PHYSICAL_DEFENSE, event.getDamage()));
+        } else {
+            final String classified = AttributeManager.SKILL_DEFENSE + "-" + event.getClassification();
+            final double firstPass = AttributeAPI.scaleStat(event.getTarget(), classified, event.getDamage());
+            final double newAmount = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.SKILL_DEFENSE, firstPass);
+            event.setDamage(newAmount);
         }
     }
 
