@@ -185,7 +185,9 @@ const Mechanic = {
     DATA_SET: {name: 'Data Set', container: false, construct: MechanicDataSet},
     DATA_EDIT: {name: 'Data Edit', container: false, construct: MechanicDataEdit},
     MYTHIC_CAST: {name: 'Mythic CAST', container: false, construct: MechanicMythicCast},
-    SNOWSTORM: {name: "Snow Storm", container: false, construct: MechanicSnowStorm}
+    SNOWSTORM: {name: "Snow Storm", container: false, construct: MechanicSnowStorm},
+    Dragon_Animation_Start: {name: "Dragon Animation Start", container: false, construct: MechanicDragonAnimationStart},
+    Dragon_Animation_Stop: {name: "Dragon Animation Stop", container: false, construct: MechanicDragonAnimationStop}
 };
 
 let saveIndex;
@@ -3034,6 +3036,36 @@ function MechanicMythicCast() {
     );
     this.data.push(new AttributeValue('Power', 'power', 0, 0)
         .setTooltip('技能等级')
+    );
+}
+
+extend('MechanicDragonAnimationStart', 'Component');
+
+function MechanicDragonAnimationStart() {
+    this.super('Dragon Animation Start', Type.MECHANIC, false);
+
+    this.description = '使目标播放动作 玩家播放玩家动作 其余目标播放其模型动作';
+
+    this.data.push(new StringValue('动作名称', 'name', '动作名称')
+        .setTooltip('这里直接写动作名称即可')
+    );
+    this.data.push(new AttributeValue('过度时间', 'time', 0, 0)
+        .setTooltip('这个选项只有非玩家的其他模型动画生效')
+    );
+}
+
+extend('MechanicDragonAnimationStop', 'Component');
+
+function MechanicDragonAnimationStop() {
+    this.super('Dragon Animation Stop', Type.MECHANIC, false);
+
+    this.description = '停止目标动作';
+
+    this.data.push(new StringValue('动作名称', 'name', '动作名称')
+        .setTooltip('这里直接写动作名称即可 玩家类型可忽略')
+    );
+    this.data.push(new AttributeValue('过度时间', 'time', 0, 0)
+        .setTooltip('这个选项只有非玩家的其他模型动画生效')
     );
 }
 

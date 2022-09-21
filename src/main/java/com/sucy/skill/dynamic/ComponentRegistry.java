@@ -6,29 +6,8 @@ import com.sucy.skill.dynamic.custom.CustomComponent;
 import com.sucy.skill.dynamic.custom.CustomEffectComponent;
 import com.sucy.skill.dynamic.custom.EditorOption;
 import com.sucy.skill.dynamic.mechanic.*;
-import com.sucy.skill.dynamic.target.AreaTarget;
-import com.sucy.skill.dynamic.target.ConeTarget;
-import com.sucy.skill.dynamic.target.LinearTarget;
-import com.sucy.skill.dynamic.target.LocationTarget;
-import com.sucy.skill.dynamic.target.NearestTarget;
-import com.sucy.skill.dynamic.target.OffsetTarget;
-import com.sucy.skill.dynamic.target.RememberTarget;
-import com.sucy.skill.dynamic.target.SelfTarget;
-import com.sucy.skill.dynamic.target.SingleTarget;
-import com.sucy.skill.dynamic.trigger.BlockBreakTrigger;
-import com.sucy.skill.dynamic.trigger.BlockPlaceTrigger;
-import com.sucy.skill.dynamic.trigger.CrouchTrigger;
-import com.sucy.skill.dynamic.trigger.DeathTrigger;
-import com.sucy.skill.dynamic.trigger.EnvironmentalTrigger;
-import com.sucy.skill.dynamic.trigger.KillTrigger;
-import com.sucy.skill.dynamic.trigger.LandTrigger;
-import com.sucy.skill.dynamic.trigger.LaunchTrigger;
-import com.sucy.skill.dynamic.trigger.MoveTrigger;
-import com.sucy.skill.dynamic.trigger.PhysicalDealtTrigger;
-import com.sucy.skill.dynamic.trigger.PhysicalTakenTrigger;
-import com.sucy.skill.dynamic.trigger.SkillDealtTrigger;
-import com.sucy.skill.dynamic.trigger.SkillTakenTrigger;
-import com.sucy.skill.dynamic.trigger.Trigger;
+import com.sucy.skill.dynamic.target.*;
+import com.sucy.skill.dynamic.trigger.*;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.EventExecutor;
 
@@ -298,5 +277,7 @@ public class ComponentRegistry {
         register(new WolfMechanic());
         register(new MythicCastMechanic());
         register(new SnowStormMechanic());
+        register(new DragonAnimationStartMechanic());
+        register(new DragonAnimationStopMechanic());
     }
 }
