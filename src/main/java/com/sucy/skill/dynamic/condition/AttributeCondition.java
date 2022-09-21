@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -39,14 +40,11 @@ public class AttributeCondition extends ConditionComponent
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        if (!(target instanceof Player)) return false;
-
         final String attr = settings.getString(ATTR, null);
         final int min = (int) parseValues(caster, MIN, level, 0);
-        final int max = (int) parseValues(caster, MAX, level, 999);
+        final int max = (int) parseValues(caster, MAX, level, Integer.MAX_VALUE);
 
-        final PlayerData data = SkillAPI.getPlayerData((Player) target);
-        final int value = data.getAttribute(attr);
+        final int value = AttributeAPI.getAttribute(target,attr);
         return value >= min && value <= max;
     }
 
