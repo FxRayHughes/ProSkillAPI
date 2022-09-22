@@ -1916,8 +1916,10 @@ public class PlayerData {
         this.updateHealthAndMana(player);
         this.startPassives(player);
         this.updateScoreboard();
-        if (this.getLastHealth() > 0 && !player.isDead()) {
-            player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
+        if (SkillAPI.getSettings().isAttributesHeal()) {
+            if (this.getLastHealth() > 0 && !player.isDead()) {
+                player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
+            }
         }
     }
 }
