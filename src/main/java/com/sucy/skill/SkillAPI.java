@@ -48,6 +48,7 @@ import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PlaceholderAPIHook;
 import com.sucy.skill.hook.PluginChecker;
+import com.sucy.skill.hook.mechanic.MythicListener;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
 import com.sucy.skill.packet.PacketInjector;
@@ -161,6 +162,7 @@ public class SkillAPI extends JavaPlugin {
         listen(new ToolListener(), true);
         listen(new KillListener(), true);
         listen(new AddonListener(), true);
+        listen(new MythicListener(), true);
         listen(new ItemListener(), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {

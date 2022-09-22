@@ -28,4 +28,6 @@ public class MythicMobsHook {
     public static void castSkill(LivingEntity caster, String skillName, Float power) {
         MythicMobs.inst().getAPIHelper().castSkill(caster, skillName, power);
     }
+
+
 }
