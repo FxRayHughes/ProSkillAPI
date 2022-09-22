@@ -33,6 +33,9 @@ public class AttributeAPI {
             if (data.getAttributes().containsKey(key)) {
                 total += data.getAttributes().get(key);
             }
+            AttributeGetEvent event = new AttributeGetEvent(entity, key, total);
+            Bukkit.getPluginManager().callEvent(event);
+            total = event.getValue();
             if (data.bonusAttrib.containsKey(key)) {
                 total += data.bonusAttrib.get(key);
             }
@@ -40,7 +43,7 @@ public class AttributeAPI {
             for (PlayerClass playerClass : data.getClasses()) {
                 total += playerClass.getData().getAttribute(key, playerClass.getLevel());
             }
-            total = Math.max(0, total);
+            return Math.max(0, total);
         }
         AttributeGetEvent event = new AttributeGetEvent(entity, key, total);
         Bukkit.getPluginManager().callEvent(event);
