@@ -445,8 +445,10 @@ public class MainListener extends SkillAPIListener
             data.clearBonuses();
             data.stopPassives(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
-            event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
-            event.getPlayer().setHealth(SkillAPI.getSettings().getDefaultHealth());
+            if (SkillAPI.getSettings().isAttributesHeal()){
+                event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
+                event.getPlayer().setHealth(SkillAPI.getSettings().getDefaultHealth());
+            }
             if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none"))
             {
                 event.getPlayer().setLevel(0);
