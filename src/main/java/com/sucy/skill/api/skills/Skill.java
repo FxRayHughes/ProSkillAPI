@@ -723,7 +723,9 @@ public abstract class Skill implements IconHolder
             {
                 if (p.getLocation().distanceSquared(l) < radius)
                 {
-                    p.sendMessage(RPGFilter.SKILL.setReplacement(getName()).apply(Filter.PLAYER.setReplacement(player.getName()).apply(message)));
+                    if (message.contains("闭嘴")) {
+                        p.sendMessage(RPGFilter.SKILL.setReplacement(getName()).apply(Filter.PLAYER.setReplacement(player.getName()).apply(message)));
+                    }
                 }
             }
         }

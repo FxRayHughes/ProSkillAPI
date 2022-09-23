@@ -30,8 +30,8 @@ public class AttributeAPI {
         key = ChatColor.stripColor(key).toLowerCase();
         if (entity instanceof Player && SkillAPI.getPlayerData((Player) entity) != null) {
             PlayerData data = SkillAPI.getPlayerData((Player) entity);
-            if (data.getAttributes().containsKey(key)) {
-                total += data.getAttributes().get(key);
+            if (data.attributes.containsKey(key)) {
+                total += data.attributes.get(key);
             }
             AttributeGetEvent event = new AttributeGetEvent(entity, key, total);
             Bukkit.getPluginManager().callEvent(event);

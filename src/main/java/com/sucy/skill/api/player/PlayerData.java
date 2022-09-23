@@ -82,7 +82,7 @@ public class PlayerData {
     private final HashMap<String, PlayerClass> classes = new HashMap<>();
     private final HashMap<String, PlayerSkill> skills = new HashMap<>();
     private final HashMap<Material, PlayerSkill> binds = new HashMap<>();
-    private final HashMap<String, Integer> attributes = new HashMap<>();
+    public final HashMap<String, Integer> attributes = new HashMap<>();
     public final HashMap<String, Integer> bonusAttrib = new HashMap<>();
 
     public final HashMap<String, HashMap<String, Integer>> addAttrib = new HashMap<>();

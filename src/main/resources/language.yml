@@ -9,6 +9,7 @@
 # configuration tutorials.                       #
 # ---------------------------------------------- #
 Notifications:
+  #如果cast: '闭嘴' 将不会提示释放技能 单独写在技能里也生效(只要是包含闭嘴就不提示
   cast: '&6{player} &2has cast &6{skill}'
   gain-exp: '&2You have gained &6{exp} experience'
   gain-lvl: '&6Level Up! &2You are now a &6level {level} {class}'
