@@ -40,7 +40,8 @@ const Trigger = {
     PHYSICAL_DAMAGE: {name: 'Physical Damage', container: true, construct: TriggerPhysicalDamage},
     SKILL_DAMAGE: {name: 'Skill Damage', container: true, construct: TriggerSkillDamage},
     TOOK_PHYSICAL_DAMAGE: {name: 'Took Physical Damage', container: true, construct: TriggerTookPhysicalDamage},
-    TOOK_SKILL_DAMAGE: {name: 'Took Skill Damage', container: true, construct: TriggerTookSkillDamage}
+    TOOK_SKILL_DAMAGE: {name: 'Took Skill Damage', container: true, construct: TriggerTookSkillDamage},
+    INTERACT: {name: 'Interact', container: true, construct: TriggerInteract}
 };
 
 /**
@@ -55,7 +56,7 @@ const Target = {
     OFFSET: {name: 'Offset', container: true, construct: TargetOffset},
     REMEMBER: {name: 'Remember', container: true, construct: TargetRemember},
     SELF: {name: 'Self', container: true, construct: TargetSelf},
-    SINGLE: {name: 'Single', container: true, construct: TargetSingle}
+    SINGLE: {name: 'Single', container: true, construct: TargetSingle},
 };
 
 /**
@@ -783,6 +784,24 @@ function TriggerTookSkillDamage() {
     );
     this.data.push(new StringListValue('Category', 'category', ['default'])
         .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
+    );
+}
+
+extend('TriggerInteract', 'Component');
+
+function TriggerInteract() {
+    this.super('Interact', Type.TRIGGER, true);
+
+    this.description = '这个触发器是玩家在手持物品进行操作的时候触发的';
+
+    this.data.push(new StringListValue("动作", "action", ["LEFT_CLICK_AIR", "LEFT_CLICK_BLOCK", "PHYSICAL", "RIGHT_CLICK_AIR", "RIGHT_CLICK_BLOCK"])
+        .setTooltip('每个动作以;结尾进行区分')
+    );
+    this.data.push(new StringValue("物品名", "name", "all")
+        .setTooltip('物品的名称中包含某个内容 all为全部都可以')
+    );
+    this.data.push(new StringValue("Lore", "lore", "all")
+        .setTooltip('物品的描述中包含某个内容 all为全部都可以')
     );
 }
 
