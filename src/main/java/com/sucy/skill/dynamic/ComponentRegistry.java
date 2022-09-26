@@ -28,7 +28,7 @@ public class ComponentRegistry {
     static final Map<ComponentType, Map<String, Class<?>>> COMPONENTS = new EnumMap<>(ComponentType.class);
 
     static final Map<String, Trigger<?>> TRIGGERS = new HashMap<>();
-    private static final Map<Trigger<?>, EventExecutor> EXECUTORS = new HashMap<>();
+    public static final Map<Trigger<?>, EventExecutor> EXECUTORS = new HashMap<>();
 
     public static Trigger<?> getTrigger(final String key) {
         return TRIGGERS.get(key.toUpperCase().replace(' ', '_'));
@@ -57,7 +57,6 @@ public class ComponentRegistry {
         } else if (trigger.getKey().contains("-")) {
             throw new IllegalArgumentException(trigger.getKey() + " is not a valid key: must not contain dashes");
         }
-
         TRIGGERS.put(trigger.getKey(), trigger);
         EXECUTORS.put(trigger, (listener, event) -> {
             if (!trigger.getEvent().isInstance(event)) return;

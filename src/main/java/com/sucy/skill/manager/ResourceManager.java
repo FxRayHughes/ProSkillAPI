@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 /**
  * Manages embedded resources within the .jar
@@ -58,7 +59,7 @@ public class ResourceManager
             byte[] buffer = new byte[4096];
             File dir = new File(folder);
             dir.mkdirs();
-            resStreamOut = new FileOutputStream(new File(dir + File.separator + name));
+            resStreamOut = Files.newOutputStream(new File(dir + File.separator + name).toPath());
 
             // Copy to the file
             while ((readBytes = stream.read(buffer)) > 0)
@@ -79,8 +80,7 @@ public class ResourceManager
     /**
      * <p>Places the SkillAPI module for Quests into the proper directory</p>
      */
-    public static void copyQuestsModule()
-    {
+    public static void copyQuestsModule() {
         copyResource("SkillAPIModule.jar", QUESTS_FOLDER);
     }
 }

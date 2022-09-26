@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -39,16 +40,19 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         return true;
     }
 
+    @NotNull
     @Override
     public String getAuthor(){
         return "Spark";
     }
 
+    @NotNull
     @Override
     public String getIdentifier(){
         return "sapi";
     }
 
+    @NotNull
     @Override
     public String getVersion(){
         return "1.0.0";
@@ -290,6 +294,15 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
             if (identifier.equals("default_scurrentrequiredexp")) {
                 return String.valueOf(data.getMainClass().getRequiredExp());
+            }
+            if (identifier.equals("default_totalexp")) {
+                return String.valueOf(data.getMainClass().getTotalExp());
+            }
+            if (identifier.equals("default_needexp")) {
+                return String.valueOf((int) (data.getMainClass().getRequiredExp() - data.getMainClass().getExp()));
+            }
+            if (identifier.equals("default_skill_point")) {
+                return String.valueOf(data.getMainClass().getPoints());
             }
         }
 

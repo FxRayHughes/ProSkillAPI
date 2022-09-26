@@ -45,14 +45,12 @@ public class BungeeHook implements Listener
      *
      * @param api api reference
      */
-    public static void init(SkillAPI api)
-    {
+    public static void init(SkillAPI api) {
         api.getServer().getPluginManager().registerEvents(new BungeeHook(), api);
     }
 
     @EventHandler
-    public void onKick(ServerKickEvent event)
-    {
+    public void onKick(ServerKickEvent event) {
         MainListener.unload(VersionManager.getPlayer(event.getPlayer().getName()));
     }
 

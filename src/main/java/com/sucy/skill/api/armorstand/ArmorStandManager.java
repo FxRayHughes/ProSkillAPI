@@ -30,8 +30,12 @@ public class ArmorStandManager {
      *
      */
     public static void cleanUp() {
-        instances.values().forEach(ArmorStandData::remove);
-        instances.clear();
+        try {
+            instances.values().forEach(ArmorStandData::remove);
+            instances.clear();
+        } catch (Exception ignored) {
+
+        }
     }
 
     /**

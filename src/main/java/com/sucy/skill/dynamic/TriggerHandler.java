@@ -24,12 +24,12 @@ import static com.sucy.skill.dynamic.ComponentRegistry.getExecutor;
  */
 public class TriggerHandler implements Listener {
 
-    private final HashMap<Integer, Integer> active = new HashMap<>();
+    public final HashMap<Integer, Integer> active = new HashMap<>();
 
-    private final DynamicSkill skill;
-    private final String key;
-    private final Trigger<?> trigger;
-    private final TriggerComponent component;
+    public final DynamicSkill skill;
+    public final String key;
+    public final Trigger<?> trigger;
+    public final TriggerComponent component;
 
     public TriggerHandler(
             final DynamicSkill skill,
@@ -76,23 +76,34 @@ public class TriggerHandler implements Listener {
      */
     public void register(final SkillAPI plugin) {
         plugin.getServer().getPluginManager().registerEvent(
-                trigger.getEvent(), this, EventPriority.HIGHEST, getExecutor(trigger), plugin, true);
+                trigger.getEvent(),
+                this,
+                EventPriority.NORMAL,
+                getExecutor(trigger),
+                plugin,
+                true
+        );
     }
 
     <T extends Event> void apply(final T event, final Trigger<T> trigger) {
         final LivingEntity caster = trigger.getCaster(event);
-        if (caster == null || !active.containsKey(caster.getEntityId())) { return; }
-
+        if (caster == null || !active.containsKey(caster.getEntityId())) {
+            return;
+        }
         final int level = active.get(caster.getEntityId());
-        if (!trigger.shouldTrigger(event, level, component.settings)) { return; }
-
+        if (!trigger.shouldTrigger(event, level, component.settings)) {
+            return;
+        }
         final LivingEntity target = trigger.getTarget(event, component.settings);
         trigger.setValues(event, DynamicSkill.getCastData(caster));
         trigger(caster, target, level);
 
-        if (event instanceof Cancellable) { skill.applyCancelled((Cancellable) event); }
+        if (event instanceof Cancellable) {
+            skill.applyCancelled((Cancellable) event);
+        }
         trigger.postProcess(event, skill);
     }
+
 
     boolean trigger(final LivingEntity user, final LivingEntity target, final int level) {
         if (user == null || target == null || component.isRunning() || !SkillAPI.getSettings().isValidTarget(target)) {

@@ -69,7 +69,7 @@ dependencies {
 }
 
 group = "com.sucy.skill"
-version = "R-1.0.12"
+version = "R-1.0.14 "
 description = "ProSkillAPI"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 

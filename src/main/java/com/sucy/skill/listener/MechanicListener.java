@@ -32,6 +32,9 @@ import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.FlagExpireEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
 import com.sucy.skill.api.projectile.ItemProjectile;
+import com.sucy.skill.dynamic.ComponentRegistry;
+import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.TriggerHandler;
 import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
@@ -40,12 +43,15 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.VaultHook;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -78,30 +84,25 @@ public class MechanicListener extends SkillAPIListener
         flying.clear();
     }
 
+
     /**
      * Checks for landing on the ground
      *
      * @param event event details
      */
     @EventHandler
-    public void onMove(PlayerMoveEvent event)
-    {
+    public void onMove(PlayerMoveEvent event) {
         if (event.getPlayer().hasMetadata("NPC"))
             return;
 
         boolean inMap = flying.containsKey(event.getPlayer().getUniqueId());
-        if (inMap == ((Entity) event.getPlayer()).isOnGround())
-        {
-            if (inMap)
-            {
+        if (inMap == ((Entity) event.getPlayer()).isOnGround()) {
+            if (inMap) {
                 double maxHeight = flying.remove(event.getPlayer().getUniqueId());
                 Bukkit.getPluginManager().callEvent(new PlayerLandEvent(event.getPlayer(), maxHeight - event.getPlayer().getLocation().getY()));
-            }
-            else
+            } else
                 flying.put(event.getPlayer().getUniqueId(), event.getPlayer().getLocation().getY());
-        }
-        else if (inMap)
-        {
+        } else if (inMap) {
             double y = flying.get(event.getPlayer().getUniqueId());
             flying.put(event.getPlayer().getUniqueId(), Math.max(y, event.getPlayer().getLocation().getY()));
         }
@@ -286,4 +287,5 @@ public class MechanicListener extends SkillAPIListener
             event.setCancelled(true);
         }
     }
+
 }

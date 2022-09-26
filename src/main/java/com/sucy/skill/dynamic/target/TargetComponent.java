@@ -10,6 +10,7 @@ import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -132,7 +133,7 @@ public abstract class TargetComponent extends EffectComponent {
 
             for (LivingEntity entity : found) {
                 if (count >= max) break;
-                if (isValidTarget(caster, target, entity) || (self.equals(IncludeCaster.IN_AREA) && caster==entity)) {
+                if (isValidTarget(caster, target, entity) || (self.equals(IncludeCaster.IN_AREA) && caster == entity)) {
                     list.add(entity);
                     count++;
                 }
@@ -141,6 +142,8 @@ public abstract class TargetComponent extends EffectComponent {
         if (self.equals(IncludeCaster.TRUE)) list.add(caster);
         return list;
     }
+
+
 
     boolean isValidTarget(final LivingEntity caster, final LivingEntity from, final LivingEntity target) {
         if (SkillAPI.getMeta(target, MechanicListener.ARMOR_STAND) != null) return false;
