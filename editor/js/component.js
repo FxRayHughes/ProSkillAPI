@@ -186,6 +186,7 @@ const Mechanic = {
     DATA_SET: {name: 'Data Set', container: false, construct: MechanicDataSet},
     DATA_EDIT: {name: 'Data Edit', container: false, construct: MechanicDataEdit},
     MYTHIC_CAST: {name: 'Mythic CAST', container: false, construct: MechanicMythicCast},
+    MYTHIC_CAST_TARGET: {name: 'Mythic CAST TARGET', container: false, construct: MechanicMythicCastTarget},
     SNOWSTORM: {name: "Snow Storm", container: false, construct: MechanicSnowStorm},
     Dragon_Animation_Start: {name: "Dragon Animation Start", container: false, construct: MechanicDragonAnimationStart},
     Dragon_Animation_Stop: {name: "Dragon Animation Stop", container: false, construct: MechanicDragonAnimationStop},
@@ -3051,6 +3052,21 @@ function MechanicMythicCast() {
     this.super('Mythic Cast', Type.MECHANIC, false);
 
     this.description = '让目标释放Mythic的技能组';
+
+    this.data.push(new StringValue('SkillName', 'skillname', '技能名')
+        .setTooltip('唯一识别标签 {uuid} 会被进行替换为 施法者的UUID')
+    );
+    this.data.push(new AttributeValue('Power', 'power', 0, 0)
+        .setTooltip('技能等级')
+    );
+}
+
+extend('MechanicMythicCastTarget', 'Component');
+
+function MechanicMythicCastTarget() {
+    this.super('Mythic Cast Target', Type.MECHANIC, false);
+
+    this.description = '施法者释放某个Mythic技能对目标们';
 
     this.data.push(new StringValue('SkillName', 'skillname', '技能名')
         .setTooltip('唯一识别标签 {uuid} 会被进行替换为 施法者的UUID')

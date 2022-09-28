@@ -276,6 +276,7 @@ public class ComponentRegistry {
         register(new WarpValueMechanic());
         register(new WolfMechanic());
         register(new MythicCastMechanic());
+        register(new MythicCastTargetMechanic());
         register(new SnowStormMechanic());
         register(new DragonAnimationStartMechanic());
         register(new DragonAnimationStopMechanic());
