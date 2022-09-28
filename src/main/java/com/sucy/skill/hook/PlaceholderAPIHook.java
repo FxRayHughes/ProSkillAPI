@@ -4,6 +4,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.ChatColor;
@@ -303,6 +304,22 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
             if (identifier.equals("default_skill_point")) {
                 return String.valueOf(data.getMainClass().getPoints());
+            }
+            if (identifier.equals("default_skill_cooldown:")) {
+                String[] idSplit = identifier.split(":");
+                PlayerSkill skill = data.getSkill(idSplit[1]);
+                if (skill == null) {
+                    return "0";
+                }
+                return String.valueOf(skill.getCooldown());
+            }
+            if (identifier.equals("default_skill_maxcooldown:")) {
+                String[] idSplit = identifier.split(":");
+                PlayerSkill skill = data.getSkill(idSplit[1]);
+                if (skill == null) {
+                    return "0";
+                }
+                return String.valueOf(skill.getData().getCooldown(skill.getLevel()));
             }
         }
 
