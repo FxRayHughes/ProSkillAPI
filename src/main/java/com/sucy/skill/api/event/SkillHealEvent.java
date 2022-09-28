@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.event;
 
+import com.sucy.skill.api.skills.Skill;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -35,14 +36,15 @@ import org.bukkit.event.HandlerList;
  * An event for when an entity is healed by
  * another entity with the use of a skill.
  */
-public class SkillHealEvent extends Event implements Cancellable
-{
+public class SkillHealEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
     private LivingEntity healer;
     private LivingEntity target;
-    private double       damage;
-    private boolean      cancelled;
+    private double damage;
+
+    private Skill skill;
+    private boolean cancelled;
 
     /**
      * Initializes a new event
@@ -51,8 +53,8 @@ public class SkillHealEvent extends Event implements Cancellable
      * @param target entity receiving the damage
      * @param damage the amount of damage dealt
      */
-    public SkillHealEvent(LivingEntity healer, LivingEntity target, double damage)
-    {
+    public SkillHealEvent(LivingEntity healer, LivingEntity target, Skill skill, double damage) {
+        this.skill = skill;
         this.healer = healer;
         this.target = target;
         this.damage = damage;

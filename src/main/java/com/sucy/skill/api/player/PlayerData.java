@@ -1353,20 +1353,21 @@ public class PlayerData {
         double health = bonusHealth;
         maxMana = bonusMana;
         for (PlayerClass c : classes.values()) {
-            health += c.getHealth();
+            if (SkillAPI.getSettings().isAttributesHeal()) {
+                health += c.getHealth();
+            }
             maxMana += c.getMana();
         }
-        if (!SkillAPI.getSettings().isAttributesHeal()){
-            return;
-        }
-        if (health == bonusHealth) {
-            health += SkillAPI.getSettings().getDefaultHealth();
-        }
-        if (health <= 0) {
-            health = SkillAPI.getSettings().getDefaultHealth();
-        }
-        if (SkillAPI.getSettings().isModifyHealth()) {
-            player.setMaxHealth(health);
+        if (SkillAPI.getSettings().isAttributesHeal()) {
+            if (health == bonusHealth) {
+                health += SkillAPI.getSettings().getDefaultHealth();
+            }
+            if (health <= 0) {
+                health = SkillAPI.getSettings().getDefaultHealth();
+            }
+            if (SkillAPI.getSettings().isModifyHealth()) {
+                player.setMaxHealth(health);
+            }
         }
         mana = Math.min(mana, maxMana);
 
@@ -1918,7 +1919,9 @@ public class PlayerData {
         this.updateScoreboard();
         if (SkillAPI.getSettings().isAttributesHeal()) {
             if (this.getLastHealth() > 0 && !player.isDead()) {
-                player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
+                if (SkillAPI.getSettings().isAttributesHeal()) {
+                    player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
+                }
             }
         }
     }
