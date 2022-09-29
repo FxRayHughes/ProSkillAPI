@@ -66,8 +66,8 @@ public class GUITool implements ToolMenu
         return inUse;
     }
 
-    private static HashMap<String, GUIData>   setups = new HashMap<String, GUIData>();
-    private static HashMap<String, ItemStack> items  = new HashMap<String, ItemStack>();
+    private static final HashMap<String, GUIData>   setups = new HashMap<String, GUIData>();
+    private static final HashMap<String, ItemStack> items  = new HashMap<String, ItemStack>();
 
     private static CommentedConfig config;
 

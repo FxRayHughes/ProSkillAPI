@@ -41,7 +41,8 @@ const Trigger = {
     SKILL_DAMAGE: {name: 'Skill Damage', container: true, construct: TriggerSkillDamage},
     TOOK_PHYSICAL_DAMAGE: {name: 'Took Physical Damage', container: true, construct: TriggerTookPhysicalDamage},
     TOOK_SKILL_DAMAGE: {name: 'Took Skill Damage', container: true, construct: TriggerTookSkillDamage},
-    INTERACT: {name: 'Interact', container: true, construct: TriggerInteract}
+    INTERACT: {name: 'Interact', container: true, construct: TriggerInteract},
+    SWAP_HAND: {name: 'Swap Hand', container: true, construct: TriggerSwapHand}
 };
 
 /**
@@ -802,6 +803,39 @@ function TriggerInteract() {
         .setTooltip('物品的名称中包含某个内容 all为全部都可以')
     );
     this.data.push(new StringValue("Lore", "lore", "all")
+        .setTooltip('物品的描述中包含某个内容 all为全部都可以')
+    );
+}
+
+extend('TriggerSwapHand', 'Component');
+
+function TriggerSwapHand() {
+    this.super('Swap Hand', Type.TRIGGER, true);
+
+    this.description = '切换主副手物品时触发';
+
+    this.data.push(new ListValue('是否需要下蹲', 'sneaking', ['True', 'False'], 'False')
+        .setTooltip('设置为True后Shfit+F才可以执行')
+    );
+    this.data.push(new ListValue('是否取消事件', 'cancelled', ['True', 'False'], 'True')
+        .setTooltip('设置为True后会阻止物品真的切换，但是会释放技能')
+    );
+    this.data.push(new ListValue('判断主手物品', 'main_enable', ['True', 'False'], 'False')
+        .setTooltip('主手必须有东西才可以执行')
+    );
+    this.data.push(new StringValue("主手物品名", "main_name", "all")
+        .setTooltip('物品的名称中包含某个内容 all为全部都可以')
+    );
+    this.data.push(new StringValue("主手Lore", "main_lore", "all")
+        .setTooltip('物品的描述中包含某个内容 all为全部都可以')
+    );
+    this.data.push(new ListValue('判断副手物品', 'off_enable', ['True', 'False'], 'False')
+        .setTooltip('副手必须有东西才可以执行')
+    );
+    this.data.push(new StringValue("副手物品名", "off_name", "all")
+        .setTooltip('物品的名称中包含某个内容 all为全部都可以')
+    );
+    this.data.push(new StringValue("副手Lore", "off_lore", "all")
         .setTooltip('物品的描述中包含某个内容 all为全部都可以')
     );
 }

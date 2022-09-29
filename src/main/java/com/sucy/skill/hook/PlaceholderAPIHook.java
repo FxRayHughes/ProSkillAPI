@@ -305,7 +305,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             if (identifier.equals("default_skill_point")) {
                 return String.valueOf(data.getMainClass().getPoints());
             }
-            if (identifier.equals("default_skill_cooldown:")) {
+            if (identifier.startsWith("default_skill_cooldown:")) {
                 String[] idSplit = identifier.split(":");
                 PlayerSkill skill = data.getSkill(idSplit[1]);
                 if (skill == null) {
@@ -313,7 +313,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
                 return String.valueOf(skill.getCooldown());
             }
-            if (identifier.equals("default_skill_maxcooldown:")) {
+            if (identifier.startsWith("default_skill_maxcooldown:")) {
                 String[] idSplit = identifier.split(":");
                 PlayerSkill skill = data.getSkill(idSplit[1]);
                 if (skill == null) {

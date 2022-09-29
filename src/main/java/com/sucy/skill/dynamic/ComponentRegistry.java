@@ -142,6 +142,7 @@ public class ComponentRegistry {
         register(new SkillDealtTrigger());
         register(new SkillTakenTrigger());
         register(new PlayerInteractTrigger());
+        register(new SwapHandItemsTrigger());
 
         // Targets
         register(new AreaTarget());
