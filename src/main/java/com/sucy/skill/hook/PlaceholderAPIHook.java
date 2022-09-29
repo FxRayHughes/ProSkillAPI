@@ -321,6 +321,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
                 return String.valueOf(skill.getData().getCooldown(skill.getLevel()));
             }
+            if (identifier.startsWith("default_skill_level:")) {
+                String[] idSplit = identifier.split(":");
+                PlayerSkill skill = data.getSkill(idSplit[1]);
+                if (skill == null) {
+                    return "0";
+                }
+                return String.valueOf(skill.getLevel());
+            }
         }
 
         if (identifier.startsWith("player_")) {
