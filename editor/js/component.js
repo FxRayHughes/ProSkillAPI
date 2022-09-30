@@ -192,7 +192,8 @@ const Mechanic = {
     Dragon_Animation_Start: {name: "Dragon Animation Start", container: false, construct: MechanicDragonAnimationStart},
     Dragon_Animation_Stop: {name: "Dragon Animation Stop", container: false, construct: MechanicDragonAnimationStop},
     Dragon_Animation_Item: {name: "Dragon Animation Item", container: false, construct: MechanicDragonAnimationItem},
-    Dragon_Animation_Block: {name: "Dragon Animation Block", container: false, construct: MechanicDragonAnimationBlock}
+    Dragon_Animation_Block: {name: "Dragon Animation Block", container: false, construct: MechanicDragonAnimationBlock},
+    KETHER: {name: "Kether", container: false, construct: MechanicKether}
 };
 
 let saveIndex;
@@ -3170,6 +3171,18 @@ function MechanicDragonAnimationStop() {
     );
     this.data.push(new AttributeValue('过度时间', 'time', 0, 0)
         .setTooltip('这个选项只有非玩家的其他模型动画生效')
+    );
+}
+
+extend('MechanicKether', 'Component');
+
+function MechanicKether() {
+    this.super('Kether', Type.MECHANIC, false);
+
+    this.description = '使目标执行kether语句，目标必须是玩家';
+
+    this.data.push(new StringValue('脚本名', 'name', '脚本文件名')
+        .setTooltip('请前往kether/xxx.yml编辑')
     );
 }
 

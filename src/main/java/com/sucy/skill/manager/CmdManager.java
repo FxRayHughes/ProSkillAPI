@@ -79,7 +79,8 @@ public class CmdManager
             new ConfigurableCommand(api, "reset", SenderType.PLAYER_ONLY, new CmdReset(), "Resets account data", "", Permissions.BASIC),
             new ConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "Shows player skills", "", Permissions.BASIC),
             new ConfigurableCommand(api, "unbind", SenderType.PLAYER_ONLY, new CmdUnbind(), "Unbinds held item", "", Permissions.BASIC),
-            new ConfigurableCommand(api, "world", SenderType.PLAYER_ONLY, new CmdWorld(), "Moves to world", "<world>", Permissions.WORLD)
+            new ConfigurableCommand(api, "world", SenderType.PLAYER_ONLY, new CmdWorld(), "Moves to world", "<world>", Permissions.WORLD),
+            new ConfigurableCommand(api, "mustcast", SenderType.ANYONE, new CmdForceEntityCast(), "强制实体释放技能", "", Permissions.BASIC)
         );
         root.addSubCommands(
             new ConfigurableCommand(api, "forceaccount", SenderType.CONSOLE_ONLY, new CmdForceAccount(), "Changes player's account", "<player> <accountId>", Permissions.FORCE),

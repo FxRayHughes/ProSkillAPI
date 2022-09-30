@@ -233,7 +233,9 @@ public class ComponentRegistry {
         register(new InterruptMechanic());
         register(new ItemMechanic());
         register(new ItemProjectileMechanic());
+        register(new KetherMechanic());
         register(new ItemRemoveMechanic());
+        register(new JavaScriptMechanic());
         register(new LaunchMechanic());
         register(new LightningMechanic());
         register(new ManaMechanic());

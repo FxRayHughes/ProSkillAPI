@@ -44,6 +44,7 @@ import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.data.io.SQLIO;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.mechanic.JavaScriptMechanic;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PlaceholderAPIHook;
@@ -69,6 +70,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +81,8 @@ import java.util.List;
  * <p>You can retrieve a reference to this through Bukkit the same way as any other plugin.</p>
  */
 public class SkillAPI extends JavaPlugin {
-    private static SkillAPI singleton;
+    public static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    public static SkillAPI singleton;
 
     private final HashMap<String, Skill> skills = new HashMap<>();
     private final HashMap<String, RPGClass> classes = new HashMap<>();
@@ -182,8 +186,6 @@ public class SkillAPI extends JavaPlugin {
         listen(new LingeringPotionListener(), VersionManager.isVersionAtLeast(VersionManager.V1_9_0));
         listen(new ExperienceListener(), settings.yieldsEnabled());
         listen(new PluginChecker(), true);
-
-
         // Set up tasks
         if (settings.isManaEnabled()) {
             if (VersionManager.isVersionAtLeast(11400)) {

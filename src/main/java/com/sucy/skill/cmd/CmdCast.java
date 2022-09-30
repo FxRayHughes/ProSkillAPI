@@ -72,25 +72,25 @@ public class CmdCast implements IFunction
             PlayerData player = SkillAPI.getPlayerData((Player) sender);
 
             // Get the skill name
-            String skill = args[0];
+            StringBuilder skill = new StringBuilder(args[0]);
             for (int i = 1; i < args.length; i++)
-                skill += " " + args[i];
+                skill.append(" ").append(args[i]);
 
             // Invalid skill
-            if (!SkillAPI.isSkillRegistered(skill))
+            if (!SkillAPI.isSkillRegistered(skill.toString()))
                 command.sendMessage(sender, NOT_SKILL, ChatColor.RED + "That is not a valid skill name");
 
             // Class mismatch
-            else if (!player.hasSkill(skill))
+            else if (!player.hasSkill(skill.toString()))
                 command.sendMessage(sender, NOT_AVAILABLE, ChatColor.RED + "That skill is not available for your class");
 
             // Not unlocked
-            else if (!player.hasSkill(skill) || player.getSkillLevel(skill) == 0)
+            else if (!player.hasSkill(skill.toString()) || player.getSkillLevel(skill.toString()) == 0)
                 command.sendMessage(sender, NOT_UNLOCKED, ChatColor.RED + "You must level up the skill first");
 
             // Cast the skill
             else
-                player.cast(skill);
+                player.cast(skill.toString());
         }
 
         // Invalid arguments
