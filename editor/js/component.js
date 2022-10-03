@@ -193,6 +193,7 @@ const Mechanic = {
     Dragon_Animation_Stop: {name: "Dragon Animation Stop", container: false, construct: MechanicDragonAnimationStop},
     Dragon_Animation_Item: {name: "Dragon Animation Item", container: false, construct: MechanicDragonAnimationItem},
     Dragon_Animation_Block: {name: "Dragon Animation Block", container: false, construct: MechanicDragonAnimationBlock},
+    VALUE_SCRIPT: {name: 'Value Script', container: false, construct: MechanicValueScript},
     KETHER: {name: "Kether", container: false, construct: MechanicKether}
 };
 
@@ -2912,6 +2913,21 @@ function MechanicValueSet() {
     );
     this.data.push(new AttributeValue('Value', 'value', 1, 0)
         .setTooltip('The value to store under the key')
+    );
+}
+
+extend('MechanicValueScript', 'Component');
+
+function MechanicValueScript() {
+    this.super('Value Script', Type.MECHANIC, false);
+
+    this.description = '使用脚本来定义一个变量';
+
+    this.data.push(new StringValue('Key', 'key', 'value')
+        .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
+    );
+    this.data.push(new StringValue('脚本内容', 'script', 'script')
+        .setTooltip('内置的变量:attribute_[变量名] value_[value数据] api player caster 玩家类型自动替换papi')
     );
 }
 

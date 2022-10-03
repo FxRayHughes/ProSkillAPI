@@ -715,15 +715,12 @@ public abstract class Skill implements IconHolder
      */
     public void sendMessage(Player player, double radius)
     {
-        if (hasMessage())
-        {
+        if (hasMessage()) {
             radius *= radius;
             Location l = player.getLocation();
-            for (Player p : player.getWorld().getPlayers())
-            {
-                if (p.getLocation().distanceSquared(l) < radius)
-                {
-                    if (message.contains("闭嘴")) {
+            for (Player p : player.getWorld().getPlayers()) {
+                if (p.getLocation().distanceSquared(l) < radius) {
+                    if (!message.contains("闭嘴")) {
                         p.sendMessage(RPGFilter.SKILL.setReplacement(getName()).apply(Filter.PLAYER.setReplacement(player.getName()).apply(message)));
                     }
                 }

@@ -1358,6 +1358,7 @@ public class PlayerData {
             }
             maxMana += c.getMana();
         }
+        mana = Math.min(mana, maxMana);
         if (SkillAPI.getSettings().isAttributesHeal()) {
             if (health == bonusHealth) {
                 health += SkillAPI.getSettings().getDefaultHealth();
@@ -1368,15 +1369,14 @@ public class PlayerData {
             if (SkillAPI.getSettings().isModifyHealth()) {
                 player.setMaxHealth(health);
             }
-        }
-        mana = Math.min(mana, maxMana);
 
-        // Health scaling is available starting with 1.6.2
-        if (SkillAPI.getSettings().isOldHealth()) {
-            player.setHealthScaled(true);
-            player.setHealthScale(20);
-        } else {
-            player.setHealthScaled(false);
+            // Health scaling is available starting with 1.6.2
+            if (SkillAPI.getSettings().isOldHealth()) {
+                player.setHealthScaled(true);
+                player.setHealthScale(20);
+            } else {
+                player.setHealthScaled(false);
+            }
         }
     }
 
@@ -1875,13 +1875,21 @@ public class PlayerData {
 
         // On Cooldown
         if (status == SkillStatus.ON_COOLDOWN && cooldown) {
-            SkillAPI.getLanguage().sendMessage(
+            List<String> mess = SkillAPI.getLanguage().getMessage(
                     ErrorNodes.COOLDOWN,
-                    getPlayer(),
+                    true,
                     FilterType.COLOR,
                     RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
-                    RPGFilter.SKILL.setReplacement(skill.getData().getName())
-            );
+                    RPGFilter.SKILL.setReplacement(skill.getData().getName()));
+            if (!mess.contains("闭嘴")){
+                SkillAPI.getLanguage().sendMessage(
+                        ErrorNodes.COOLDOWN,
+                        getPlayer(),
+                        FilterType.COLOR,
+                        RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
+                        RPGFilter.SKILL.setReplacement(skill.getData().getName())
+                );
+            }
             return PlayerSkillCastFailedEvent.invoke(skill, ON_COOLDOWN);
         }
 

@@ -102,38 +102,32 @@ public class GUITask extends RepeatThreadTask
 
             PlayerData data = SkillAPI.getPlayerData(player);
 
-            // Health scale
-            if (forceScaling)
-            {
-                if (oldHealth)
-                    player.setHealthScale(20);
-                else
-                    player.setHealthScale(player.getMaxHealth());
+            if (SkillAPI.getSettings().isAttributesHeal()) {
+                if (forceScaling) {
+                    if (oldHealth) {
+                        player.setHealthScale(20);
+                    } else {
+                        player.setHealthScale(player.getMaxHealth());
+                    }
+                }
             }
 
             // Level bar options
-            if (levelMana)
-            {
+            if (levelMana) {
                 Logger.log(LogType.GUI, 2, "Updating level bar with mana");
                 if (data.getMaxMana() == 0) {
                     player.setLevel(0);
                     player.setExp(0);
-                }
-                else {
+                } else {
                     player.setLevel((int) data.getMana());
                     player.setExp(Math.min(0.999f, (float) (0.999 * data.getMana() / data.getMaxMana())));
                 }
-            }
-            else if (levelLevel)
-            {
+            } else if (levelLevel) {
                 Logger.log(LogType.GUI, 2, "Updating level bar with class level/exp");
-                if (!data.hasClass())
-                {
+                if (!data.hasClass()) {
                     player.setLevel(0);
                     player.setExp(0);
-                }
-                else
-                {
+                } else {
                     PlayerClass main = data.getMainClass();
                     player.setLevel(main.getLevel());
                     player.setExp((float) main.getExp() / main.getRequiredExp());

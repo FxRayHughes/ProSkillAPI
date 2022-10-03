@@ -35,9 +35,11 @@ import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import javax.script.ScriptEngine;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -135,12 +137,27 @@ public abstract class EffectComponent {
         double scale = getNum(caster, key + "-scale", 0);
         double value = base + (level - 1) * scale;
 
-        // Apply global modifiers
         if (SkillAPI.getSettings().isAttributesEnabled()) {
             value = AttributeAPI.scaleDynamic(caster, this, key, value);
         }
 
         return value;
+    }
+
+    protected ScriptEngine parseEngine(LivingEntity caster, int level, ScriptEngine engine) {
+
+        if (SkillAPI.getSettings().isAttributesEnabled()) {
+            final AttributeManager manager = SkillAPI.getAttributeManager();
+            if (manager != null) {
+                manager.getAttributes().forEach((s, attribute) -> {
+                    int amount = AttributeAPI.getAttribute(caster, attribute.getKey());
+                    engine.put("attribute_" + attribute.getKey(), attribute.modify(this, attribute.getKey(), 0, amount));
+                });
+            }
+        }
+        engine.put("skill_level", level);
+
+        return engine;
     }
 
     /**

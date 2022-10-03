@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.dynamic.mechanic.ValueMultiplyMechanic
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,33 +26,29 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.hook.PlaceholderAPIHook;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * Adds to a cast data value
+ * 使JS运算的内容施加给value
  */
-public class ValueMultiplyMechanic extends MechanicComponent {
-    private static final String KEY        = "key";
-    private static final String MULTIPLIER = "multiplier";
+public class ValueScriptMechanic extends MechanicComponent {
+    private static final String KEY = "key";
+    private static final String SCRIPT = "script";
 
     @Override
     public String getKey() {
-        return "value multiply";
+        return "value script";
     }
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         if (targets.size() == 0 || !settings.has(KEY)) {
@@ -60,9 +56,23 @@ public class ValueMultiplyMechanic extends MechanicComponent {
         }
 
         String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
-        double multiplier = parseValues(caster, MULTIPLIER, level, 1);
+        String script = settings.getString(SCRIPT);
+        ScriptEngine engine = SkillAPI.scriptEngineManager.getEngineByName("JavaScript");
+        if (caster instanceof Player) {
+            Player player = (Player) caster;
+            script = PlaceholderAPIHook.format(script, player);
+            engine.put("player", player);
+        }
+        parseEngine(caster, level, engine);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        if (data.containsKey(key)) { data.put(key, multiplier * (Double) data.get(key)); }
+        data.forEach((a, b) -> engine.put("value_" + a, data.get(key)));
+        engine.put("api", SkillAPI.singleton);
+        engine.put("caster", caster);
+        try {
+            data.put(key, engine.eval(script));
+        } catch (ScriptException e) {
+            throw new RuntimeException(e);
+        }
         return true;
     }
 }
