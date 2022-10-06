@@ -179,10 +179,12 @@ public class MainListener extends SkillAPIListener
         DynamicSkill.clearCastData(player);
 
         player.setDisplayName(player.getName());
-        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-        } else {
-            player.setMaxHealth(20);
+        if (SkillAPI.getSettings().isAttributesHeal()){
+            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+                player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+            } else {
+                player.setMaxHealth(20);
+            }
         }
         player.setWalkSpeed(0.2f);
         SkillAPI.unloadPlayerData(player, skipSaving);
@@ -447,7 +449,7 @@ public class MainListener extends SkillAPIListener
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
             if (SkillAPI.getSettings().isAttributesHeal()){
                 event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
-                event.getPlayer().(SkillAPI.getSettings().getDefaultHealth());
+                event.getPlayer().setHealthScale(SkillAPI.getSettings().getDefaultHealth());
             }
             if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none"))
             {
