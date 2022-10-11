@@ -8,6 +8,7 @@ import com.sucy.skill.dynamic.custom.EditorOption;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
 import com.sucy.skill.dynamic.trigger.*;
+import com.sucy.skill.hook.PluginChecker;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.EventExecutor;
 
@@ -278,8 +279,10 @@ public class ComponentRegistry {
         register(new WarpTargetMechanic());
         register(new WarpValueMechanic());
         register(new WolfMechanic());
-        register(new MythicCastMechanic());
-        register(new MythicCastTargetMechanic());
+        if (PluginChecker.isMythicMobsActive()) {
+            register(new MythicCastMechanic());
+            register(new MythicCastTargetMechanic());
+        }
         register(new SnowStormMechanic());
         register(new DragonAnimationStartMechanic());
         register(new DragonAnimationStopMechanic());
