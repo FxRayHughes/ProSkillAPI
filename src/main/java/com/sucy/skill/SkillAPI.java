@@ -48,6 +48,7 @@ import com.sucy.skill.dynamic.mechanic.JavaScriptMechanic;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PlaceholderAPIHook;
+import com.sucy.skill.hook.PlaceholderAPIHookFix;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.mechanic.MythicListener;
 import com.sucy.skill.listener.*;
@@ -137,6 +138,7 @@ public class SkillAPI extends JavaPlugin {
         }
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderAPIHook(this).register();
+            new PlaceholderAPIHookFix(this).register();
             Bukkit.getLogger().info("ProSkillAPI hook into PlaceholderAPI: " + ChatColor.GREEN + "success.");
         }
 
@@ -300,7 +302,6 @@ public class SkillAPI extends JavaPlugin {
 
     /**
      * @return SkillAPI singleton if available
-     *
      * @throws IllegalStateException if SkillAPI isn't enabled
      */
     private static SkillAPI singleton() {
@@ -352,7 +353,6 @@ public class SkillAPI extends JavaPlugin {
      * returned instead.
      *
      * @param name name of the skill
-     *
      * @return skill with the name or null if not found
      */
     public static Skill getSkill(String name) {
@@ -382,7 +382,6 @@ public class SkillAPI extends JavaPlugin {
      * Checks whether or not a skill is registered.
      *
      * @param name name of the skill
-     *
      * @return true if registered, false otherwise
      */
     public static boolean isSkillRegistered(String name) {
@@ -393,7 +392,6 @@ public class SkillAPI extends JavaPlugin {
      * Checks whether or not a skill is registered
      *
      * @param skill the skill to check
-     *
      * @return true if registered, false otherwise
      */
     public static boolean isSkillRegistered(PlayerSkill skill) {
@@ -404,7 +402,6 @@ public class SkillAPI extends JavaPlugin {
      * Checks whether or not a skill is registered
      *
      * @param skill the skill to check
-     *
      * @return true if registered, false otherwise
      */
     public static boolean isSkillRegistered(Skill skill) {
@@ -416,7 +413,6 @@ public class SkillAPI extends JavaPlugin {
      * returned instead.
      *
      * @param name name of the class
-     *
      * @return class with the name or null if not found
      */
     public static RPGClass getClass(String name) {
@@ -455,7 +451,6 @@ public class SkillAPI extends JavaPlugin {
      * Checks whether or not a class is registered.
      *
      * @param name name of the class
-     *
      * @return true if registered, false otherwise
      */
     public static boolean isClassRegistered(String name) {
@@ -466,7 +461,6 @@ public class SkillAPI extends JavaPlugin {
      * Checks whether or not a class is registered.
      *
      * @param playerClass the class to check
-     *
      * @return true if registered, false otherwise
      */
     public static boolean isClassRegistered(PlayerClass playerClass) {
@@ -477,7 +471,6 @@ public class SkillAPI extends JavaPlugin {
      * Checks whether or not a class is registered.
      *
      * @param rpgClass the class to check
-     *
      * @return true if registered, false otherwise
      */
     public static boolean isClassRegistered(RPGClass rpgClass) {
@@ -489,7 +482,6 @@ public class SkillAPI extends JavaPlugin {
      * player, a new set of data will be created and returned.
      *
      * @param player player to get the data for
-     *
      * @return the class data of the player
      */
     public static PlayerData getPlayerData(OfflinePlayer player) {
@@ -563,7 +555,6 @@ public class SkillAPI extends JavaPlugin {
      * currently loaded.
      *
      * @param player player to check for
-     *
      * @return true if has loaded data, false otherwise
      */
     public static boolean hasPlayerData(OfflinePlayer player) {
@@ -600,7 +591,6 @@ public class SkillAPI extends JavaPlugin {
      * of data will be created and returned.
      *
      * @param player player to get the data for
-     *
      * @return the class data of the player
      */
     public static PlayerAccounts getPlayerAccountData(OfflinePlayer player) {
@@ -774,7 +764,6 @@ public class SkillAPI extends JavaPlugin {
      *
      * @param target entity to retrieve from
      * @param key    key the value was stored under
-     *
      * @return the stored value
      */
     public static Object getMeta(Metadatable target, String key) {
@@ -787,7 +776,6 @@ public class SkillAPI extends JavaPlugin {
      *
      * @param target entity to retrieve from
      * @param key    key the value was stored under
-     *
      * @return the stored value
      */
     public static int getMetaInt(Metadatable target, String key) {
@@ -799,7 +787,6 @@ public class SkillAPI extends JavaPlugin {
      *
      * @param target entity to retrieve from
      * @param key    key the value was stored under
-     *
      * @return the stored value
      */
     public static double getMetaDouble(Metadatable target, String key) {
@@ -820,7 +807,6 @@ public class SkillAPI extends JavaPlugin {
      * Grabs a config for SkillAPI
      *
      * @param name config file name
-     *
      * @return config data
      */
     public static CommentedConfig getConfig(String name) {

@@ -272,6 +272,7 @@ public class ComponentRegistry {
         register(new ValuePlaceholderMechanic());
         register(new ValueRandomMechanic());
         register(new ValueSetMechanic());
+        register(new ValueScriptMechanic());
         register(new WarpMechanic());
         register(new WarpLocMechanic());
         register(new WarpRandomMechanic());
