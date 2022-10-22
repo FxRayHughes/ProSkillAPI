@@ -280,10 +280,8 @@ public class ComponentRegistry {
         register(new WarpTargetMechanic());
         register(new WarpValueMechanic());
         register(new WolfMechanic());
-        if (PluginChecker.isMythicMobsActive()) {
-            register(new MythicCastMechanic());
-            register(new MythicCastTargetMechanic());
-        }
+        register(new MythicCastMechanic());
+        register(new MythicCastTargetMechanic());
         register(new SnowStormMechanic());
         register(new DragonAnimationStartMechanic());
         register(new DragonAnimationStopMechanic());

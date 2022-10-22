@@ -103,7 +103,6 @@ public class PlayerEquips {
      * @param inv   inventory to manage
      * @param index related index
      * @param from  old equip data
-     *
      * @return the used equip data
      */
     private EquipData swap(PlayerInventory inv, int index, EquipData from, boolean weapon) {
@@ -160,7 +159,6 @@ public class PlayerEquips {
      * Makes data for the ItemStack if needed
      *
      * @param item item to make for
-     *
      * @return item data
      */
     private EquipData make(ItemStack item) {
@@ -273,6 +271,9 @@ public class PlayerEquips {
                             PlayerReadAttributeEvent event = new PlayerReadAttributeEvent(player, item, attrs.getKey(), attrs.getLast());
                             Bukkit.getPluginManager().callEvent(event);
                             if (!event.isCancelled()) {
+                                if (attribs == null) {
+                                    attribs = new HashMap<>();
+                                }
                                 attribs.put(event.getAttribute(), event.getValue());
                             }
                         }

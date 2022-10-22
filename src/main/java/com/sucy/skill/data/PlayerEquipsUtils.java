@@ -16,6 +16,9 @@ public class PlayerEquipsUtils {
             if (oLore.contains(attr)) {
                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                 int extra = toInt(oLore);
+                if (extra <= 0){
+                    return null;
+                }
                 return new Pair<>(normalized, extra);
             }
         }
