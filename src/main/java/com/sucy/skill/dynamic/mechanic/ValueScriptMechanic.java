@@ -65,7 +65,7 @@ public class ValueScriptMechanic extends MechanicComponent {
         }
         parseEngine(caster, level, engine);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        data.forEach((a, b) -> engine.put("value_" + a, data.get(key)));
+        data.forEach((a, b) -> engine.put("value_" + a, b));
         engine.put("api", SkillAPI.singleton);
         engine.put("caster", caster);
         try {

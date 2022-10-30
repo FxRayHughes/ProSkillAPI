@@ -144,7 +144,7 @@ public abstract class EffectComponent {
         return value;
     }
 
-    protected ScriptEngine parseEngine(LivingEntity caster, int level, ScriptEngine engine) {
+    protected void parseEngine(LivingEntity caster, int level, ScriptEngine engine) {
 
         if (SkillAPI.getSettings().isAttributesEnabled()) {
             final AttributeManager manager = SkillAPI.getAttributeManager();
@@ -157,7 +157,6 @@ public abstract class EffectComponent {
         }
         engine.put("skill_level", level);
 
-        return engine;
     }
 
     /**

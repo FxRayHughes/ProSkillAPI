@@ -1,13 +1,18 @@
 package com.sucy.skill.api.attribute;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.attribute.mob.MobAttribute;
+import com.sucy.skill.api.attribute.mob.MobAttributeData;
+import com.sucy.skill.api.event.AttributeEntityAddEvent;
 import com.sucy.skill.api.event.AttributeGetEvent;
+import com.sucy.skill.api.event.TempAttributeAddEvent;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -47,7 +52,10 @@ public class AttributeAPI {
         }
         AttributeGetEvent event = new AttributeGetEvent(entity, key, total);
         Bukkit.getPluginManager().callEvent(event);
-        return event.getValue();
+        int old = event.getValue();
+        MobAttributeData mobAttributeData = MobAttribute.getData(entity.getUniqueId(), true);
+        assert mobAttributeData != null;
+        return (int) (old + mobAttributeData.getAttribute(key));
     }
 
 
@@ -105,6 +113,30 @@ public class AttributeAPI {
             }
         }
         return modified;
+    }
+
+
+    /**
+     * 广播属性增加事件 让拓展器也获得监听。
+     * proSkillapi 也从event执行代码
+     *
+     * @param entity    目标
+     * @param attribute 属性ID
+     * @param value     增加的值 仅作为bus
+     */
+    public static TempAttributeAddEvent tempAttribute(LivingEntity entity, String attribute, double value, long tick) {
+        TempAttributeAddEvent event = new TempAttributeAddEvent(entity, attribute, value, tick);
+        Bukkit.getPluginManager().callEvent(event);
+        return event;
+    }
+
+    /**
+     * 广播非玩家增加属性事件
+     */
+    public static AttributeEntityAddEvent attributeEntityAdd(LivingEntity entity, String attribute, double value) {
+        AttributeEntityAddEvent event = new AttributeEntityAddEvent(entity, attribute, (int) value);
+        Bukkit.getPluginManager().callEvent(event);
+        return event;
     }
 
 }
