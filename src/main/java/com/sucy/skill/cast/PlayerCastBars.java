@@ -32,6 +32,7 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.task.PreviewTask;
 import com.sucy.skill.thread.MainThread;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -508,7 +509,7 @@ public class PlayerCastBars implements InventoryHolder
      * @param config config data
      * @param hover  whether or not it's for the hover bar
      */
-    public void save(DataSection config, boolean hover)
+    public void save(ConfigurationSection config, boolean hover)
     {
         HashMap<Integer, String> bar = hover ? hoverBar : instantBar;
         for (Map.Entry<Integer, String> entry : bar.entrySet())
