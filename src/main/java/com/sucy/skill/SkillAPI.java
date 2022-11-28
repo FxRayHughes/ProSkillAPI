@@ -54,10 +54,7 @@ import com.sucy.skill.hook.mechanic.MythicListener;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
 import com.sucy.skill.packet.PacketInjector;
-import com.sucy.skill.task.CooldownTask;
-import com.sucy.skill.task.GUITask;
-import com.sucy.skill.task.ManaTask;
-import com.sucy.skill.task.SaveTask;
+import com.sucy.skill.task.*;
 import com.sucy.skill.thread.MainThread;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -189,6 +186,8 @@ public class SkillAPI extends JavaPlugin {
         listen(new ExperienceListener(), settings.yieldsEnabled());
         listen(new PluginChecker(), true);
         // Set up tasks
+        listen(new MobListener(), settings.isAttributeMobEnabled());
+        MainThread.register(new MobAttributeTask());
         if (settings.isManaEnabled()) {
             if (VersionManager.isVersionAtLeast(11400)) {
                 manaTask = Bukkit.getScheduler().runTaskTimer(

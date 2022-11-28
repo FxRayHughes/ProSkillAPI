@@ -54,7 +54,11 @@ public class AttributeAPI {
         Bukkit.getPluginManager().callEvent(event);
         int old = event.getValue();
         MobAttributeData mobAttributeData = MobAttribute.getData(entity.getUniqueId(), true);
-        assert mobAttributeData != null;
+        if (mobAttributeData == null) {
+            MobAttributeData create = new MobAttributeData(entity.getUniqueId());
+            mobAttributeData = create;
+            MobAttribute.data.put(entity.getUniqueId(), create);
+        }
         return (int) (old + mobAttributeData.getAttribute(key));
     }
 

@@ -21,13 +21,13 @@ public class MobAttributeData {
 
     private HashMap<String, HashMap<String, Double>> temp = new HashMap<>();
 
-    MobAttributeData(UUID uuid) {
+    public MobAttributeData(UUID uuid) {
         this.uuid = uuid;
     }
 
     public LivingEntity getEntity() {
         Entity entity = Bukkit.getEntity(uuid);
-        if (entity == null || entity.isEmpty() || entity.isDead()) {
+        if (entity == null || entity.isDead()) {
             return null;
         }
         return (LivingEntity) entity;
@@ -86,5 +86,14 @@ public class MobAttributeData {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    @Override
+    public String toString() {
+        return "MobAttributeData{" +
+                "uuid=" + uuid +
+                ", map=" + map +
+                ", temp=" + temp +
+                '}';
     }
 }

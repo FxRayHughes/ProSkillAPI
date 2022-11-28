@@ -333,6 +333,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
                 return String.valueOf(skill.getLevel());
             }
+            if (identifier.startsWith("default_attribute:")) {
+                String[] idSplit = identifier.split(":");
+                return String.valueOf(data.getAttribute(idSplit[1]));
+            }
         }
 
         if (identifier.startsWith("player_")) {

@@ -602,6 +602,8 @@ public class Settings {
     private static final String CLASS_HP = CLASS_BASE + "classless-hp";
     private static final String CLASS_SHOW = CLASS_BASE + "show-auto-skills";
     private static final String CLASS_ATTRIB = CLASS_BASE + "attributes-enabled";
+
+    private static final String CLASS_ATTRIB_MOB = CLASS_BASE + "attributes-mob-enabled";
     private static final String CLASS_REFUND = CLASS_BASE + "attributes-downgrade";
     private static final String CLASS_HEAL = CLASS_BASE + "attributes-heal";
     private static final String CLASS_LEVEL = CLASS_BASE + "level-up-skill";
@@ -610,6 +612,8 @@ public class Settings {
     private int defaultHealth;
     private boolean showAutoSkills;
     private boolean attributesEnabled;
+
+    private boolean attributeMobEnabled;
     private boolean attributesDowngrade;
 
     private boolean attributesHeal;
@@ -689,6 +693,7 @@ public class Settings {
         defaultHealth = config.getInt(CLASS_HP);
         showAutoSkills = config.getBoolean(CLASS_SHOW);
         attributesEnabled = config.getBoolean(CLASS_ATTRIB);
+        attributeMobEnabled = config.getBoolean(CLASS_ATTRIB_MOB);
         attributesDowngrade = config.getBoolean(CLASS_REFUND);
         attributesHeal = config.getBoolean(CLASS_HEAL);
         levelUpSkill = config.getString(CLASS_LEVEL);
@@ -1743,5 +1748,13 @@ public class Settings {
 
         skillDisabledRegions = ImmutableSet.copyOf(data.getList(WG_SKILLS));
         expDisabledRegions = ImmutableSet.copyOf(data.getList(WG_EXP));
+    }
+
+    public boolean isAttributeMobEnabled() {
+        return attributeMobEnabled;
+    }
+
+    public void setAttributeMobEnabled(boolean attributeMobEnabled) {
+        this.attributeMobEnabled = attributeMobEnabled;
     }
 }

@@ -108,6 +108,10 @@ Classes:
   #
   # Whether or not attributes are enabled
   attributes-enabled: false
+
+  #启用怪物读取SkillAPI属性
+  attributes-mob-enabled: true
+
   #
   # Whether or not attributes can be refunded
   attributes-downgrade: false

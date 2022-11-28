@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.listener.AttributeListener
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -55,8 +55,7 @@ import java.util.HashMap;
 /**
  * Listener for managing applying attribute bonuses for players
  */
-public class AttributeListener extends SkillAPIListener
-{
+public class AttributeListener extends SkillAPIListener {
     public static final String PHYSICAL = "physical";
     private static HashMap<String, Double> BONUSES = new HashMap<>();
 
@@ -81,15 +80,13 @@ public class AttributeListener extends SkillAPIListener
      *
      * @param player player to clear bonuses for
      */
-    public static void clearBonuses(Player player)
-    {
+    public static void clearBonuses(Player player) {
         clearLocalBonuses(player);
         BONUSES.remove(player.getName() + ":" + AttributeManager.HEALTH);
         BONUSES.remove(player.getName() + ":" + AttributeManager.MANA);
     }
 
-    private static void clearLocalBonuses(Player player)
-    {
+    private static void clearLocalBonuses(Player player) {
         BONUSES.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         player.setWalkSpeed(0.2f);
 
@@ -117,8 +114,7 @@ public class AttributeListener extends SkillAPIListener
     /**
      * Gives players bonus stats on login
      */
-    public void onJoin(final Player player)
-    {
+    public void onJoin(final Player player) {
         updatePlayer(SkillAPI.getPlayerData(player));
     }
 
@@ -128,8 +124,7 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler(priority = EventPriority.HIGH)
-    public void onRespawn(PlayerRespawnEvent event)
-    {
+    public void onRespawn(PlayerRespawnEvent event) {
         if (event.getPlayer().hasMetadata("NPC"))
             return;
 
@@ -142,8 +137,7 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler
-    public void onQuit(PlayerQuitEvent event)
-    {
+    public void onQuit(PlayerQuitEvent event) {
         if (event.getPlayer().hasMetadata("NPC"))
             return;
 
@@ -156,8 +150,7 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler
-    public void onLevelUp(PlayerLevelUpEvent event)
-    {
+    public void onLevelUp(PlayerLevelUpEvent event) {
         updatePlayer(event.getPlayerData());
     }
 
@@ -167,8 +160,7 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler
-    public void onInvest(PlayerUpAttributeEvent event)
-    {
+    public void onInvest(PlayerUpAttributeEvent event) {
         updatePlayer(event.getPlayerData());
     }
 
@@ -178,11 +170,9 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onManaRegen(PlayerManaGainEvent event)
-    {
+    public void onManaRegen(PlayerManaGainEvent event) {
         // Bonus to regen from attributes
-        if (event.getSource() == ManaSource.REGEN)
-        {
+        if (event.getSource() == ManaSource.REGEN) {
             double newAmount = event.getPlayerData().scaleStat(AttributeManager.MANA_REGEN, event.getAmount());
             Logger.log(LogType.MANA, 3, "Attributes scaled mana gain to " + newAmount);
             event.setAmount(newAmount);
@@ -195,8 +185,7 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPhysicalDamage(PhysicalDamageEvent event)
-    {
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
         // Physical Damage
         double newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
         if (event.isProjectile()) {
@@ -205,13 +194,18 @@ public class AttributeListener extends SkillAPIListener
             newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.MELEE_DAMAGE, newAmount);
         }
         event.setDamage(newAmount);
-
+        if (newAmount <= 0) {
+            event.setCancelled(true);
+        }
         // Physical Defense
         double newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
         if (event.isProjectile()) {
-            newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.PROJECTILE_DEFENSE, newAmount);
+            newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.PROJECTILE_DEFENSE, newAmountD);
         } else {
-            newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.MELEE_DEFENSE, newAmount);
+            newAmountD = AttributeAPI.scaleStat(event.getTarget(), AttributeManager.MELEE_DEFENSE, newAmountD);
+        }
+        if (newAmountD <= 0) {
+            event.setCancelled(true);
         }
         event.setDamage(newAmountD);
     }
@@ -249,7 +243,7 @@ public class AttributeListener extends SkillAPIListener
         if (!(event.getEntity() instanceof Player))
             return;
 
-        final Player player = (Player)event.getEntity();
+        final Player player = (Player) event.getEntity();
         if (CitizensHook.isNPC(player)) {
             return;
         }
@@ -279,7 +273,7 @@ public class AttributeListener extends SkillAPIListener
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onHungerChange(final FoodLevelChangeEvent event) {
-        final Player player = (Player)event.getEntity();
+        final Player player = (Player) event.getEntity();
         if (event.getFoodLevel() < player.getFoodLevel()) {
             final PlayerData data = SkillAPI.getPlayerData(player);
             final int lost = data.subtractHungerValue(player.getFoodLevel() - event.getFoodLevel());
@@ -291,7 +285,7 @@ public class AttributeListener extends SkillAPIListener
     public void onHungerHeal(final EntityRegainHealthEvent event) {
         if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED
                 && event.getEntity() instanceof Player) {
-            final Player player = (Player)event.getEntity();
+            final Player player = (Player) event.getEntity();
             final PlayerData data = SkillAPI.getPlayerData(player);
             final double scaled = data.scaleStat(AttributeManager.HUNGER_HEAL, event.getAmount());
             event.setAmount(scaled);
@@ -303,14 +297,12 @@ public class AttributeListener extends SkillAPIListener
      *
      * @param data player to update
      */
-    public static void updatePlayer(PlayerData data)
-    {
+    public static void updatePlayer(PlayerData data) {
         Player player = data.getPlayer();
-        if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
-        {
+        if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
             double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth(), 0, Double.MAX_VALUE);
 
-            if (SkillAPI.getSettings().isAttributesHeal()){
+            if (SkillAPI.getSettings().isAttributesHeal()) {
                 data.addMaxHealth(change);
             }
 
@@ -350,8 +342,7 @@ public class AttributeListener extends SkillAPIListener
      *
      * @param player player to refresh
      */
-    public static void refreshSpeed(Player player)
-    {
+    public static void refreshSpeed(Player player) {
         BONUSES.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         double speed = updateStat(SkillAPI.getPlayerData(player), AttributeManager.MOVE_SPEED, 0.2, -2, 1);
         player.setWalkSpeed((float) (0.2 + speed));
@@ -363,14 +354,11 @@ public class AttributeListener extends SkillAPIListener
      * @param data  player data
      * @param key   stat key
      * @param value current value
-     *
      * @return change in the stat based on current attributes
      */
-    private static double updateStat(PlayerData data, String key, double value, double min, double max)
-    {
+    private static double updateStat(PlayerData data, String key, double value, double min, double max) {
         Player player = data.getPlayer();
-        if (player != null)
-        {
+        if (player != null) {
             String mapKey = player.getName() + ":" + key;
             double current = BONUSES.containsKey(mapKey) ? BONUSES.remove(mapKey) : 0;
             double updated = Math.max(min, Math.min(max, data.scaleStat(key, value - current) - value + current));

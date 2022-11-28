@@ -5,15 +5,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MobAttribute {
 
-    private static final ConcurrentHashMap<UUID, MobAttributeData> data = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, MobAttributeData> data = new ConcurrentHashMap<>();
 
     public static MobAttributeData getData(UUID uuid, boolean create) {
         if (data.containsKey(uuid)) {
             return data.get(uuid);
         }
         if (create) {
-            return data.put(uuid, new MobAttributeData(uuid));
+            MobAttributeData temp = new MobAttributeData(uuid);
+            data.put(uuid, temp);
+            return temp;
         }
         return null;
     }
+
 }
