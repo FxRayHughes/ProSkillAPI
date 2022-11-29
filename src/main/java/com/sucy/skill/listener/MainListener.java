@@ -38,6 +38,7 @@ import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.data.PlayerEquipsRead;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
 import com.sucy.skill.hook.CitizensHook;
@@ -490,7 +491,7 @@ public class MainListener extends SkillAPIListener
         if (player != null) {
             SkillAPI.schedule(() -> {
                 final PlayerData data = SkillAPI.getPlayerData(player);
-                data.getEquips().update(player);
+                PlayerEquipsRead.update(data);
 
                 CLEAR_HANDLERS.forEach(handler -> handler.accept(player));
             }, 1);

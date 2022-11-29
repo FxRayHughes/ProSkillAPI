@@ -36,6 +36,7 @@ import com.sucy.skill.api.event.PlayerExperienceLostEvent;
 import com.sucy.skill.api.event.PlayerGainSkillPointsEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.data.PlayerEquipsRead;
 import com.sucy.skill.data.TitleType;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.language.NotificationNodes;
@@ -458,7 +459,7 @@ public class PlayerClass
         final Player player = getPlayerData().getPlayer();
         if (player != null) {
             getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());
-            getPlayerData().getEquips().update(getPlayerData().getPlayer());
+            PlayerEquipsRead.update( getPlayerData());
         }
         getPlayerData().autoLevel();
 

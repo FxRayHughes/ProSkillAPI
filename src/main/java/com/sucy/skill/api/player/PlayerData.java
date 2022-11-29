@@ -43,7 +43,6 @@ import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.api.target.TargetHelper;
 import com.sucy.skill.cast.PlayerCastBars;
 import com.sucy.skill.data.GroupSettings;
-import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.gui.handlers.AttributeHandler;
 import com.sucy.skill.gui.handlers.DetailsHandler;
@@ -67,6 +66,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.*;
 
@@ -85,14 +85,13 @@ public class PlayerData {
     public final HashMap<String, Integer> attributes = new HashMap<>();
     public final HashMap<String, Integer> bonusAttrib = new HashMap<>();
 
-    public final HashMap<String, HashMap<String, Integer>> addAttrib = new HashMap<>();
+    public final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> addAttrib = new ConcurrentHashMap<>();
 
     private DataSection extraData = new DataSection();
     private OfflinePlayer player;
     private PlayerSkillBar skillBar;
     private PlayerCastBars castBars;
     private PlayerCombos combos;
-    private PlayerEquips equips;
     private String scheme;
     private String menuClass;
     private double mana;
@@ -116,7 +115,6 @@ public class PlayerData {
         this.skillBar = new PlayerSkillBar(this);
         this.castBars = new PlayerCastBars(this);
         this.combos = new PlayerCombos(this);
-        this.equips = new PlayerEquips(this);
         this.init = SkillAPI.isLoaded() && init;
         this.scheme = "default";
         this.hunger = 1;
@@ -187,9 +185,9 @@ public class PlayerData {
     /**
      * @return equipped item data
      */
-    public PlayerEquips getEquips() {
-        return equips;
-    }
+//    public PlayerEquips getEquips() {
+//        return equips;
+//    }
 
     /**
      * @return health during last logout
@@ -310,7 +308,7 @@ public class PlayerData {
 
     public int getAddAttribute(String key) {
         int infos = 0;
-        for (HashMap<String, Integer> value : addAttrib.values()) {
+        for (ConcurrentHashMap<String, Integer> value : addAttrib.values()) {
             if (value.containsKey(key)) {
                 infos += value.getOrDefault(key, 0);
             }
@@ -1552,7 +1550,7 @@ public class PlayerData {
         bonusMana = 0;
         bonusHealth = 0;
         bonusAttrib.clear();
-        equips = new PlayerEquips(this);
+        //equips = new PlayerEquips(this);
     }
 
     ///////////////////////////////////////////////////////
@@ -1881,7 +1879,7 @@ public class PlayerData {
                     FilterType.COLOR,
                     RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
                     RPGFilter.SKILL.setReplacement(skill.getData().getName()));
-            if (!mess.contains("闭嘴")){
+            if (!mess.contains("闭嘴")) {
                 SkillAPI.getLanguage().sendMessage(
                         ErrorNodes.COOLDOWN,
                         getPlayer(),
@@ -1921,7 +1919,7 @@ public class PlayerData {
         }
 
         AttributeListener.updatePlayer(this);
-        getEquips().update(player);
+        //getEquips().update(player);
         this.updateHealthAndMana(player);
         this.startPassives(player);
         this.updateScoreboard();

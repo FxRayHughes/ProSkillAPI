@@ -73,6 +73,7 @@ import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>The main class of the plugin which has the accessor methods into most of the API.</p>
@@ -188,6 +189,7 @@ public class SkillAPI extends JavaPlugin {
         // Set up tasks
         listen(new MobListener(), settings.isAttributeMobEnabled());
         MainThread.register(new MobAttributeTask());
+        MainThread.register(new PlayerEquipTask());
         if (settings.isManaEnabled()) {
             if (VersionManager.isVersionAtLeast(11400)) {
                 manaTask = Bukkit.getScheduler().runTaskTimer(
@@ -488,6 +490,10 @@ public class SkillAPI extends JavaPlugin {
             return null;
         }
         return getPlayerAccountData(player).getActiveData();
+    }
+
+    public static List<PlayerData> getPlayerDataList() {
+        return getPlayerAccountData().values().stream().map(PlayerAccounts::getActiveData).collect(Collectors.toList());
     }
 
     /**

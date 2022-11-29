@@ -37,8 +37,8 @@ html, body {
 	overflow: hidden;
 	font: 20px Sertig-Web;
 	font-weight: bold;
-	color: white;
-	background-color: black;
+	color: #000000;
+	background-color: #1864ab;
 }
 
 #badBrowser {
@@ -47,7 +47,7 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: black;
+    background-color: #1c7ed6;
 }
 
 #attribute-label {
@@ -77,7 +77,7 @@ html, body {
 	float: left;
 	width: 100%;
 	height: calc(100% - 45px);
-	background-color: black;
+	background-color: #a5d8ff;
 	border-radius: 0;
 	overflow: hidden;
 }
@@ -88,13 +88,13 @@ html, body {
 
 #main {
 	height: calc(100% - 115px);
-	background-color: #333;
+	background-color: #1971c2;
 	clear: both;
 }
 
 #small {
 	height: calc(100% - 150px);
-	background-color: black;
+	background-color: #339af0;
 	display: none;
 	padding: 20px;
 	clear: both;
@@ -116,7 +116,7 @@ html, body {
 	float: left;
 	width: 200px;
     font: 18px Sertig-Web;
-    background-color: #181818;
+    background-color: #1971c2;
     color: white;
     font-weight: bold;
     height: 100%;
@@ -133,12 +133,13 @@ html, body {
 }
 
 header {
-	width: 150px;
+	width: 400px;
 	float: left;
-	height: 80px;
+	height: 10px;
 }
 
 #version {
+	display:none;
 	width: calc(100% - 350px);
 	float: left;
 	height: 40px;
@@ -163,7 +164,7 @@ h4 {
 	font-weight: bold;
 	text-align: center;
 	padding: 10px;
-	color: #0f0;
+	color: #1864ab;
 	clear: both;
 }
 
@@ -171,11 +172,11 @@ h5 {
 	float: left;
 	width: 225px;
 	padding: 10px 5px;
-	background-color: #181818;
+	background-color: #d0ebff;
 	margin-bottom: 10px;
 	margin-left: 10px;
 	border-radius: 5px;
-	border: 2px solid #333;
+	border: 2px solid #e7f5ff;
 	text-align: center;
 	font: 24px Sertig-Web;
 	font-weight: bold;
@@ -193,7 +194,7 @@ h6 {
 	display: inline-block;
 	width: calc(25% - 26px);
 	padding: 5px 5px;
-	background-color: #043;
+	background-color: #4dabf7;
 	margin-left: 3px;
 	margin-top: 10px;
 	margin-bottom: 5px;
@@ -206,7 +207,7 @@ h6 {
 }
 
 h6:hover {
-	background-color: #666;
+	background-color: #4dabf7;
 	cursor: pointer;
 }
 
@@ -218,7 +219,7 @@ hr {
 footer {
 	width: 100%;
 	height: 40px;
-	background-color: black;
+	background-color: #bac8ff;
 }
 
 footer a {
@@ -237,7 +238,7 @@ footer a {
 }
 
 footer a:hover {
-	background-color: #222;
+	background-color: #4dabf7;
 }
 
 footer a:first-child {
@@ -275,15 +276,15 @@ input, select, textarea {
 }
 
 .doneButton {
-	background-color: #008966;
+	background-color: #1864ab;
     border: 2px solid #004433;
 	color: white;
 	transition: background-color 600ms, color 600ms;
 }
 
 .doneButton:hover {
-	background-color: #004433;
-    border: 2px solid #002211;
+	background-color: #339af0;
+    border: 2px solid #004433;
 }
 
 hr {
@@ -295,11 +296,11 @@ hr {
 }
 
 #saveSkill {
-	background-color: #375a7f;
+	background-color: #6af;
 }
 
 #saveSkill:hover {
-    background-color: #6af;
+    background-color: #339af0;
 }
 
 .ioButton {
@@ -353,7 +354,7 @@ hr {
 
 .tab {
     cursor: pointer;
-    background: #008966;
+    background: #e8590c;
 }
 
 .tab:hover {
@@ -375,12 +376,6 @@ hr {
 }
 
 .tabLeft:after {
-    position: absolute;
-    left: -3px;
-    top: -3px;
-    content: '';
-    border-top: 20px solid #333;
-    border-right: 20px solid transparent;
 }
 
 .tabRight:before {
@@ -393,12 +388,6 @@ hr {
 }
 
 .tabRight:after {
-    position: absolute;
-    right: -3px;
-    top: -3px;
-    content: '';
-    border-top: 20px solid #333;
-    border-left: 20px solid transparent;
 }
 
 #io {
@@ -420,8 +409,8 @@ label {
 #skillForm input, select, #classForm input, #skillForm .byteList, #classForm .byteList {
 	font: 20px Sertig-Web;
 	font-weight: bold;
-	background-color: #181818;
-	border: 1px solid #888;
+	background-color: #228be6;
+	border: 1px solid #a5d8ff;
     border-top: none;
     border-right: none;
 	border-radius: 5px;
@@ -454,14 +443,14 @@ label {
 }
 
 select {
-	background-color: #222;
+	background-color: #228be6;
 	cursor: pointer;
 }
 
 #skillForm textarea, #classForm textArea {
 	font: 20px Sertig-Web;
 	font-weight: bold;
-	background-color: #181818;
+	background-color: #228be6;
 	border: 1px solid #888;
     border-top: none;
     border-right: none;
@@ -481,7 +470,7 @@ textArea {
 #skillForm p, #classForm p {
 	text-align: center;
 	font: 20px Sertig-Web;
-	color: #ccc;
+	color: #000000;
 }
 
 #skillForm .areaLabel, #classForm .areaLabel {

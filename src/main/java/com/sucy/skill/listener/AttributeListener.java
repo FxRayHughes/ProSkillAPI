@@ -226,7 +226,6 @@ public class AttributeListener extends SkillAPIListener {
             final double newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.SKILL_DAMAGE, firstPass);
             event.setDamage(newAmount);
         }
-
         // Skill Defense
         if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
             event.setDamage(AttributeAPI.scaleStat(event.getTarget(), AttributeManager.PHYSICAL_DEFENSE, event.getDamage()));

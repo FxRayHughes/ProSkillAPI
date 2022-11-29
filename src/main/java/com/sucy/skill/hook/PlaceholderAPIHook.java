@@ -1,6 +1,7 @@
 package com.sucy.skill.hook;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
@@ -335,7 +336,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
             if (identifier.startsWith("default_attribute:")) {
                 String[] idSplit = identifier.split(":");
-                return String.valueOf(data.getAttribute(idSplit[1]));
+                return String.valueOf(AttributeAPI.getAttribute(player.getPlayer(), idSplit[1]));
             }
         }
 
