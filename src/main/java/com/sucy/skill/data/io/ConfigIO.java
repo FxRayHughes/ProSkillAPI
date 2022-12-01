@@ -34,8 +34,10 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.log.Logger;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -97,13 +99,8 @@ public class ConfigIO extends IOManager
     {
         try
         {
-            CommentedConfig config = new CommentedConfig(api, "players/" + new VersionPlayer(data.getOfflinePlayer()).getIdString());
-            config.clear();
-
-            DataSection file = save(data);
-            config.getConfig().applyDefaults(file);
-
-            config.save();
+            YamlConfiguration yamlConfiguration = save(data);
+            yamlConfiguration.save(new File(api.getDataFolder().getAbsolutePath() + "/" + "players/" + new VersionPlayer(data.getOfflinePlayer()).getIdString() + ".yml"));
         }
         catch (Exception ex)
         {
@@ -118,7 +115,7 @@ public class ConfigIO extends IOManager
     public void saveAll()
     {
         HashMap<String, PlayerAccounts> data = SkillAPI.getPlayerAccountData();
-        ArrayList<String> keys = new ArrayList<String>(data.keySet());
+        ArrayList<String> keys = new ArrayList<>(data.keySet());
         for (String key : keys)
             saveData(data.get(key));
     }
