@@ -16,7 +16,7 @@ public class PlayerEquipsUtils {
             if (oLore.contains(attr)) {
                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                 int extra = toInt(oLore);
-                if (extra <= 0){
+                if (extra <= 0) {
                     return null;
                 }
                 return new Pair<>(normalized, extra);
@@ -26,10 +26,17 @@ public class PlayerEquipsUtils {
     }
 
     public static Integer toInt(String a) {
+        if (a.isEmpty()) {
+            return 0;
+        }
         String regEx = "[^0-9]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(a);
-        return NumberParser.parseInt(m.replaceAll("").trim());
+        a = m.replaceAll("").trim();
+        if (a.isEmpty()) {
+            return 0;
+        }
+        return NumberParser.parseInt(a);
     }
 
 }

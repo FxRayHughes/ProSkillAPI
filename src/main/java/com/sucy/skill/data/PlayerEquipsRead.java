@@ -58,8 +58,7 @@ public class PlayerEquipsRead {
         for (String lore : lores) {
             String lower = ChatColor.stripColor(lore).toLowerCase();
             if (lower.contains(lct)) {
-                String[] gett = lct.split("[: ]");
-                int si = NumberParser.parseInt(gett[gett.length - 1]);
+                int si = PlayerEquipsUtils.toInt(lct);
                 return playerData.getMainClass().getLevel() >= si;
             }
         }
@@ -86,6 +85,9 @@ public class PlayerEquipsRead {
         if (!SkillAPI.getSettings().isCheckAttributes()) {
             return;
         }
+        if (!playerData.getPlayer().isOnline()) {
+            return;
+        }
         PlayerInventory playerInventory = playerData.getPlayer().getInventory();
         for (int slot : SkillAPI.getSettings().getSlots()) {
             ItemStack itemStack = playerInventory.getItem(slot);
@@ -97,7 +99,7 @@ public class PlayerEquipsRead {
                     if (name.equals("null")) {
                         name = itemStack.getType().name();
                     }
-                    if (!canUse(playerData, lore,name )) {
+                    if (!canUse(playerData, lore, name)) {
                         return;
                     }
                     ConcurrentHashMap<String, Integer> attribs = new ConcurrentHashMap<>();

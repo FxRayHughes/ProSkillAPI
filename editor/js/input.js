@@ -231,13 +231,13 @@ ListValue.prototype.createHTML = function (target) {
 
     const vLower = this.value.toLowerCase().replace('_', ' ');
     const list = typeof this.list == 'function' ? this.list() : this.list;
-    for (let i = 0; i < list.length; i++) {
+    for (let i in list) {
         const option = document.createElement('option');
         option.innerHTML = list[i];
         this.select.add(option);
 
         const lower = list[i].toLowerCase().replace('_', ' ');
-        if (lower === vLower || (selected == -1 && list[i] == 'None')) {
+        if (lower === vLower || (selected === -1 && list[i] === 'None')) {
             selected = i;
         }
     }

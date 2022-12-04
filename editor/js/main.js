@@ -32,6 +32,9 @@ let ATTRIBS = [
 depend('filter');
 depend('input');
 depend('yaml');
+depend('black', function () {
+    init()
+});
 depend('component', function () {
     const config = localStorage.getItem('config');
     if (config) {

@@ -43,6 +43,8 @@ import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.api.target.TargetHelper;
 import com.sucy.skill.cast.PlayerCastBars;
 import com.sucy.skill.data.GroupSettings;
+import com.sucy.skill.data.PlayerEquipsRead;
+import com.sucy.skill.data.PlayerEquipsUtils;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.gui.handlers.AttributeHandler;
 import com.sucy.skill.gui.handlers.DetailsHandler;
@@ -1923,6 +1925,8 @@ public class PlayerData {
         this.updateHealthAndMana(player);
         this.startPassives(player);
         this.updateScoreboard();
+        PlayerEquipsRead.update(this);
+        this.getSkillBar().update(player);
         if (SkillAPI.getSettings().isAttributesHeal()) {
             if (this.getLastHealth() > 0 && !player.isDead()) {
                 if (SkillAPI.getSettings().isAttributesHeal()) {
