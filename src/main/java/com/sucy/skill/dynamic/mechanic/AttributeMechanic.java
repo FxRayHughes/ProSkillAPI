@@ -66,7 +66,7 @@ public class AttributeMechanic extends MechanicComponent {
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         String key = settings.getString(KEY, "");
-        if (targets.size() == 0 || SkillAPI.getAttributeManager().getAttribute(key) == null) {
+        if (targets.size() == 0) {
             return false;
         }
 
@@ -75,13 +75,13 @@ public class AttributeMechanic extends MechanicComponent {
         final double seconds = parseValues(caster, SECONDS, level, 3.0);
         final boolean stackable = settings.getString(STACKABLE, "false").equalsIgnoreCase("true");
         final int ticks = (int) (seconds * 20);
-
-        boolean worked = false;
         for (LivingEntity target : targets) {
             TempAttributeAddEvent event = AttributeAPI.tempAttribute(target, key, amount, ticks);
             if (!event.isCancelled()) {
+                if (SkillAPI.getAttributeManager().getAttribute(key) == null) {
+                    return false;
+                }
                 if (event.getCaster() instanceof Player) {
-                    worked = true;
                     final PlayerData data = SkillAPI.getPlayerData((Player) event.getCaster());
 
                     if (casterTasks.containsKey(data.getPlayerName()) && !stackable) {
@@ -121,7 +121,7 @@ public class AttributeMechanic extends MechanicComponent {
                 }
             }
         }
-        return worked;
+        return true;
     }
 
     @Override

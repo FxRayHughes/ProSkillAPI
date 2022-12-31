@@ -42,9 +42,9 @@ import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.data.io.SQLIO;
+import com.sucy.skill.data.io.SavePlayer;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.mechanic.JavaScriptMechanic;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PlaceholderAPIHook;
@@ -68,7 +68,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -422,6 +421,11 @@ public class SkillAPI extends JavaPlugin {
         }
         return singleton().classes.get(name.toLowerCase());
     }
+
+    public static void initSaveData(OfflinePlayer player) {
+        singleton().players.computeIfAbsent(player.getUniqueId().toString(), id -> new SavePlayer(player));
+    }
+
 
     /**
      * Retrieves the registered class data for SkillAPI. It is recommended that you

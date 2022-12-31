@@ -32,12 +32,10 @@ import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.EntityCastSkillEvent;
-import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillCastAPI;
-import com.sucy.skill.api.skills.SkillShot;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -50,7 +48,7 @@ import java.util.regex.Pattern;
  * A command that makes a player cast a skill regardless
  * of them owning it or not and also ignores cooldown/mana costs.
  */
-public class CmdForceCast implements IFunction {
+public class CmdForceCastB implements IFunction {
     private static final Pattern INTEGER = Pattern.compile("-?[0-9]+");
 
     private static final String NOT_PLAYER = "not-player";
@@ -94,7 +92,13 @@ public class CmdForceCast implements IFunction {
             if (events.isCancelled()) {
                 return;
             }
-            SkillCastAPI.cast(player, skill, level);
+            PlayerData playerData = SkillAPI.getPlayerData(player);
+            if (playerData == null) {
+                return;
+            }
+            PlayerSkill playerSkill = new PlayerSkill(playerData, skill, playerData.getMainClass());
+            playerSkill.setLevel(level);
+            playerData.cast(playerSkill);
         }
     }
 }
