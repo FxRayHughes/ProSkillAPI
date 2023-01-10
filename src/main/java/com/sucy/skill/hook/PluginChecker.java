@@ -143,7 +143,7 @@ public class PluginChecker extends SkillAPIListener {
      * @return true if active
      */
     public static boolean isDisguiseActive() {
-        return libsDisguises;
+        return Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
     }
 
     /**

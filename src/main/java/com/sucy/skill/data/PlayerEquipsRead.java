@@ -5,10 +5,12 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.event.PlayerReadAttributeEvent;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -82,9 +84,19 @@ public class PlayerEquipsRead {
     }
 
     public static void update(PlayerData playerData) {
+        updateinl(playerData);
+        AttributeListener.updatePlayer(playerData);
+    }
+
+    public static void updateinl(PlayerData playerData) {
         if (!SkillAPI.getSettings().isCheckAttributes()) {
             return;
         }
+        if (playerData == null || Bukkit.getPlayer(playerData.getUUID()) == null) {
+            return;
+        }
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerData.getUUID());
+        playerData = SkillAPI.getPlayerData(offlinePlayer);
         if (!playerData.getPlayer().isOnline()) {
             return;
         }
@@ -96,9 +108,6 @@ public class PlayerEquipsRead {
                 if (meta != null && meta.hasLore()) {
                     List<String> lore = meta.getLore();
                     String name = itemStack.getItemMeta().getDisplayName();
-                    if (name.equals("null")) {
-                        name = itemStack.getType().name();
-                    }
                     if (!canUse(playerData, lore, name)) {
                         return;
                     }
@@ -134,21 +143,15 @@ public class PlayerEquipsRead {
         if (!SkillAPI.getSettings().isCheckAttributes()) {
             return;
         }
-        ItemStack itemStack;
-        String key;
-        if (off) {
-            itemStack = playerData.getPlayer().getInventory().getItemInOffHand();
-            key = "OFF";
-        } else {
-            itemStack = playerData.getPlayer().getInventory().getItemInMainHand();
-            key = "MAIN";
-        }
+        ItemStack itemStack = playerData.getPlayer().getInventory().getItemInMainHand();
+        ;
+        String key = "Main";
         if (itemStack.getType() == Material.AIR || !itemStack.hasItemMeta()) {
             playerData.addAttrib.put("Equip_" + key, new ConcurrentHashMap<>());
             return;
         }
         ItemMeta meta = itemStack.getItemMeta();
-        if (!meta.hasLore()) {
+        if (meta == null || !meta.hasLore()) {
             playerData.addAttrib.put("Equip_" + key, new ConcurrentHashMap<>());
             return;
         }

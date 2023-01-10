@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.manager.RegistrationManager
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,6 +42,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * <p>Skill API Registration Manager.</p>
@@ -64,8 +65,8 @@ public class RegistrationManager {
 
     private static final String SKILL_FOLDER = "dynamic" + File.separator + "skill";
     private static final String CLASS_FOLDER = "dynamic" + File.separator + "class";
-    private static final String SKILL_DIR    = SKILL_FOLDER + File.separator;
-    private static final String CLASS_DIR    = CLASS_FOLDER + File.separator;
+    private static final String SKILL_DIR = SKILL_FOLDER + File.separator;
+    private static final String CLASS_DIR = CLASS_FOLDER + File.separator;
 
     private final SkillAPI api;
 
@@ -175,37 +176,38 @@ public class RegistrationManager {
 
         // Load individual dynamic skills
         Logger.log(LogType.REGISTRATION, 1, "Loading individual dynamic skill files...");
-        File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
-        if (skillRoot.exists()) {
-            File[] files = skillRoot.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (!file.getName().endsWith(".yml")) { continue; }
-                    String name = file.getName().replace(".yml", "");
-                    try {
-                        CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
-                        DynamicSkill skill = new DynamicSkill(name);
-                        skill.load(sConfig.getConfig().getSection(name));
-                        if (!SkillAPI.isSkillRegistered(skill.getName())) {
-                            api.addDynamicSkill(skill);
-                            skill.registerEvents(api);
-                            sConfig.clear();
-                            skill.save(sConfig.getConfig().createSection(name));
-                            skill.save(skillConfig.getConfig().createSection(name));
-                            sConfig.save();
-                            Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + name);
-                        } else if (SkillAPI.getSkill(name) instanceof DynamicSkill) {
-                            Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");
-                        } else {
-                            Logger.invalid("Duplicate skill detected: " + name);
-                        }
-                    } catch (Exception ex) {
-                        Logger.invalid("Failed to load skill: " + name + " - " + ex.getMessage());
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        }
+//        File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
+//        if (skillRoot.exists()) {
+//            File[] files = skillRoot.listFiles();
+//            if (files != null) {
+//                for (File file : files) {
+//                    if (!file.getName().endsWith(".yml")) { continue; }
+//                    String name = file.getName().replace(".yml", "");
+//                    try {
+//                        CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
+//                        DynamicSkill skill = new DynamicSkill(name);
+//                        skill.load(sConfig.getConfig().getSection(name));
+//                        if (!SkillAPI.isSkillRegistered(skill.getName())) {
+//                            api.addDynamicSkill(skill);
+//                            skill.registerEvents(api);
+//                            sConfig.clear();
+//                            skill.save(sConfig.getConfig().createSection(name));
+//                            skill.save(skillConfig.getConfig().createSection(name));
+//                            sConfig.save();
+//                            Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + name);
+//                        } else if (SkillAPI.getSkill(name) instanceof DynamicSkill) {
+//                            Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");
+//                        } else {
+//                            Logger.invalid("Duplicate skill detected: " + name);
+//                        }
+//                    } catch (Exception ex) {
+//                        Logger.invalid("Failed to load skill: " + name + " - " + ex.getMessage());
+//                        ex.printStackTrace();
+//                    }
+//                }
+//            }
+//        }
+        LoadSkillTree();
 
         Logger.log(LogType.REGISTRATION, 1, "Loading classes...");
 
@@ -261,7 +263,9 @@ public class RegistrationManager {
             File[] files = classRoot.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (!file.getName().endsWith(".yml")) { continue; }
+                    if (!file.getName().endsWith(".yml")) {
+                        continue;
+                    }
                     try {
                         String name = file.getName().replace(".yml", "");
                         CommentedConfig cConfig = new CommentedConfig(api, CLASS_DIR + name);
@@ -301,13 +305,60 @@ public class RegistrationManager {
         Logger.log(LogType.REGISTRATION, 0, " - " + SkillAPI.getClasses().size() + " classes");
     }
 
+    ArrayList<File> skillsConfig = new ArrayList<>();
+
+    private void loadFiles(File file) {
+        if (file.isFile()) {
+            skillsConfig.add(file);
+        } else {
+            File[] list = file.listFiles();
+            if (list != null) {
+                for (File listFile : list) {
+                    loadFiles(listFile);
+                }
+            }
+        }
+    }
+
+    private void LoadSkillTree() {
+        File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
+        loadFiles(skillRoot);
+        for (File file : skillsConfig) {
+            if (!file.getName().endsWith(".yml")) {
+                continue;
+            }
+            String name = file.getName().replace(".yml", "");
+            try {
+                CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
+                DynamicSkill skill = new DynamicSkill(name);
+                skill.load(sConfig.getConfig().getSection(name));
+                if (!SkillAPI.isSkillRegistered(skill.getName())) {
+                    api.addDynamicSkill(skill);
+                    skill.registerEvents(api);
+                    sConfig.clear();
+                    skill.save(sConfig.getConfig().createSection(name));
+                    skill.save(skillConfig.getConfig().createSection(name));
+                    sConfig.save();
+                    Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + name);
+                } else if (SkillAPI.getSkill(name) instanceof DynamicSkill) {
+                    Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");
+                } else {
+                    Logger.invalid("Duplicate skill detected: " + name);
+                }
+            } catch (Exception ex) {
+                Logger.invalid("Failed to load skill: " + name + " - " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+
+    }
+
     /**
      * <p>Validates a skill, making sure it is being registered during the
      * appropriate time, it isn't null, and it doesn't conflict with other
      * registered skills.</p>
      *
      * @param skill skill to validate
-     *
      * @return the class if valid, null otherwise
      */
     public Skill validate(Skill skill) {
@@ -365,7 +416,6 @@ public class RegistrationManager {
      * registered classes.</p>
      *
      * @param rpgClass class to validate
-     *
      * @return the class if valid, null otherwise
      */
     public RPGClass validate(RPGClass rpgClass) {

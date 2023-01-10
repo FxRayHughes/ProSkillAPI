@@ -34,6 +34,7 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -44,7 +45,7 @@ import org.bukkit.plugin.Plugin;
 /**
  * A command that gives a player class experience
  */
-public class CmdPoints implements IFunction {
+public class CmdSkillPoints implements IFunction {
     private static final String NOT_PLAYER = "not-player";
     private static final String NOT_NUMBER = "not-number";
     private static final String NOT_POSITIVE = "not-positive";
@@ -60,17 +61,16 @@ public class CmdPoints implements IFunction {
      * @param sender sender of the command
      * @param args   argument list
      */
+
+    //class xxx ID 1
     @Override
     public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args) {
         // Disabled world
         if (sender instanceof Player && !SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()) && args.length == 1) {
             cmd.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
-        }
-
-        // Only can show info of a player so console needs to provide a name
-        else if (args.length >= 1 && (args.length >= 2 || sender instanceof Player)) {
+        } else if (args.length >= 3) {
             // Get the player data
-            OfflinePlayer target = args.length == 1 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
+            OfflinePlayer target = VersionManager.getOfflinePlayer(args[0], false);
             if (target == null) {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");
                 return;
@@ -79,7 +79,7 @@ public class CmdPoints implements IFunction {
             // Parse the skill points
             int amount;
             try {
-                amount = Integer.parseInt(args[args.length == 1 ? 0 : 1]);
+                amount = Integer.parseInt(args[1]);
             } catch (Exception ex) {
                 cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid skill point amount");
                 return;
@@ -93,7 +93,8 @@ public class CmdPoints implements IFunction {
 
             // Give skill points
             PlayerData data = SkillAPI.getPlayerData(target);
-            data.givePoints(amount, ExpSource.COMMAND);
+            PlayerSkill skill = data.getSkill(args[2]);
+            skill.setPoints(amount);
 
             // Messages
             if (target != sender) {
@@ -102,10 +103,7 @@ public class CmdPoints implements IFunction {
             if (target.isOnline()) {
                 cmd.sendMessage(target.getPlayer(), RECEIVED_SP, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{points} skill points " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.POINTS.setReplacement("" + amount));
             }
-        }
-
-        // Not enough arguments
-        else {
+        } else {
             CommandManager.displayUsage(cmd, sender);
         }
     }

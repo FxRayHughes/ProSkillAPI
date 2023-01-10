@@ -1603,11 +1603,13 @@ public class Settings {
         return lockedSlots;
     }
 
-    private void loadSkillBarSettings() {
+    public void loadSkillBarSettings() {
         DataSection bar = config.getSection("Skill Bar");
         skillBarEnabled = bar.getBoolean("enabled", false) && !castEnabled;
         skillBarCooldowns = bar.getBoolean("show-cooldown", true);
-
+        if (!skillBarEnabled){
+            return;
+        }
         DataSection icon = bar.getSection("empty-icon");
         Material mat = Material.matchMaterial(icon.getString("material", "PUMPKIN_SEEDS"));
         if (mat == null) {

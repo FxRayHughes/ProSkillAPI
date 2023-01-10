@@ -33,6 +33,7 @@ import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.data.PlayerEquipsRead;
 import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;

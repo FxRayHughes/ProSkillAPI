@@ -35,7 +35,9 @@ public class ArmorStandMechanic extends MechanicComponent {
     private static final String RIGHT = "right";
 
     @Override
-    public String getKey() { return "armor stand"; }
+    public String getKey() {
+        return "armor stand";
+    }
 
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
@@ -65,12 +67,14 @@ public class ArmorStandMechanic extends MechanicComponent {
                 try {
                     as.setMarker(marker);
                     as.setInvulnerable(true);
-                } catch (NoSuchMethodError ignored) {}
+                } catch (NoSuchMethodError ignored) {
+                }
                 try {
                     as.setSilent(true);
-                } catch (NoSuchMethodError ignored) {}
+                } catch (NoSuchMethodError ignored) {
+                }
                 as.setGravity(gravity);
-                as.setCustomName(name);
+                as.setCustomName(name.replace("{player}", caster.getName()));
                 as.setCustomNameVisible(nameVisible);
                 as.setSmall(small);
                 as.setArms(arms);
