@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.dynamic.mechanic.ParticleProjectileMechanic
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -55,27 +55,29 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
     private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String POSITION = "position";
-    private static final String ANGLE    = "angle";
-    private static final String AMOUNT   = "amount";
-    private static final String LEVEL    = "skill_level";
-    private static final String HEIGHT   = "height";
-    private static final String RADIUS   = "rain-radius";
-    private static final String SPREAD   = "spread";
-    private static final String ALLY     = "group";
-    private static final String RIGHT    = "right";
-    private static final String UPWARD   = "upward";
-    private static final String FORWARD  = "forward";
+    private static final String ANGLE = "angle";
+    private static final String AMOUNT = "amount";
+    private static final String LEVEL = "skill_level";
+    private static final String HEIGHT = "height";
+    private static final String RADIUS = "rain-radius";
+    private static final String SPREAD = "spread";
+    private static final String ALLY = "group";
+    private static final String RIGHT = "right";
+    private static final String UPWARD = "upward";
+    private static final String FORWARD = "forward";
 
     private static final String USE_EFFECT = "use-effect";
     private static final String EFFECT_KEY = "effect-key";
 
+    private static final String ARMOR_STAND = "armor-stand";
+
     /**
      * Creates the list of indicators for the skill
      *
-     * @param list   list to store indicators in
-     * @param caster caster reference
+     * @param list    list to store indicators in
+     * @param caster  caster reference
      * @param targets location to base location on
-     * @param level  the level of the skill to create for
+     * @param level   the level of the skill to create for
      */
     @Override
     public void makeIndicators(List<IIndicator> list, Player caster, List<LivingEntity> targets, int level) {
@@ -129,7 +131,6 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
      * @param caster  caster of the skill
      * @param level   level of the skill
      * @param targets targets to apply to
-     *
      * @return true if applied to something, false otherwise
      */
     @Override
@@ -144,6 +145,7 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
         copy.set(ParticleProjectile.SPEED, parseValues(caster, ParticleProjectile.SPEED, level, 1), 0);
         copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
         copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
+        copy.set(ParticleHelper.ARMOR_STAND, settings.getString(ARMOR_STAND, "none"));
 
         // Fire from each target
         for (LivingEntity target : targets) {

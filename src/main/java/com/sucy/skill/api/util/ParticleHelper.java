@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.api.util.ParticleHelper
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -84,7 +84,7 @@ public class ParticleHelper {
      * Settings key for the radius of the particle arrangement
      */
     public static final String RADIUS_KEY = "radius";
-    
+
     /**
      * Settings key for the amount of particles to play
      */
@@ -124,6 +124,8 @@ public class ParticleHelper {
      * Settings key for the reflection particles' "speed" value (default 1)
      */
     public static final String SPEED_KEY = "speed";
+
+    public static final String ARMOR_STAND = "armor_stand";
 
     private static final Random random = new Random();
 
@@ -186,14 +188,19 @@ public class ParticleHelper {
     public static void play(Location loc, String particle, Settings settings) {
         particle = particle.toLowerCase().replace("_", " ");
         final int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
-        final float dx = (float)settings.getDouble(DX_KEY, 0.0);
-        final float dy = (float)settings.getDouble(DY_KEY, 0.0);
-        final float dz = (float)settings.getDouble(DZ_KEY, 0.0);
+        final float dx = (float) settings.getDouble(DX_KEY, 0.0);
+        final float dy = (float) settings.getDouble(DY_KEY, 0.0);
+        final float dz = (float) settings.getDouble(DZ_KEY, 0.0);
         final int amount = settings.getInt(AMOUNT_KEY, 1);
         final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
         final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
         final int type = settings.getInt(TYPE_KEY, 0);
         final int data = settings.getInt(DATA_KEY, 0);
+        if (settings.getString(ARMOR_STAND) != null) {
+            if (!settings.getString(ARMOR_STAND, "none").equals("none")) {
+                return;
+            }
+        }
 
         try {
             // Normal bukkit effects

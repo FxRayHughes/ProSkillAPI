@@ -31,7 +31,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * <p>An event for when a particle projectile is launched.</p>
+ * <p>粒子投射物发射时的事件.</p>
  */
 public class ParticleProjectileLaunchEvent extends Event
 {

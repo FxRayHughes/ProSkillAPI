@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.api.event.ParticleProjectileExpireEvent
+ * com.sucy.skill.api.event.ParticleProjectileLaunchEvent
  *
  * The MIT License (MIT)
  *
@@ -26,37 +26,32 @@
  */
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.api.projectile.ParticleProjectile;
+import com.sucy.skill.dynamic.mechanic.ParticleAnimationMechanic;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * <p>粒子投射物因飞行时间过长而失效的事件。</p>
+ * <p>粒子投射物发射时的事件.</p>
  */
-public class ParticleProjectileExpireEvent extends Event
+public class ParticleAnimationExpireEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
 
-    private final ParticleProjectile projectile;
+    private final ParticleAnimationMechanic.ParticleTask particleTask;
+
+    /**
+     * <p>Initializes a new event.</p>
+     * @param particleTask
+     */
 
     /**
      * <p>Initializes a new event.</p>
      *
-     * @param projectile the projectile that hit something
+     * @param particleTask
      */
-    public ParticleProjectileExpireEvent(ParticleProjectile projectile)
+    public ParticleAnimationExpireEvent(ParticleAnimationMechanic.ParticleTask particleTask)
     {
-        this.projectile = projectile;
-    }
-
-    /**
-     * <p>Retrieves the projectile</p>
-     *
-     * @return the projectile that hit something
-     */
-    public ParticleProjectile getProjectile()
-    {
-        return projectile;
+        this.particleTask = particleTask;
     }
 
     /**
@@ -78,5 +73,9 @@ public class ParticleProjectileExpireEvent extends Event
     public static HandlerList getHandlerList()
     {
         return handlers;
+    }
+
+    public ParticleAnimationMechanic.ParticleTask getParticleTask() {
+        return particleTask;
     }
 }

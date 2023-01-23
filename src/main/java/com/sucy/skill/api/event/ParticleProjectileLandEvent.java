@@ -31,7 +31,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * <p>An event for when a particle projectile projectile hits terrain.</p>
+ * <p>当粒子抛射物击中地形时的事件。</p>
  */
 public class ParticleProjectileLandEvent extends Event
 {

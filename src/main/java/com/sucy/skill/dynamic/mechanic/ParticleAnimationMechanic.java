@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.dynamic.mechanic.ParticleAnimationMechanic
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,31 +28,37 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.event.ParticleAnimationExpireEvent;
+import com.sucy.skill.api.event.ParticleAnimationLaunchEvent;
 import com.sucy.skill.api.util.ParticleHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Plays a particle effect
  */
-public class ParticleAnimationMechanic extends MechanicComponent
-{
-    private static final String FORWARD  = "forward";
-    private static final String UPWARD   = "upward";
-    private static final String RIGHT    = "right";
-    private static final String STEPS    = "steps";
-    private static final String FREQ     = "frequency";
-    private static final String ANGLE    = "angle";
-    private static final String START    = "start";
+public class ParticleAnimationMechanic extends MechanicComponent {
+    private static final String FORWARD = "forward";
+    private static final String UPWARD = "upward";
+    private static final String RIGHT = "right";
+    private static final String STEPS = "steps";
+    private static final String FREQ = "frequency";
+    private static final String ANGLE = "angle";
+    private static final String START = "start";
     private static final String DURATION = "duration";
-    private static final String H_TRANS  = "h-translation";
-    private static final String V_TRANS  = "v-translation";
+    private static final String H_TRANS = "h-translation";
+    private static final String V_TRANS = "v-translation";
     private static final String H_CYCLES = "h-cycles";
     private static final String V_CYCLES = "v-cycles";
+
+    private static final String ARMOR_STAND = "armor-stand";
 
     @Override
     public String getKey() {
@@ -65,14 +71,11 @@ public class ParticleAnimationMechanic extends MechanicComponent
      * @param caster  caster of the skill
      * @param level   level of the skill
      * @param targets targets to apply to
-     *
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
 
@@ -80,41 +83,50 @@ public class ParticleAnimationMechanic extends MechanicComponent
         copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
         copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
         copy.set("level", level);
+        copy.set(ParticleHelper.ARMOR_STAND, settings.getString(ARMOR_STAND, "none"));
         new ParticleTask(caster, targets, level, copy);
         return targets.size() > 0;
     }
 
-    private class ParticleTask extends BukkitRunnable
-    {
+    public class ParticleTask extends BukkitRunnable {
 
         private List<LivingEntity> targets;
-        private double[]           rots;
-        private Vector             offset;
-        private Vector             dir;
+        private double[] rots;
+        private Vector offset;
+        private Vector dir;
 
         private double forward;
         private double right;
         private double upward;
 
-        private int    steps;
-        private int    freq;
-        private int    angle;
-        private int    startAngle;
-        private int    duration;
-        private int    life;
-        private int    hc;
-        private int    vc;
-        private int    hl;
-        private int    vl;
+        private int steps;
+        private int freq;
+        private int angle;
+        private int startAngle;
+        private int duration;
+        private int life;
+        private int hc;
+        private int vc;
+        private int hl;
+        private int vl;
         private double ht;
         private double vt;
         private double cos;
         private double sin;
 
-        private Settings settings;
+        public Location location;
 
-        ParticleTask(LivingEntity caster, List<LivingEntity> targets, int level, Settings settings)
-        {
+        public Settings settings;
+
+        public UUID uuid;
+
+        public ArrayList<Location> step = new ArrayList<>();
+
+        ParticleTask(LivingEntity caster, List<LivingEntity> targets, int level, Settings settings) {
+            this.uuid = UUID.randomUUID();
+
+            this.location = caster.getLocation();
+
             this.targets = targets;
             this.settings = settings;
 
@@ -139,8 +151,7 @@ public class ParticleAnimationMechanic extends MechanicComponent
             this.sin = Math.sin(angle * Math.PI / (180 * duration));
 
             rots = new double[targets.size() * 2];
-            for (int i = 0; i < targets.size(); i++)
-            {
+            for (int i = 0; i < targets.size(); i++) {
                 Vector dir = targets.get(i).getLocation().getDirection().setY(0).normalize();
                 rots[i * 2] = dir.getX();
                 rots[i * 2 + 1] = dir.getZ();
@@ -153,27 +164,20 @@ public class ParticleAnimationMechanic extends MechanicComponent
             rotate(offset, sc, ss);
             rotate(dir, sc, ss);
 
-            SkillAPI.schedule(this, 0, freq);
-        }
-
-        @Override
-        public void run()
-        {
-            for (int i = 0; i < steps; i++)
-            {
+            for (int i = 0; i < steps; i++) {
                 // Play the effect
                 int j = 0;
-                for (LivingEntity target : targets)
-                {
+                for (LivingEntity target : targets) {
                     Location loc = target.getLocation();
 
                     rotate(offset, rots[j], rots[j + 1]);
                     loc.add(offset);
-                    ParticleHelper.play(loc, settings);
+                    //ParticleHelper.play(loc, settings);
+                    Location temp = loc.clone();
+                    step.add(temp);
                     loc.subtract(offset);
                     rotate(offset, rots[j++], -rots[j++]);
                 }
-
                 // Update the lifespan of the animation
                 this.life++;
 
@@ -186,25 +190,34 @@ public class ParticleAnimationMechanic extends MechanicComponent
                 offset.setZ(offset.getZ() + dx * dir.getZ());
                 offset.setY(upward + heightAt(this.life));
             }
+            this.life = 0;
 
-            if (this.life >= this.duration)
-            {
+            Bukkit.getPluginManager().callEvent(new ParticleAnimationLaunchEvent(this));
+            SkillAPI.schedule(this, 0, freq);
+        }
+
+        @Override
+        public void run() {
+            for (Location location1 : step) {
+                ParticleHelper.play(location1, settings);
+                this.life++;
+            }
+
+            if (this.life >= this.duration) {
+                Bukkit.getPluginManager().callEvent(new ParticleAnimationExpireEvent(this));
                 cancel();
             }
         }
 
-        private double heightAt(int step)
-        {
+        private double heightAt(int step) {
             return vt * (vl - Math.abs(vl - step % (2 * vl))) / vl;
         }
 
-        private double radAt(int step)
-        {
+        private double radAt(int step) {
             return ht * (hl - Math.abs(hl - step % (2 * hl))) / hl;
         }
 
-        private void rotate(Vector vec, double cos, double sin)
-        {
+        private void rotate(Vector vec, double cos, double sin) {
             double x = vec.getX() * cos - vec.getZ() * sin;
             vec.setZ(vec.getX() * sin + vec.getZ() * cos);
             vec.setX(x);

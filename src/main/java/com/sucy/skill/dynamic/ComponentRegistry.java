@@ -89,7 +89,7 @@ public class ComponentRegistry {
         }
     }
 
-    private static void append(final Object obj, final StringBuilder builder) {
+    public static void append(final Object obj, final StringBuilder builder) {
         if (!(obj instanceof CustomComponent)) {
             return;
         }
@@ -121,7 +121,7 @@ public class ComponentRegistry {
         builder.append("]},");
     }
 
-    private static void register(final EffectComponent component) {
+    public static void register(final EffectComponent component) {
         COMPONENTS.computeIfAbsent(component.getType(), t -> new HashMap<>())
                 .put(component.getKey().toLowerCase(), component.getClass());
     }

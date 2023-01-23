@@ -72,6 +72,7 @@ import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -496,6 +497,14 @@ public class SkillAPI extends JavaPlugin {
         return getPlayerAccountData(player).getActiveData();
     }
 
+    public static PlayerData getPlayerData(UUID uuid) {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        if (!player.isOnline()) {
+            return null;
+        }
+        return getPlayerAccountData(player).getActiveData();
+    }
+
     public static List<PlayerData> getPlayerDataList() {
         return getPlayerAccountData().values().stream().map(PlayerAccounts::getActiveData).collect(Collectors.toList());
     }
@@ -755,6 +764,10 @@ public class SkillAPI extends JavaPlugin {
      */
     public static BukkitTask schedule(BukkitRunnable runnable, int delay, int period) {
         return runnable.runTaskTimer(singleton(), delay, period);
+    }
+
+    public static BukkitTask scheduleAsny(BukkitRunnable runnable, int delay, int period) {
+        return runnable.runTaskTimerAsynchronously(singleton(), delay, period);
     }
 
     /**

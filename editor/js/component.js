@@ -2339,6 +2339,10 @@ function MechanicParticleAnimation() {
 
     this.description = 'Plays an animated particle effect at the location of each target over time by applying various transformations.';
 
+    this.data.push(new StringValue('ArmorStand', 'armor-stand', 'none')
+        .setTooltip('是否生成盔甲架代替粒子')
+    );
+
     this.data.push(new IntValue('Steps', 'steps', 1, 0)
         .setTooltip('The number of times to play particles and apply translations each application.')
     );
@@ -2396,6 +2400,10 @@ function MechanicParticleProjectile() {
     this.super('Particle Projectile', Type.MECHANIC, true);
 
     this.description = 'Launches a projectile using particles as its visual that applies child components upon landing. The target passed on will be the collided target or the location where it landed if it missed.';
+
+    this.data.push(new StringValue('ArmorStand', 'armor-stand', 'none')
+        .setTooltip('是否生成盔甲架代替粒子')
+    );
 
     addProjectileOptions(this);
 
@@ -3097,6 +3105,7 @@ function MechanicDataEdit() {
         .setTooltip('数字内容')
     );
 }
+
 extend('MechanicMythicCast', 'Component');
 
 function MechanicMythicCast() {

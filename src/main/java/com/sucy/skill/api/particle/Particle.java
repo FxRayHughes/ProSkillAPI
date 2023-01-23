@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.api.particle.Particle
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2016 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,7 +28,10 @@ package com.sucy.skill.api.particle;
 
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -92,7 +95,9 @@ public class Particle {
             // 1.8+ servers
             else if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
                 particleEnum = Class.forName(nms + "EnumParticle");
-                for (Object value : particleEnum.getEnumConstants()) { particleTypes.put(value.toString(), value); }
+                for (Object value : particleEnum.getEnumConstants()) {
+                    particleTypes.put(value.toString(), value);
+                }
                 packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
                 packet = packetClass.getConstructor(
                         particleEnum,
@@ -141,7 +146,9 @@ public class Particle {
     public static void send(Player player, List<Object> packets)
             throws Exception {
         Object network = connection.get(getHandle.invoke(player));
-        for (Object packet : packets) { sendPacket.invoke(network, packet); }
+        for (Object packet : packets) {
+            sendPacket.invoke(network, packet);
+        }
     }
 
     /**
@@ -155,7 +162,9 @@ public class Particle {
     public static void send(Player player, Object[] packets)
             throws Exception {
         Object network = connection.get(getHandle.invoke(player));
-        for (Object packet : packets) { sendPacket.invoke(network, packet); }
+        for (Object packet : packets) {
+            sendPacket.invoke(network, packet);
+        }
     }
 
     /**
@@ -169,7 +178,9 @@ public class Particle {
             throws Exception {
         range *= range;
         for (Player player : loc.getWorld().getPlayers()) {
-            if (player.getLocation().distanceSquared(loc) < range) { send(player, packets); }
+            if (player.getLocation().distanceSquared(loc) < range) {
+                send(player, packets);
+            }
         }
     }
 
@@ -184,7 +195,9 @@ public class Particle {
             throws Exception {
         range *= range;
         for (Player player : loc.getWorld().getPlayers()) {
-            if (player.getLocation().distanceSquared(loc) < range) { send(player, packets); }
+            if (player.getLocation().distanceSquared(loc) < range) {
+                send(player, packets);
+            }
         }
     }
 
@@ -218,7 +231,9 @@ public class Particle {
 
     public static Object make(ParticleSettings settings, double x, double y, double z) throws Exception {
         // Invalid particle settings
-        if (settings == null || settings.type == null) { return null; }
+        if (settings == null || settings.type == null) {
+            return null;
+        }
 
         return make(
                 settings.type.name(),
@@ -261,7 +276,7 @@ public class Particle {
                     dz,
                     speed,
                     amount,
-                    material == null ? new int[0] : new int[] { material.ordinal(), data });
+                    material == null ? new int[0] : new int[]{material.ordinal(), data});
         }
 
         // 1.7.x servers just use a string for the type,
@@ -324,7 +339,7 @@ public class Particle {
                 object = material.createBlockData();
         }
         for (Player player : players) {
-            player.spawnParticle(particle,x,y,z,count,dx,dy,dz,speed,object);
+            player.spawnParticle(particle, x, y, z, count, dx, dy, dz, speed, object);
         }
     }
 }

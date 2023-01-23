@@ -31,6 +31,9 @@ public class AttributeAPI {
      */
     public static Integer getAttribute(LivingEntity entity, String key) {
         //触发Event 让其他插件可篡改
+        if (entity == null || entity.isDead()){
+            return 0;
+        }
         int total = 0;
         key = ChatColor.stripColor(key).toLowerCase();
         if (entity instanceof Player && SkillAPI.getPlayerData((Player) entity) != null) {

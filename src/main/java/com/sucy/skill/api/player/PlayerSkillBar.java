@@ -276,9 +276,9 @@ public class PlayerSkillBar {
         for (ItemStack itemStack : player.getInventory()) {
             ItemStack un = SkillAPI.getSettings().getUnassigned();
 
-            if (un == null) {
+            if (un == null || itemStack == null) {
                 clear(player);
-                return;
+                break;
             }
             if (itemStack.isSimilar(un)) {
                 itemStack.setAmount(0);

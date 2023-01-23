@@ -389,7 +389,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     public static ArrayList<Vector> calcSpread(Vector dir, double angle, int amount) {
         // Special cases
         if (amount <= 0) {
-            return new ArrayList<Vector>();
+            return new ArrayList<>();
         }
 
         ArrayList<Vector> list = new ArrayList<Vector>();

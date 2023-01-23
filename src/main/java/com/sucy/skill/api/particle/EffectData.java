@@ -36,7 +36,7 @@ import java.util.Iterator;
  */
 public class EffectData
 {
-    private HashMap<String, EffectInstance> effects = new HashMap<String, EffectInstance>();
+    private final HashMap<String, EffectInstance> effects = new HashMap<String, EffectInstance>();
 
     private EffectTarget target;
 
