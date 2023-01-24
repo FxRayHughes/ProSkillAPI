@@ -38,6 +38,7 @@ import com.sucy.party.Party;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.CombatProtection;
 import com.sucy.skill.api.DefaultCombatProtection;
+import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IndicatorSettings;
@@ -47,6 +48,7 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.log.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -237,7 +239,6 @@ public class Settings {
      * Retrieves the settings for a class group
      *
      * @param group name of the group to retrieve the settings for
-     *
      * @return settings for the class group
      */
     public GroupSettings getGroupSettings(String group) {
@@ -299,7 +300,6 @@ public class Settings {
      * by checking permissions for additional accounts.
      *
      * @param player player to check the max allowed accounts for
-     *
      * @return number of allowed accounts
      */
     public int getMaxAccounts(Player player) {
@@ -372,10 +372,19 @@ public class Settings {
      *
      * @param attacker the attacking entity
      * @param target   the target entity
-     *
      * @return true if can be attacked, false otherwise
      */
     public boolean canAttack(LivingEntity attacker, LivingEntity target) {
+
+        //召唤物的判断依赖于召唤者
+        if (!attacker.getMetadata(AttributeAPI.FX_SKILL_API_MASTER).isEmpty()) {
+            UUID masterId = UUID.fromString(attacker.getMetadata(AttributeAPI.FX_SKILL_API_MASTER).get(0).asString());
+            Entity master = Bukkit.getEntity(masterId);
+            if (master != null && !master.isEmpty()) {
+                attacker = (LivingEntity) master;
+            }
+        }
+
         if (attacker instanceof Player) {
             final Player player = (Player) attacker;
             if (target instanceof Animals && !(target instanceof Tameable)) {
@@ -418,7 +427,6 @@ public class Settings {
      *
      * @param attacker the attacking entity
      * @param target   the target entity
-     *
      * @return true if an ally, false otherwise
      */
     public boolean isAlly(LivingEntity attacker, LivingEntity target) {
@@ -793,6 +801,7 @@ public class Settings {
 
     /**
      * Return whether skill mechanics should use 'data' values as CustomModelData
+     *
      * @return skill mechanics use CustomModelData
      */
     public boolean useSkillModelData() {
@@ -1146,7 +1155,6 @@ public class Settings {
      * on the given message type
      *
      * @param type type of message to check for
-     *
      * @return true if should use title display, false otherwise
      */
     public boolean useTitle(TitleType type) {
@@ -1413,7 +1421,6 @@ public class Settings {
      * Gets the required amount of experience at a given level
      *
      * @param level level of the class
-     *
      * @return required experience to gain a level
      */
     public int getRequiredExp(int level) {
@@ -1428,7 +1435,6 @@ public class Settings {
      * Gets the experience yield of a mob
      *
      * @param mob mob to get the yield of
-     *
      * @return experience yield
      */
     public double getYield(String mob) {
@@ -1607,7 +1613,7 @@ public class Settings {
         DataSection bar = config.getSection("Skill Bar");
         skillBarEnabled = bar.getBoolean("enabled", false) && !castEnabled;
         skillBarCooldowns = bar.getBoolean("show-cooldown", true);
-        if (!skillBarEnabled){
+        if (!skillBarEnabled) {
             return;
         }
         DataSection icon = bar.getSection("empty-icon");
@@ -1696,7 +1702,6 @@ public class Settings {
      * Checks whether or not SkillAPI is active in the world
      *
      * @param world world to check
-     *
      * @return true if active, false otherwise
      */
     public boolean isWorldEnabled(World world) {
@@ -1708,7 +1713,6 @@ public class Settings {
      * the given name.
      *
      * @param world world name
-     *
      * @return true if active, false otherwise
      */
     public boolean isWorldEnabled(String world) {

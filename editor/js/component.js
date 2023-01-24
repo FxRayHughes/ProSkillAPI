@@ -1681,6 +1681,9 @@ function MechanicArmorStand() {
     this.data.push(new AttributeValue('Right Offset', 'right', 0, 0)
         .setTooltip('How far to the right the armorstand should be of the target. A negative value will put it to the left.')
     );
+    this.data.push(new StringListValue('Skills 一行一个', 'skills', [])
+        .setTooltip('这会视为盔甲架释放的技能 你可以在后续给他属性，但造成伤害/治疗会以召唤者为伤害/治疗源(伤害/治疗属性来自于召唤者)')
+    );
 }
 
 extend('MechanicArmorStandPose', 'Component');

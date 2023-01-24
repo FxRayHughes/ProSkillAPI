@@ -42,6 +42,7 @@ import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -339,7 +340,6 @@ public class TempEntity implements LivingEntity {
     public @NotNull Pose getPose() {
         return null;
     }
-
     @Override
     public @NotNull Spigot spigot() {
         return null;
@@ -378,6 +378,7 @@ public class TempEntity implements LivingEntity {
     public boolean isSleeping() {
         return false;
     }
+
 
     public void setAI(boolean b) { }
 
@@ -418,7 +419,6 @@ public class TempEntity implements LivingEntity {
 
     @Override
     public <T> void setMemory(@NotNull MemoryKey<T> memoryKey, @Nullable T memoryValue) {}
-
     @Override
     public @NotNull EntityCategory getCategory() { return EntityCategory.NONE; }
 
@@ -555,6 +555,7 @@ public class TempEntity implements LivingEntity {
     }
 
     public void setFireTicks(int i) {}
+
 
     public void remove() {}
 

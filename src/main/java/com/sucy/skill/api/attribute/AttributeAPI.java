@@ -20,6 +20,8 @@ import java.util.List;
 
 public class AttributeAPI {
 
+    public static final String FX_SKILL_API_MASTER ="FX_SKILL_API_MASTER";
+
 
     /**
      * 获取实体属性 所有实体获取属性环节都会走这个方法
@@ -31,7 +33,7 @@ public class AttributeAPI {
      */
     public static Integer getAttribute(LivingEntity entity, String key) {
         //触发Event 让其他插件可篡改
-        if (entity == null || entity.isDead()){
+        if (entity == null || entity.isDead()) {
             return 0;
         }
         int total = 0;

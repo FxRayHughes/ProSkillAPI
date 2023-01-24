@@ -3,6 +3,10 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.armorstand.ArmorStandInstance;
 import com.sucy.skill.api.armorstand.ArmorStandManager;
+import com.sucy.skill.api.attribute.AttributeAPI;
+import com.sucy.skill.api.skills.PassiveSkill;
+import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.skills.SkillCastAPI;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
 import org.bukkit.Location;
@@ -12,6 +16,9 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.sucy.skill.dynamic.mechanic.WolfMechanic.LEVEL;
+import static com.sucy.skill.dynamic.mechanic.WolfMechanic.SKILL_META;
 
 /**
  * Summons an armor stand that can be used as a marker or for item display. Applies child components on the armor stand
@@ -34,6 +41,8 @@ public class ArmorStandMechanic extends MechanicComponent {
     private static final String UPWARD = "upward";
     private static final String RIGHT = "right";
 
+    private static final String SKILLS = "skills";
+
     @Override
     public String getKey() {
         return "armor stand";
@@ -55,6 +64,8 @@ public class ArmorStandMechanic extends MechanicComponent {
         double forward = parseValues(caster, FORWARD, level, 0);
         double upward = parseValues(caster, UPWARD, level, 0);
         double right = parseValues(caster, RIGHT, level, 0);
+
+        List<String> skills = settings.getStringList(SKILLS);
 
         List<LivingEntity> armorStands = new ArrayList<>();
         for (LivingEntity target : targets) {
@@ -82,6 +93,14 @@ public class ArmorStandMechanic extends MechanicComponent {
                 as.setVisible(visible);
             });
             SkillAPI.setMeta(armorStand, MechanicListener.ARMOR_STAND, true);
+            //设置一下主人
+            SkillAPI.setMeta(armorStand, AttributeAPI.FX_SKILL_API_MASTER, caster.getUniqueId());
+
+            for (String skillName : skills) {
+                Skill skill = SkillAPI.getSkill(skillName);
+                SkillCastAPI.cast(armorStand, skill, level);
+            }
+
             armorStands.add(armorStand);
 
             ArmorStandInstance instance;

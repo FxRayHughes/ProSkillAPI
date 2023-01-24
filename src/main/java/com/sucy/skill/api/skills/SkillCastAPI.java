@@ -6,6 +6,9 @@ import com.sucy.skill.api.target.TargetHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
+import static com.sucy.skill.dynamic.mechanic.WolfMechanic.LEVEL;
+import static com.sucy.skill.dynamic.mechanic.WolfMechanic.SKILL_META;
+
 public class SkillCastAPI {
 
     /**
@@ -34,6 +37,12 @@ public class SkillCastAPI {
             }
             boolean canAttack = !SkillAPI.getSettings().canAttack(caster, target);
             return ((TargetSkill) skill).cast(caster, target, level, canAttack);
+        }
+        if (skill instanceof PassiveSkill) {
+            ((PassiveSkill) skill).initialize(caster, level);
+            SkillAPI.setMeta(caster, SKILL_META, skill);
+            SkillAPI.setMeta(caster, LEVEL, level);
+            return true;
         }
         return false;
     }

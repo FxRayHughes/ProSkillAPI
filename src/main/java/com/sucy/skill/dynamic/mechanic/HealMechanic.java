@@ -19,7 +19,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, valueS OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
@@ -27,11 +27,14 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.version.VersionManager;
+import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.event.SkillHealEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Heals each target
@@ -57,7 +60,23 @@ public class HealMechanic extends MechanicComponent {
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         boolean percent = settings.getString(TYPE, "health").equalsIgnoreCase("percent");
-        double value = parseValues(caster, VALUE, level, 1.0);
+
+        double value = 0;
+        LivingEntity other = caster;
+
+        if (caster.getMetadata(AttributeAPI.FX_SKILL_API_MASTER).isEmpty()) {
+            value = parseValues(caster, VALUE, level, 1.0);
+        } else {
+            UUID masterId = UUID.fromString(caster.getMetadata(AttributeAPI.FX_SKILL_API_MASTER).get(0).asString());
+            Entity master = Bukkit.getEntity(masterId);
+            if (master == null || master.isEmpty() || master.isDead()) {
+                value = parseValues(caster, VALUE, level, 1.0);
+            } else if (master instanceof LivingEntity) {
+                other = (LivingEntity) master;
+                value = parseValues((LivingEntity) master, VALUE, level, 1.0);
+            }
+        }
+        
         if (value < 0) { return false; }
         for (LivingEntity target : targets) {
             if (target.isDead()) { continue; }
@@ -67,7 +86,7 @@ public class HealMechanic extends MechanicComponent {
                 amount = target.getMaxHealth() * value / 100;
             }
 
-            SkillHealEvent event = new SkillHealEvent(caster, target, skill, amount);
+            SkillHealEvent event = new SkillHealEvent(other , target, skill, amount);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 VersionManager.heal(target, event.getAmount());
