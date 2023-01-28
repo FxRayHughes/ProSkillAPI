@@ -34,21 +34,18 @@ import org.bukkit.event.HandlerList;
 /**
  * Event called when a player upgrades a skill
  */
-public class PlayerUpAttributeEvent extends Event implements Cancellable {
+public class PlayerReadEquipsEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private PlayerData player;
-    private String attribute;
     private boolean cancelled = false;
 
     /**
      * Constructor
      *
      * @param playerData data of the player raising the attribute
-     * @param attribute  the name of the attribute that was raised
      */
-    public PlayerUpAttributeEvent(PlayerData playerData, String attribute) {
+    public PlayerReadEquipsEvent(PlayerData playerData) {
         this.player = playerData;
-        this.attribute = attribute;
     }
 
     /**
@@ -56,13 +53,6 @@ public class PlayerUpAttributeEvent extends Event implements Cancellable {
      */
     public PlayerData getPlayerData() {
         return player;
-    }
-
-    /**
-     * @return name of the raised attribute
-     */
-    public String getAttribute() {
-        return attribute;
     }
 
     /**

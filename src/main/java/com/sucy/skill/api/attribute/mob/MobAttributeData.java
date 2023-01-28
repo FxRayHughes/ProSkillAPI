@@ -19,7 +19,7 @@ public class MobAttributeData {
     private UUID uuid;
     private HashMap<String, Double> map = new HashMap<>();
 
-    private HashMap<String, HashMap<String, Double>> temp = new HashMap<>();
+    private final HashMap<String, HashMap<String, Double>> temp = new HashMap<>();
 
     public MobAttributeData(UUID uuid) {
         this.uuid = uuid;

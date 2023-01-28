@@ -4,6 +4,7 @@ import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.event.PlayerReadAttributeEvent;
+import com.sucy.skill.api.event.PlayerReadEquipsEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.util.Pair;
@@ -84,6 +85,7 @@ public class PlayerEquipsRead {
     }
 
     public static void update(PlayerData playerData) {
+        Bukkit.getPluginManager().callEvent(new PlayerReadEquipsEvent(playerData));
         updateinl(playerData);
         AttributeListener.updatePlayer(playerData);
     }
@@ -177,6 +179,43 @@ public class PlayerEquipsRead {
             }
         }
         playerData.addAttrib.put("Equip_" + key, attribs);
+    }
+
+    public static void loadItem(PlayerData playerData, ItemStack itemStack, String slot) {
+        if (!SkillAPI.getSettings().isCheckAttributes()) {
+            return;
+        }
+        if (itemStack.getType() == Material.AIR || !itemStack.hasItemMeta()) {
+            playerData.addAttrib.put(slot, new ConcurrentHashMap<>());
+            return;
+        }
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null || !meta.hasLore()) {
+            playerData.addAttrib.put(slot, new ConcurrentHashMap<>());
+            return;
+        }
+        List<String> lore = meta.getLore();
+        if (!canUse(playerData, lore, itemStack.getItemMeta().getDisplayName())) {
+            return;
+        }
+        ConcurrentHashMap<String, Integer> attribs = new ConcurrentHashMap<>();
+        assert lore != null;
+        for (String line : lore) {
+            String lower = ChatColor.stripColor(line).toLowerCase();
+            Pair<String, Integer> attrs = PlayerEquipsUtils.getAttribute(lower);
+            if (attrs != null) {
+                PlayerReadAttributeEvent event = new PlayerReadAttributeEvent(playerData, itemStack, attrs.getKey(), attrs.getLast());
+                Bukkit.getPluginManager().callEvent(event);
+                if (!event.isCancelled()) {
+                    if (attribs.containsKey(event.getAttribute())) {
+                        attribs.put(event.getAttribute(), attribs.get(event.getAttribute()) + event.getValue());
+                    } else {
+                        attribs.put(event.getAttribute(), event.getValue());
+                    }
+                }
+            }
+        }
+        playerData.addAttrib.put(slot, attribs);
     }
 
 

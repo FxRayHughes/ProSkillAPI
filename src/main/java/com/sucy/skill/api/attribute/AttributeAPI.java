@@ -17,10 +17,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AttributeAPI {
 
-    public static final String FX_SKILL_API_MASTER ="FX_SKILL_API_MASTER";
+    public static final String FX_SKILL_API_MASTER = "FX_SKILL_API_MASTER";
 
 
     /**
@@ -59,14 +60,49 @@ public class AttributeAPI {
         Bukkit.getPluginManager().callEvent(event);
         int old = event.getValue();
         MobAttributeData mobAttributeData = MobAttribute.getData(entity.getUniqueId(), true);
-        if (mobAttributeData == null) {
-            MobAttributeData create = new MobAttributeData(entity.getUniqueId());
-            mobAttributeData = create;
-            MobAttribute.data.put(entity.getUniqueId(), create);
-        }
         return (int) (old + mobAttributeData.getAttribute(key));
     }
 
+    /**
+     * 给实体增加属性 会自动判断是玩家还是Mob
+     *
+     * @param entity    施法者
+     * @param source    源
+     * @param attribute 属性
+     * @param value     值
+     */
+
+    public static void addAttribute(LivingEntity entity, String source, String attribute, Integer value) {
+        if (entity instanceof Player) {
+            PlayerData playerData = SkillAPI.getPlayerData(entity.getUniqueId());
+            if (playerData == null) {
+                return;
+            }
+            playerData.addAttrib.computeIfAbsent(source, key -> new ConcurrentHashMap<>()).put(attribute, value);
+            return;
+        }
+        MobAttributeData mobAttributeData = MobAttribute.getData(entity.getUniqueId(), true);
+        mobAttributeData.tempAddAttribute(source, attribute, value);
+    }
+
+    /**
+     * 删除属性源
+     *
+     * @param entity 目标
+     * @param source 源
+     */
+    public static void clearSource(LivingEntity entity, String source) {
+        if (entity instanceof Player) {
+            PlayerData playerData = SkillAPI.getPlayerData(entity.getUniqueId());
+            if (playerData == null) {
+                return;
+            }
+            playerData.addAttrib.remove(source);
+            return;
+        }
+        MobAttributeData mobAttributeData = MobAttribute.getData(entity.getUniqueId(), true);
+        mobAttributeData.tempRemove(source);
+    }
 
     /**
      * Scales a dynamic skill's value using global modifiers

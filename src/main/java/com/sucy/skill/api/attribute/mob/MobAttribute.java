@@ -8,15 +8,10 @@ public class MobAttribute {
     public static ConcurrentHashMap<UUID, MobAttributeData> data = new ConcurrentHashMap<>();
 
     public static MobAttributeData getData(UUID uuid, boolean create) {
-        if (data.containsKey(uuid)) {
-            return data.get(uuid);
-        }
         if (create) {
-            MobAttributeData temp = new MobAttributeData(uuid);
-            data.put(uuid, temp);
-            return temp;
+            return data.computeIfAbsent(uuid, key -> new MobAttributeData(uuid));
         }
-        return null;
+        return data.get(uuid);
     }
 
 }
