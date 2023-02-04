@@ -6,6 +6,9 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
+import com.sucy.skill.api.util.FlagManager;
+import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.data.DataSkill;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.ChatColor;
@@ -15,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * SkillAPI © 2018
@@ -169,7 +173,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                             return "0";
                         }
 
-                        ArrayList<String> childList = new ArrayList<String>();
+                        ArrayList<String> childList = new ArrayList<>();
 
                         for (RPGClass classes : SkillAPI.getClasses().values()) {
                             String classname = classes.getName().toLowerCase();
@@ -352,6 +356,22 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             if (identifier.startsWith("default_attribute:")) {
                 String[] idSplit = identifier.split(":");
                 return String.valueOf(AttributeAPI.getAttribute(player.getPlayer(), idSplit[1]));
+            }
+            if (identifier.startsWith("default_flag:")) {
+                String[] idSplit = identifier.split(":");
+                String key = idSplit[1];
+                return String.valueOf(FlagManager.hasFlag(playerData.getPlayer(), key));
+            }
+            if (identifier.startsWith("default_value:")) {
+                String[] idSplit = identifier.split(":");
+                String key = idSplit[1];
+                HashMap<String, Object> value = DynamicSkill.getCastData(playerData.getPlayer());
+                return String.valueOf(value.getOrDefault(key, "0"));
+            }
+            if (identifier.startsWith("default_data:")) {
+                String[] idSplit = identifier.split(":");
+                String key = idSplit[1];
+                return String.valueOf(DataSkill.getValue(playerData.getUUID(), key));
             }
         }
 
