@@ -88,7 +88,6 @@ public class DamageMechanic extends MechanicComponent {
             if (target.isDead()) {
                 continue;
             }
-
             double amount = damage;
             if (percent) {
                 amount = damage * target.getMaxHealth() / 100;

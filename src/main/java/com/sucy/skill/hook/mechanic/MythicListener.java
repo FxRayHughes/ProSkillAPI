@@ -7,11 +7,16 @@ import org.bukkit.event.EventPriority;
 
 public class MythicListener extends SkillAPIListener {
 
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public static void call(MythicMechanicLoadEvent event) {
-        if (event.getMechanicName().equals("castskillapi")) {
+        if (event.getMechanicName().equalsIgnoreCase("castskillapi")) {
             event.register(new MythicSkillMechanic(event.getContainer().getConfigLine(), event.getConfig()));
         }
+        if (event.getMechanicName().equalsIgnoreCase("damageType")) {
+            event.register(new MythicDamageMechanic(event.getContainer().getConfigLine(), event.getConfig()));
+        }
     }
+
 
 }

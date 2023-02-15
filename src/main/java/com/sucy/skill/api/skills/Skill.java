@@ -607,7 +607,8 @@ public abstract class Skill implements IconHolder {
      * @param key attribute key
      * @return formatted attribute name
      */
-    protected String getAttrName(String key) {
+    protected String getAttrName(String key)
+    {
         return TextFormatter.format(key);
     }
 
@@ -682,7 +683,7 @@ public abstract class Skill implements IconHolder {
      * @param classification type of damage to deal
      */
     public void damage(LivingEntity target, double damage, LivingEntity source, String classification) {
-        damage(target, damage, source, classification);
+        damage(target, damage, source, classification,true);
     }
 
     /**
@@ -702,9 +703,7 @@ public abstract class Skill implements IconHolder {
         SkillDamageEvent event = new SkillDamageEvent(this, source, target, damage, classification);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            if (source instanceof Player) {
-                Player player = (Player) source;
-                if (PluginChecker.isNoCheatActive()) NoCheatHook.exempt(player);
+            if (source != null) {
                 skillDamage = true;
                 target.setNoDamageTicks(0);
                 if (knockback) {
@@ -713,7 +712,6 @@ public abstract class Skill implements IconHolder {
                     target.damage(event.getDamage());
                 }
                 skillDamage = false;
-                if (PluginChecker.isNoCheatActive()) NoCheatHook.unexempt(player);
             } else {
                 skillDamage = true;
                 //Modified code from com.rit.sucy.version.VersionManager.damage() (MCCore)

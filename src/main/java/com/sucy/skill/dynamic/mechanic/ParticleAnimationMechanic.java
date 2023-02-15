@@ -190,6 +190,8 @@ public class ParticleAnimationMechanic extends MechanicComponent {
                 offset.setZ(offset.getZ() + dx * dir.getZ());
                 offset.setY(upward + heightAt(this.life));
             }
+            this.dir = new Vector(1, 0, 0);
+            this.offset = new Vector(forward, upward, right);
             this.life = 0;
 
             Bukkit.getPluginManager().callEvent(new ParticleAnimationLaunchEvent(this));
@@ -198,9 +200,50 @@ public class ParticleAnimationMechanic extends MechanicComponent {
 
         @Override
         public void run() {
-            for (Location location1 : step) {
-                ParticleHelper.play(location1, settings);
+            for (int i = 0; i < steps; i++) {
+                // Play the effect
+                int j = 0;
+                for (LivingEntity target : targets) {
+                    Location loc = target.getLocation();
+
+                    // Calculate the target rotation and add that
+                    double targetAngle = loc.getYaw();
+                    double targetCos;
+                    double targetSin;
+                    if (false) {
+                        targetCos = Math.cos(Math.toRadians(targetAngle));
+                        targetSin = Math.sin(Math.toRadians(targetAngle));
+                        rotate(offset, targetCos, targetSin);
+
+                        loc.add(offset);
+                        ParticleHelper.play(loc, settings);
+                        loc.subtract(offset);
+
+                        targetCos = Math.cos(Math.toRadians(-targetAngle));
+                        targetSin = Math.sin(Math.toRadians(-targetAngle));
+                        rotate(offset, targetCos, targetSin);
+                    } else {
+                        rotate(offset, Math.cos(Math.toRadians(rots[j])), Math.sin(Math.toRadians(rots[j])));
+                        loc.add(offset);
+                        ParticleHelper.play(loc, settings);
+                        loc.subtract(offset);
+
+                        rotate(offset, Math.cos(Math.toRadians(-rots[j])), Math.sin(Math.toRadians(-rots[j])));
+                        j += 1;
+                    }
+                }
+
+                // Update the lifespan of the animation
                 this.life++;
+
+                // Apply transformations
+                rotate(offset, cos, sin);
+                rotate(dir, cos, sin);
+
+                double dx = radAt(this.life) - radAt(this.life - 1);
+                offset.setX(offset.getX() + dx * dir.getX());
+                offset.setZ(offset.getZ() + dx * dir.getZ());
+                offset.setY(upward + heightAt(this.life));
             }
 
             if (this.life >= this.duration) {

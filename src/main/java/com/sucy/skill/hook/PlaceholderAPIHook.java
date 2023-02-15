@@ -282,6 +282,9 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 return String.valueOf((int) data.getMainClass().getData().getManaRegen());
             }
             if (identifier.equals("default_currentgroupname")) {
+                return String.valueOf(data.getMainClass().getData().getGroup());
+            }
+            if (identifier.equals("default_currentclassname")) {
                 return String.valueOf(data.getMainClass().getData().getName());
             }
             if (identifier.equals("default_currentavailableattributepoints")) {

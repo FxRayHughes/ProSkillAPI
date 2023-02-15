@@ -11,9 +11,8 @@ import java.util.List;
  * SkillAPI © 2017
  * com.sucy.skill.dynamic.mechanic.ValueDistanceMechanic
  */
-public class ValueDistanceMechanic extends MechanicComponent
-{
-    private static final String KEY  = "key";
+public class ValueDistanceMechanic extends MechanicComponent {
+    private static final String KEY = "key";
 
     @Override
     public String getKey() {
@@ -26,19 +25,21 @@ public class ValueDistanceMechanic extends MechanicComponent
      * @param caster  caster of the skill
      * @param level   level of the skill
      * @param targets targets to apply to
-     *
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
-    {
-        if (!settings.has(KEY) || !(caster instanceof Player))
-        {
+    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        if (!settings.has(KEY) || !(caster instanceof Player)) {
             return false;
         }
 
-        final String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
+        final String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
+        ;
         final HashMap<String, Object> data = DynamicSkill.getCastData(caster);
+        if (targets.get(0).getLocation().getWorld() != caster.getLocation().getWorld()) {
+            data.put(key, -1);
+            return true;
+        }
         data.put(key, targets.get(0).getLocation().distance(caster.getLocation()));
         return true;
     }
