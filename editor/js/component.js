@@ -2511,7 +2511,12 @@ function MechanicProjectile() {
     this.data.push(new ListValue('Cost', 'cost', ['None', 'All', 'One'], 'None')
         .setTooltip('The cost of the skill of the fired item. All will cost the same number of items as the skill fired.')
     );
-
+    this.data.push(new IntValue('Lifespan', 'lifespan', 3)
+        .setTooltip('How long in seconds before the projectile will expire in case it doesn\'t hit anything')
+    );
+    this.data.push(new IntValue('Gravity', 'gravity', 1)
+        .setTooltip('重力')
+    );
     addProjectileOptions(this);
     addEffectOptions(this, true);
 }

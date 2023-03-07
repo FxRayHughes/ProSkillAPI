@@ -80,12 +80,12 @@ public class CommandMechanic extends MechanicComponent {
             case "console":
                 for (LivingEntity t : targets) {
                     worked = true;
-                    String filteredCommand = filter(caster, t, command);
+                    String filteredCommand = filter(caster, t, command).replace("<uuid>",t.getUniqueId().toString());
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), filteredCommand);
                 }
                 break;
             case "silent console":
-                //TODO figure out how to hide command output from console
+                //figure out how to hide command output from console
                 break;
         }
         return worked;

@@ -98,7 +98,9 @@ public class ArmorStandMechanic extends MechanicComponent {
 
             for (String skillName : skills) {
                 Skill skill = SkillAPI.getSkill(skillName);
-                SkillCastAPI.cast(armorStand, skill, level);
+                if (skill != null) {
+                    SkillCastAPI.cast(armorStand, skill, level);
+                }
             }
 
             armorStands.add(armorStand);

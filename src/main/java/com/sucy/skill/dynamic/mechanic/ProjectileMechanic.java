@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.dynamic.mechanic.ProjectileMechanic
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,25 +45,28 @@ import java.util.List;
 /**
  * Heals each target
  */
-public class ProjectileMechanic extends MechanicComponent
-{
+public class ProjectileMechanic extends MechanicComponent {
     private static Class<Enum<?>> PICKUP_STATUS_ENUM = null;
     private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String PROJECTILE = "projectile";
-    private static final String SPEED      = "velocity";
-    private static final String ANGLE      = "angle";
-    private static final String AMOUNT     = "amount";
-    private static final String LEVEL      = "skill_level";
-    private static final String HEIGHT     = "height";
-    private static final String RADIUS     = "rain-radius";
-    private static final String SPREAD     = "spread";
-    private static final String COST       = "cost";
-    private static final String RANGE      = "range";
-    private static final String FLAMING    = "flaming";
-    private static final String RIGHT      = "right";
-    private static final String UPWARD     = "upward";
-    private static final String FORWARD    = "forward";
+    private static final String SPEED = "velocity";
+    private static final String ANGLE = "angle";
+    private static final String AMOUNT = "amount";
+    private static final String LEVEL = "skill_level";
+    private static final String HEIGHT = "height";
+    private static final String RADIUS = "rain-radius";
+    private static final String SPREAD = "spread";
+    private static final String COST = "cost";
+    private static final String RANGE = "range";
+    private static final String FLAMING = "flaming";
+    private static final String RIGHT = "right";
+    private static final String UPWARD = "upward";
+    private static final String FORWARD = "forward";
+    //                       Lifespan
+    private static final String LIFESPAN = "lifespan";
+    //                     Gravity
+    private static final String GRAVITY = "gravity";
 
     @Override
     public String getKey() {
@@ -76,62 +79,55 @@ public class ProjectileMechanic extends MechanicComponent
      * @param caster  caster of the skill
      * @param level   level of the skill
      * @param targets targets to apply to
-     *
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         // Get common values
         int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
         double speed = parseValues(caster, SPEED, level, 2.0);
         double range = parseValues(caster, RANGE, level, 999);
+        int lifespan = (int) parseValues(caster, LIFESPAN, level, 20);
+        int gravity = (int) parseValues(caster, GRAVITY, level, 0);
+        boolean grav = gravity == 0;
+
+
         boolean flaming = settings.getString(FLAMING, "false").equalsIgnoreCase("true");
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
         String cost = settings.getString(COST, "none").toLowerCase();
         Class<? extends Projectile> type = getProjectileClass(projectile);
-        if (type == null)
-        {
+        if (type == null) {
             type = Arrow.class;
         }
-
         // Cost to cast
-        if (cost.equals("one") || cost.equals("all"))
-        {
+        if (cost.equals("one") || cost.equals("all")) {
             Material mat = MATERIALS.get(settings.getString(PROJECTILE, "arrow").toLowerCase());
             if (mat == null || !(caster instanceof Player)) return false;
             Player player = (Player) caster;
-            if (cost.equals("one") && !player.getInventory().contains(mat, 1))
-            {
+            if (cost.equals("one") && !player.getInventory().contains(mat, 1)) {
                 return false;
             }
-            if (cost.equals("all") && !player.getInventory().contains(mat, amount))
-            {
+            if (cost.equals("all") && !player.getInventory().contains(mat, amount)) {
                 return false;
             }
-            if (cost.equals("one"))
-            {
+            if (cost.equals("one")) {
                 player.getInventory().removeItem(new ItemStack(mat));
-            }
-            else player.getInventory().removeItem(new ItemStack(mat, amount));
+            } else player.getInventory().removeItem(new ItemStack(mat, amount));
         }
 
         // Fire from each target
         ArrayList<Entity> projectiles = new ArrayList<Entity>();
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             // Apply the spread type
-            if (spread.equals("rain"))
-            {
+            if (spread.equals("rain")) {
                 double radius = parseValues(caster, RADIUS, level, 2.0);
                 double height = parseValues(caster, HEIGHT, level, 8.0);
 
                 ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
-                for (Location loc : locs)
-                {
+                for (Location loc : locs) {
                     Projectile p = caster.launchProjectile(type);
-                    p.setTicksLived(1180);
+                    p.setTicksLived(lifespan);
                     if (type.getName().contains("Arrow")) {
                         try {
                             // Will fail under 1.12
@@ -145,20 +141,20 @@ public class ProjectileMechanic extends MechanicComponent
                                 Class<?> pickupStatusClass = Class.forName("org.bukkit.Arrow$PickupStatus");
                                 Arrow.class.getMethod("setPickupStatus", pickupStatusClass).invoke(arrow, pickupStatusClass.getMethod("valueOf", String.class).invoke(null, "DISALLOWED"));
                             }
-                        } catch (NoSuchMethodError | ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {}
+                        } catch (NoSuchMethodError | ClassNotFoundException | NoSuchMethodException |
+                                 IllegalAccessException | InvocationTargetException ignored) {
+                        }
                     }
                     p.setVelocity(new Vector(0, speed, 0));
+                    p.setGravity(grav);
                     p.teleport(loc);
                     SkillAPI.setMeta(p, LEVEL, level);
                     if (flaming) p.setFireTicks(9999);
                     projectiles.add(p);
                 }
-            }
-            else
-            {
+            } else {
                 Vector dir = target.getLocation().getDirection();
-                if (spread.equals("horizontal cone"))
-                {
+                if (spread.equals("horizontal cone")) {
                     dir.setY(0);
                     dir.normalize();
                 }
@@ -172,10 +168,9 @@ public class ProjectileMechanic extends MechanicComponent
                 looking.multiply(forward).add(normal.multiply(right));
 
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
-                for (Vector d : dirs)
-                {
+                for (Vector d : dirs) {
                     Projectile p = caster.launchProjectile(type);
-                    p.setTicksLived(1180);
+                    p.setTicksLived(lifespan);
                     if (type.getName().contains("Arrow")) {
                         try {
                             // Will fail under 1.12
@@ -189,11 +184,14 @@ public class ProjectileMechanic extends MechanicComponent
                                 Class<?> pickupStatusClass = Class.forName("org.bukkit.Arrow$PickupStatus");
                                 Arrow.class.getMethod("setPickupStatus", pickupStatusClass).invoke(arrow, pickupStatusClass.getMethod("valueOf", String.class).invoke(null, "DISALLOWED"));
                             }
-                        } catch (NoSuchMethodError | ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {}
+                        } catch (NoSuchMethodError | ClassNotFoundException | NoSuchMethodException |
+                                 IllegalAccessException | InvocationTargetException ignored) {
+                        }
                     } else {
                         p.teleport(target.getLocation().add(looking).add(0, upward + 0.5, 0).add(p.getVelocity()).setDirection(d));
                     }
                     p.setVelocity(d.multiply(speed));
+                    p.setGravity(grav);
                     SkillAPI.setMeta(p, MechanicListener.P_CALL, this);
                     SkillAPI.setMeta(p, LEVEL, level);
                     if (flaming) p.setFireTicks(9999);
@@ -212,8 +210,7 @@ public class ProjectileMechanic extends MechanicComponent
      * @param projectile projectile calling back for
      * @param hit        the entity hit by the projectile, if any
      */
-    public void callback(Projectile projectile, LivingEntity hit)
-    {
+    public void callback(Projectile projectile, LivingEntity hit) {
         if (hit == null)
             hit = new TempEntity(projectile.getLocation());
 
@@ -227,25 +224,23 @@ public class ProjectileMechanic extends MechanicComponent
     private static Class<? extends Projectile> getProjectileClass(String projectileName) {
         StringBuilder conditionedName = new StringBuilder();
         for (String word : projectileName.split(" ")) {
-            conditionedName.append(word.substring(0,1).toUpperCase()).append(word.substring(1).toLowerCase());
+            conditionedName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1).toLowerCase());
         }
         try {
-            return (Class<? extends Projectile>) Class.forName("org.bukkit.entity."+conditionedName);
+            return (Class<? extends Projectile>) Class.forName("org.bukkit.entity." + conditionedName);
         } catch (ClassNotFoundException e) {
             return PROJECTILES.get(projectileName);
         }
     }
 
-    private static final HashMap<String, Class<? extends Projectile>> PROJECTILES = new HashMap<String, Class<? extends Projectile>>()
-    {{
+    private static final HashMap<String, Class<? extends Projectile>> PROJECTILES = new HashMap<String, Class<? extends Projectile>>() {{
         put("arrow", Arrow.class);
         put("egg", Egg.class);
         put("ghast fireball", LargeFireball.class);
         put("snowball", Snowball.class);
     }};
 
-    private static final HashMap<String, Material> MATERIALS = new HashMap<String, Material>()
-    {{
+    private static final HashMap<String, Material> MATERIALS = new HashMap<String, Material>() {{
         put("arrow", Material.ARROW);
         put("egg", Material.EGG);
         put("snowball", snowBall());

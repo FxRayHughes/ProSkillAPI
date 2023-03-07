@@ -32,6 +32,7 @@ import com.sucy.skill.api.attribute.mob.MobAttribute;
 import com.sucy.skill.api.attribute.mob.MobAttributeData;
 import com.sucy.skill.api.event.TempAttributeAddEvent;
 import com.sucy.skill.api.player.PlayerData;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -77,6 +78,7 @@ public class AttributeMechanic extends MechanicComponent {
         final int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
             TempAttributeAddEvent event = AttributeAPI.tempAttribute(target, key, amount, ticks);
+            Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 if (SkillAPI.getAttributeManager().getAttribute(key) == null) {
                     return false;
