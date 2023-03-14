@@ -146,6 +146,7 @@ const Mechanic = {
     MANA: {name: 'Mana', container: false, construct: MechanicMana},
     MESSAGE: {name: 'Message', container: false, construct: MechanicMessage},
     PARTICLE: {name: 'Particle', container: false, construct: MechanicParticle},
+    PARTICLE_ANIMATION_ARMOR_STAND: {name: 'Particle Animation Armor Stand', container: false, construct: MechanicParticleAnimationArmorStand},
     PARTICLE_ANIMATION: {name: 'Particle Animation', container: false, construct: MechanicParticleAnimation},
     PARTICLE_EFFECT: {name: 'Particle Effect', container: false, construct: MechanicParticleEffect},
     CANCEL_EFFECT: {name: 'Cancel Effect', container: false, construct: MechanicCancelEffect},
@@ -2334,6 +2335,57 @@ function MechanicParticle() {
         .setTooltip('How far to the right of the target to play the particles. A negative value will go to the left.')
     );
 }
+extend('MechanicParticleAnimationArmorStand', 'Component');
+
+function MechanicParticleAnimationArmorStand() {
+    this.super('Particle Animation Armor Stand', Type.MECHANIC, false);
+
+    this.description = 'Plays an animated particle effect at the location of each target over time by applying various transformations.';
+
+    this.data.push(new StringValue('ArmorStand', 'armor-stand', 'none')
+        .setTooltip('是否生成盔甲架代替粒子')
+    );
+
+    this.data.push(new IntValue('Steps', 'steps', 1, 0)
+        .setTooltip('The number of times to play particles and apply translations each application.')
+    );
+    this.data.push(new DoubleValue('Frequency', 'frequency', 0.05, 0)
+        .setTooltip('How often to apply the animation in seconds. 0.05 is the fastest (1 tick). Lower than that will act the same.')
+    );
+    this.data.push(new IntValue('Angle', 'angle', 0)
+        .setTooltip('How far the animation should rotate over the duration in degrees')
+    );
+    this.data.push(new IntValue('Start Angle', 'start', 0)
+        .setTooltip('The starting orientation of the animation. Horizontal translations and the forward/right offsets will be based off of this.')
+    );
+    this.data.push(new AttributeValue('Duration', 'duration', 5, 0)
+        .setTooltip('How long the animation should last for in seconds')
+    );
+    this.data.push(new AttributeValue('H-Translation', 'h-translation', 0, 0)
+        .setTooltip('How far the animation moves horizontally relative to the center over a cycle. Positive values make it expand from the center while negative values make it contract.')
+    );
+    this.data.push(new AttributeValue('V-Translation', 'v-translation', 0, 0)
+        .setTooltip('How far the animation moves vertically over a cycle. Positive values make it rise while negative values make it sink.')
+    );
+    this.data.push(new IntValue('H-Cycles', 'h-cycles', 1)
+        .setTooltip('How many times to move the animation position throughout the animation. Every other cycle moves it back to where it started. For example, two cycles would move it out and then back in.')
+    );
+    this.data.push(new IntValue('V-Cycles', 'v-cycles', 1)
+        .setTooltip('How many times to move the animation position throughout the animation. Every other cycle moves it back to where it started. For example, two cycles would move it up and then back down.')
+    );
+
+    addParticleOptions(this);
+
+    this.data.push(new DoubleValue('Forward Offset', 'forward', 0)
+        .setTooltip('How far forward in front of the target in blocks to play the particles. A negative value will go behind.')
+    );
+    this.data.push(new DoubleValue('Upward Offset', 'upward', 0)
+        .setTooltip('How far above the target in blocks to play the particles. A negative value will go below.')
+    );
+    this.data.push(new DoubleValue('Right Offset', 'right', 0)
+        .setTooltip('How far to the right of the target to play the particles. A negative value will go to the left.')
+    );
+}
 
 extend('MechanicParticleAnimation', 'Component');
 
@@ -2341,10 +2393,6 @@ function MechanicParticleAnimation() {
     this.super('Particle Animation', Type.MECHANIC, false);
 
     this.description = 'Plays an animated particle effect at the location of each target over time by applying various transformations.';
-
-    this.data.push(new StringValue('ArmorStand', 'armor-stand', 'none')
-        .setTooltip('是否生成盔甲架代替粒子')
-    );
 
     this.data.push(new IntValue('Steps', 'steps', 1, 0)
         .setTooltip('The number of times to play particles and apply translations each application.')

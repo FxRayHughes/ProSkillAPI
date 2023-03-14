@@ -91,7 +91,6 @@ public class ProjectileMechanic extends MechanicComponent {
         int gravity = (int) parseValues(caster, GRAVITY, level, 0);
         boolean grav = gravity == 0;
 
-
         boolean flaming = settings.getString(FLAMING, "false").equalsIgnoreCase("true");
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
@@ -117,7 +116,7 @@ public class ProjectileMechanic extends MechanicComponent {
         }
 
         // Fire from each target
-        ArrayList<Entity> projectiles = new ArrayList<Entity>();
+        ArrayList<Entity> projectiles = new ArrayList<>();
         for (LivingEntity target : targets) {
             // Apply the spread type
             if (spread.equals("rain")) {
@@ -128,6 +127,7 @@ public class ProjectileMechanic extends MechanicComponent {
                 for (Location loc : locs) {
                     Projectile p = caster.launchProjectile(type);
                     p.setTicksLived(lifespan);
+                    p.setGravity(grav);
                     if (type.getName().contains("Arrow")) {
                         try {
                             // Will fail under 1.12
@@ -135,18 +135,19 @@ public class ProjectileMechanic extends MechanicComponent {
                                 //1.14+
                                 AbstractArrow arrow = (AbstractArrow) p;
                                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                                arrow.setGravity(grav);
                             } catch (NoClassDefFoundError e) {
                                 //1.12+
                                 Arrow arrow = (Arrow) p;
                                 Class<?> pickupStatusClass = Class.forName("org.bukkit.Arrow$PickupStatus");
                                 Arrow.class.getMethod("setPickupStatus", pickupStatusClass).invoke(arrow, pickupStatusClass.getMethod("valueOf", String.class).invoke(null, "DISALLOWED"));
+                                arrow.setGravity(grav);
                             }
                         } catch (NoSuchMethodError | ClassNotFoundException | NoSuchMethodException |
                                  IllegalAccessException | InvocationTargetException ignored) {
                         }
                     }
                     p.setVelocity(new Vector(0, speed, 0));
-                    p.setGravity(grav);
                     p.teleport(loc);
                     SkillAPI.setMeta(p, LEVEL, level);
                     if (flaming) p.setFireTicks(9999);
@@ -171,6 +172,7 @@ public class ProjectileMechanic extends MechanicComponent {
                 for (Vector d : dirs) {
                     Projectile p = caster.launchProjectile(type);
                     p.setTicksLived(lifespan);
+                    p.setGravity(grav);
                     if (type.getName().contains("Arrow")) {
                         try {
                             // Will fail under 1.12
@@ -178,11 +180,13 @@ public class ProjectileMechanic extends MechanicComponent {
                                 //1.14+
                                 AbstractArrow arrow = (AbstractArrow) p;
                                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                                arrow.setGravity(grav);
                             } catch (NoClassDefFoundError e) {
                                 //1.12+
                                 Arrow arrow = (Arrow) p;
                                 Class<?> pickupStatusClass = Class.forName("org.bukkit.Arrow$PickupStatus");
                                 Arrow.class.getMethod("setPickupStatus", pickupStatusClass).invoke(arrow, pickupStatusClass.getMethod("valueOf", String.class).invoke(null, "DISALLOWED"));
+                                arrow.setGravity(grav);
                             }
                         } catch (NoSuchMethodError | ClassNotFoundException | NoSuchMethodException |
                                  IllegalAccessException | InvocationTargetException ignored) {
@@ -191,7 +195,6 @@ public class ProjectileMechanic extends MechanicComponent {
                         p.teleport(target.getLocation().add(looking).add(0, upward + 0.5, 0).add(p.getVelocity()).setDirection(d));
                     }
                     p.setVelocity(d.multiply(speed));
-                    p.setGravity(grav);
                     SkillAPI.setMeta(p, MechanicListener.P_CALL, this);
                     SkillAPI.setMeta(p, LEVEL, level);
                     if (flaming) p.setFireTicks(9999);

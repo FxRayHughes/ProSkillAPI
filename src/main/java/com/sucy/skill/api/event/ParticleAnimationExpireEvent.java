@@ -26,7 +26,7 @@
  */
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.dynamic.mechanic.ParticleAnimationMechanic;
+import com.sucy.skill.dynamic.mechanic.ParticleAnimationArmorStandMechanic;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -37,7 +37,7 @@ public class ParticleAnimationExpireEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
 
-    private final ParticleAnimationMechanic.ParticleTask particleTask;
+    private final ParticleAnimationArmorStandMechanic.ParticleTask particleTask;
 
     /**
      * <p>Initializes a new event.</p>
@@ -49,7 +49,7 @@ public class ParticleAnimationExpireEvent extends Event
      *
      * @param particleTask
      */
-    public ParticleAnimationExpireEvent(ParticleAnimationMechanic.ParticleTask particleTask)
+    public ParticleAnimationExpireEvent(ParticleAnimationArmorStandMechanic.ParticleTask particleTask)
     {
         this.particleTask = particleTask;
     }
@@ -75,7 +75,7 @@ public class ParticleAnimationExpireEvent extends Event
         return handlers;
     }
 
-    public ParticleAnimationMechanic.ParticleTask getParticleTask() {
+    public ParticleAnimationArmorStandMechanic.ParticleTask getParticleTask() {
         return particleTask;
     }
 }

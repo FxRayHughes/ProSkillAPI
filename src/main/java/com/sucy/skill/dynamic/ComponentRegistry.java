@@ -8,7 +8,6 @@ import com.sucy.skill.dynamic.custom.EditorOption;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
 import com.sucy.skill.dynamic.trigger.*;
-import com.sucy.skill.hook.PluginChecker;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.EventExecutor;
 
@@ -242,6 +241,7 @@ public class ComponentRegistry {
         register(new ManaMechanic());
         register(new MessageMechanic());
         register(new ParticleMechanic());
+        register(new ParticleAnimationArmorStandMechanic());
         register(new ParticleAnimationMechanic());
         register(new ParticleEffectMechanic());
         register(new ParticleProjectileMechanic());
