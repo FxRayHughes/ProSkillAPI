@@ -699,7 +699,6 @@ public abstract class Skill implements IconHolder {
         if (target instanceof TempEntity) {
             return;
         }
-
         SkillDamageEvent event = new SkillDamageEvent(this, source, target, damage, classification);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {

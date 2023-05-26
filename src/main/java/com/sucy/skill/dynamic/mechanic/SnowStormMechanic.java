@@ -30,6 +30,7 @@ import org.bukkit.entity.LivingEntity;
 import ray.mintcat.rayskillapiaddor.command.impl.CommandParticle;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 释放一个mm技能
@@ -63,7 +64,7 @@ public class SnowStormMechanic extends MechanicComponent {
             return false;
         }
         String name = settings.getString(NAME);
-        String id = settings.getString(ID).replace("{uuid}", caster.getUniqueId().toString());
+        String id = settings.getString(ID).replace("{uuid}", caster.getUniqueId().toString()).replace("{random}", UUID.randomUUID().toString());
         int time = (int) parseValues(caster, TIME, level, 1);
         boolean look = Boolean.parseBoolean(settings.getString(LOOK));
         double ax = parseValues(caster, AX, level, 1);

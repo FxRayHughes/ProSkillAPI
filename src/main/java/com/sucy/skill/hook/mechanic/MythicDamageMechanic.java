@@ -16,7 +16,7 @@ import org.bukkit.entity.LivingEntity;
 
 public class MythicDamageMechanic extends SkillMechanic implements ITargetedEntitySkill {
 
-    protected PlaceholderInt value;
+    protected Double value;
     protected PlaceholderString classifier;
 
     protected PlaceholderString type;
@@ -30,7 +30,7 @@ public class MythicDamageMechanic extends SkillMechanic implements ITargetedEnti
 
     public MythicDamageMechanic(String line, MythicLineConfig mlc) {
         super(line, mlc);
-        this.value = PlaceholderInt.of(mlc.getString(new String[]{"value", "v"}, "1"));
+        this.value = mlc.getDouble(new String[]{"value", "v"}, 0.0);
         this.classifier = PlaceholderString.of(mlc.getString(new String[]{"classifier", "class", "c"}, ""));
         this.type = PlaceholderString.of(mlc.getString(new String[]{"type", "t"}, ""));
         this.trueDamage = mlc.getBoolean(new String[]{"true"}, false);
@@ -49,7 +49,7 @@ public class MythicDamageMechanic extends SkillMechanic implements ITargetedEnti
         boolean missing = pString.equals("percent missing");
         boolean left = pString.equals("percent left");
         boolean trueDmg = trueDamage;
-        double damage = value.get(data);
+        double damage = value;
         Entity caster = data.getCaster().getEntity().getBukkitEntity();
         if (!(caster instanceof LivingEntity)) {
             return false;
