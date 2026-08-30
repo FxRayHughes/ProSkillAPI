@@ -174,12 +174,11 @@ public class MainListener extends SkillAPIListener {
         DynamicSkill.clearCastData(player);
 
         player.setDisplayName(player.getName());
-        if (SkillAPI.getSettings().isAttributesHeal()) {
-            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
-                player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-            } else {
-                player.setMaxHealth(20);
-            }
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+            // Always remove our modifier on unload, even when health was disabled in config.
+            PlayerData.clearHealthModifier(player);
+        } else if (SkillAPI.getSettings().isAttributesHeal()) {
+            player.setMaxHealth(20);
         }
         player.setWalkSpeed(0.2f);
         SkillAPI.unloadPlayerData(player, skipSaving);
@@ -421,8 +420,12 @@ public class MainListener extends SkillAPIListener {
             data.clearBonuses();
             data.stopPassives(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
-            if (SkillAPI.getSettings().isAttributesHeal()) {
+            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+                PlayerData.clearHealthModifier(event.getPlayer());
+            } else if (SkillAPI.getSettings().isAttributesHeal()) {
                 event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
+            }
+            if (SkillAPI.getSettings().isAttributesHeal()) {
                 event.getPlayer().setHealthScale(SkillAPI.getSettings().getDefaultHealth());
             }
             if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none")) {

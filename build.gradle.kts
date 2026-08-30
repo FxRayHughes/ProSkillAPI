@@ -55,12 +55,13 @@ repositories {
 }
 
 dependencies {
-    implementation("com.comphenix.protocol:ProtocolLib:4.5.0")
     compileOnly("org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT")
     compileOnly("io.netty:netty-all:4.1.51.Final")
-    compileOnly("LibsDisguises:LibsDisguises:10.0.21")
-    compileOnly("me.clip:placeholderapi:2.10.9")
-    compileOnly("net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-api:1.16-R0.1") {
+        // Brigadier is not referenced by this plugin and the old snapshot is unavailable.
+        exclude(group = "net.md-5", module = "brigadier")
+    }
+    compileOnly("org.projectlombok:lombok:1.18.30")
     compileOnly("fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.3")

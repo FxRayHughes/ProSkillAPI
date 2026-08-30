@@ -83,6 +83,12 @@ public class Settings {
     public Settings(SkillAPI plugin) {
         this.plugin = plugin;
         CommentedConfig file = new CommentedConfig(plugin, "config");
+        DataSection loaded = file.getConfig();
+        // Early releases exposed the singular key in config.yml while the code
+        // read the plural key. Migrate before defaults/trim erase that user choice.
+        if (!loaded.has(CLASS_HEAL) && loaded.has(CLASS_HEAL_LEGACY)) {
+            loaded.set(CLASS_HEAL, loaded.getBoolean(CLASS_HEAL_LEGACY));
+        }
         file.checkDefaults();
         file.trim();
         file.save();
@@ -613,6 +619,8 @@ public class Settings {
 
     private static final String CLASS_ATTRIB_MOB = CLASS_BASE + "attributes-mob-enabled";
     private static final String CLASS_REFUND = CLASS_BASE + "attributes-downgrade";
+    /** Legacy persisted key from the original health bypass release. */
+    private static final String CLASS_HEAL_LEGACY = CLASS_BASE + "attribute-heal";
     private static final String CLASS_HEAL = CLASS_BASE + "attributes-heal";
     private static final String CLASS_LEVEL = CLASS_BASE + "level-up-skill";
 

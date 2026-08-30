@@ -64,6 +64,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -81,6 +82,8 @@ import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.*;
  * try to instantaite your own PlayerData object.
  */
 public class PlayerData {
+    /** Stable identity keeps the plugin's health contribution separate from other plugins' modifiers. */
+    private static final UUID HEALTH_MODIFIER_ID = UUID.fromString("6f7c3e18-9a4a-4b4d-9b4a-2c6f4f0e6f31");
     private final HashMap<String, PlayerClass> classes = new HashMap<>();
     private final HashMap<String, PlayerSkill> skills = new HashMap<>();
     private final HashMap<Material, PlayerSkill> binds = new HashMap<>();
@@ -1366,9 +1369,7 @@ public class PlayerData {
             if (health <= 0) {
                 health = SkillAPI.getSettings().getDefaultHealth();
             }
-            if (SkillAPI.getSettings().isModifyHealth()) {
-                player.setMaxHealth(health);
-            }
+            updateHealthModifier(player, health);
 
             // Health scaling is available starting with 1.6.2
             if (SkillAPI.getSettings().isOldHealth()) {
@@ -1377,6 +1378,9 @@ public class PlayerData {
             } else {
                 player.setHealthScaled(false);
             }
+        } else {
+            // Removing the owned modifier also handles a live configuration reload.
+            clearHealthModifier(player);
         }
     }
 
@@ -1391,19 +1395,57 @@ public class PlayerData {
         bonusHealth += amount;
         final Player player = getPlayer();
         if (player != null && SkillAPI.getSettings().isAttributesHeal()) {
-            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
-                final AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-                if (attribute == null) {
-                    return;
-                }
-                attribute.setBaseValue(attribute.getBaseValue() + amount);
-            } else {
-                final double newHealth = player.getMaxHealth() + amount;
-                player.setMaxHealth(newHealth);
-                if (player.getMaxHealth() > newHealth) {
-                    player.setMaxHealth(newHealth * 2 - player.getMaxHealth());
-                }
+            updateHealthAndMana(player);
+        }
+    }
+
+    /**
+     * Applies only ProSkillAPI's additive health contribution. The base value is
+     * intentionally left untouched so another health plugin can own it safely.
+     */
+    private static void updateHealthModifier(Player player, double desiredHealth) {
+        AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (attribute == null) {
+            return;
+        }
+        AttributeModifier existing = null;
+        for (AttributeModifier modifier : attribute.getModifiers()) {
+            if (HEALTH_MODIFIER_ID.equals(modifier.getUniqueId())) {
+                existing = modifier;
+                break;
             }
+        }
+        if (!SkillAPI.getSettings().isModifyHealth()) {
+            if (existing != null) {
+                attribute.removeModifier(existing);
+            }
+            return;
+        }
+        if (existing != null) {
+            attribute.removeModifier(existing);
+        }
+        double amount = desiredHealth - SkillAPI.getSettings().getDefaultHealth();
+        if (Math.abs(amount) > 0.000001) {
+            attribute.addModifier(new AttributeModifier(HEALTH_MODIFIER_ID, "ProSkillAPI health", amount,
+                    AttributeModifier.Operation.ADD_NUMBER));
+        }
+    }
+
+    /** Removes the plugin-owned modifier without changing another plugin's base health. */
+    public static void clearHealthModifier(Player player) {
+        AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (attribute == null) {
+            return;
+        }
+        AttributeModifier owned = null;
+        for (AttributeModifier modifier : attribute.getModifiers()) {
+            if (HEALTH_MODIFIER_ID.equals(modifier.getUniqueId())) {
+                owned = modifier;
+                break;
+            }
+        }
+        if (owned != null) {
+            attribute.removeModifier(owned);
         }
     }
 

@@ -83,6 +83,9 @@ public class AttributeListener extends SkillAPIListener {
      */
     public static void clearBonuses(Player player) {
         clearLocalBonuses(player);
+        // Health is managed by a dedicated modifier; remove it here as well so
+        // config reloads and world changes cannot leave stale health behind.
+        PlayerData.clearHealthModifier(player);
         BONUSES.remove(player.getName() + ":" + AttributeManager.HEALTH);
         BONUSES.remove(player.getName() + ":" + AttributeManager.MANA);
     }
@@ -300,13 +303,7 @@ public class AttributeListener extends SkillAPIListener {
     public static void updatePlayer(PlayerData data) {
         Player player = data.getPlayer();
         if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
-            double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth(), 0, Double.MAX_VALUE);
-
-            if (SkillAPI.getSettings().isAttributesHeal()) {
-                data.addMaxHealth(change);
-            }
-
-            change = updateStat(data, AttributeManager.MANA, data.getMaxMana(), 0, Double.MAX_VALUE);
+            double change = updateStat(data, AttributeManager.MANA, data.getMaxMana(), 0, Double.MAX_VALUE);
             data.addMaxMana(change);
 
             change = updateStat(data, AttributeManager.MOVE_SPEED, player.getWalkSpeed(), -2, 1);

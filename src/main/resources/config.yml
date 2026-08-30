@@ -97,7 +97,8 @@ Saving:
 #
 Classes:
   #
-  # Whether or not to use SkillAPI's health system
+  # Whether ProSkillAPI should apply its class health modifier.
+  # Set this to false to keep class health calculations but leave max health untouched.
   modify-health: true
   #
   # The default health for players without a class
@@ -116,7 +117,9 @@ Classes:
   # Whether or not attributes can be refunded
   attributes-downgrade: false
   #
-  #关闭后skillapi将忽略自带的生命属性操作
+  # Master switch for ProSkillAPI health handling.
+  # Set this to false when another plugin should control all player health.
+  # Reloading ProSkillAPI removes any modifier left by an earlier enabled state.
   attributes-heal: true
   #
   # This casts the dynamic skill for the player when they level up,
