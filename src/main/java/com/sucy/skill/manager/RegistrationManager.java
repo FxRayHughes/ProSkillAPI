@@ -116,7 +116,13 @@ public class RegistrationManager {
                 }
                 String name = file.getName().replace(".yml", "");
                 try {
-                    CommentedConfig sConfig = new CommentedConfig(api, file);
+                    // MCCore 3.0 removed the File constructor; pass the config
+                    // path relative to the plugin data folder instead.
+                    String configPath = api.getDataFolder().toPath().relativize(file.toPath()).toString();
+                    if (configPath.endsWith(".yml")) {
+                        configPath = configPath.substring(0, configPath.length() - 4);
+                    }
+                    CommentedConfig sConfig = new CommentedConfig(api, configPath);
                     DynamicSkill skill = new DynamicSkill(name);
                     skill.load(sConfig.getConfig().getSection(name));
                     if (!SkillAPI.isSkillRegistered(skill.getName())) {
