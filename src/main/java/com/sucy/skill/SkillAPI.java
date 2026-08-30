@@ -166,7 +166,12 @@ public class SkillAPI extends JavaPlugin {
         listen(new ToolListener(), true);
         listen(new KillListener(), true);
         listen(new AddonListener(), true);
-        listen(new MythicListener(), true);
+        // MythicMobs is an optional integration. Do not load its listener when the
+        // provider is absent, otherwise Java resolves Mythic's API classes during
+        // plugin enable and disables SkillAPI before its core features are usable.
+        if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
+            listen(new MythicListener(), true);
+        }
         listen(new ItemListener(), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
@@ -186,8 +191,12 @@ public class SkillAPI extends JavaPlugin {
         listen(new LingeringPotionListener(), VersionManager.isVersionAtLeast(VersionManager.V1_9_0));
         listen(new ExperienceListener(), settings.yieldsEnabled());
         listen(new PluginChecker(), true);
-        // Set up tasks
-        listen(new MobListener(), settings.isAttributeMobEnabled());
+        // Mob attributes are driven by MythicMobs events; registering this class
+        // without the optional provider makes Bukkit resolve a missing event type.
+        if (settings.isAttributeMobEnabled()
+                && Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
+            listen(new MobListener(), true);
+        }
         MainThread.register(new MobAttributeTask());
         MainThread.register(new PlayerEquipTask());
         if (settings.isManaEnabled()) {

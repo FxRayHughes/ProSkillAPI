@@ -1362,7 +1362,7 @@ public class PlayerData {
             maxMana += c.getMana();
         }
         mana = Math.min(mana, maxMana);
-        if (SkillAPI.getSettings().isAttributesHeal()) {
+        if (SkillAPI.getSettings().isAttributesHeal() && SkillAPI.getSettings().isModifyHealth()) {
             if (health == bonusHealth) {
                 health += SkillAPI.getSettings().getDefaultHealth();
             }
@@ -1969,11 +1969,9 @@ public class PlayerData {
         this.updateScoreboard();
         PlayerEquipsRead.update(this);
         this.getSkillBar().update(player);
-        if (SkillAPI.getSettings().isAttributesHeal()) {
+        if (SkillAPI.getSettings().isAttributesHeal() && SkillAPI.getSettings().isModifyHealth()) {
             if (this.getLastHealth() > 0 && !player.isDead()) {
-                if (SkillAPI.getSettings().isAttributesHeal()) {
-                    player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
-                }
+                player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
             }
         }
     }

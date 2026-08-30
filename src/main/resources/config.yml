@@ -98,7 +98,7 @@ Saving:
 Classes:
   #
   # Whether ProSkillAPI should apply its class health modifier.
-  # Set this to false to keep class health calculations but leave max health untouched.
+  # Set this to false to disable every player-health mutation by ProSkillAPI.
   modify-health: true
   #
   # The default health for players without a class

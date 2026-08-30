@@ -102,7 +102,9 @@ public class GUITask extends RepeatThreadTask
 
             PlayerData data = SkillAPI.getPlayerData(player);
 
-            if (SkillAPI.getSettings().isAttributesHeal()) {
+            // Health display scaling is also a player-health mutation; leave it
+            // untouched when health handling is disabled for another plugin.
+            if (SkillAPI.getSettings().isAttributesHeal() && SkillAPI.getSettings().isModifyHealth()) {
                 if (forceScaling) {
                     if (oldHealth) {
                         player.setHealthScale(20);
