@@ -95,9 +95,9 @@ public class CmdManager {
         } else {
             root.addSubCommand(new ConfigurableCommand(api, "acc", SenderType.PLAYER_ONLY, new CmdAccount(), "Changes account", "<accountId>", Permissions.BASIC));
         }
-        if (SkillAPI.getSettings().isUseSql()) {
-            root.addSubCommand(new ConfigurableCommand(api, "backup", SenderType.ANYONE, new CmdBackup(), "Backs up SQL data", "", Permissions.BACKUP));
-        }
+        // Player data is always stored in the local SQLite backend, so the
+        // maintenance command must not depend on the legacy remote-SQL flag.
+        root.addSubCommand(new ConfigurableCommand(api, "backup", SenderType.ANYONE, new CmdBackup(), "Backs up SQL data", "", Permissions.BACKUP));
         if (SkillAPI.getSettings().isSkillBarEnabled()) {
             root.addSubCommand(new ConfigurableCommand(api, "bar", SenderType.PLAYER_ONLY, new CmdBar(), "Toggles skill bar", "", Permissions.BASIC));
         }

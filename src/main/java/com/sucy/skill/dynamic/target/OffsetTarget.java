@@ -72,7 +72,7 @@ public class OffsetTarget extends TargetComponent {
         dir.multiply(forward);
         dir.add(nor.multiply(right)).setY(upward);
 
-        return new TempEntity(t.getLocation().add(dir));
+        return TempEntity.create(t.getLocation().add(dir));
     }
 
     @Override

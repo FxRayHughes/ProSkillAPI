@@ -81,7 +81,7 @@ public class LocationTarget extends TargetComponent {
             }
         }
 
-        return ImmutableList.of(new TempEntity(loc));
+        return ImmutableList.of(TempEntity.create(loc));
     }
 
     private Location calcTargetLoc(LivingEntity entity, double maxRange) {

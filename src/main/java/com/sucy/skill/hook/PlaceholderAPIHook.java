@@ -7,13 +7,13 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.FlagManager;
+import com.sucy.skill.compat.bukkit.AttributeCompat;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.data.DataSkill;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -254,11 +254,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 return String.valueOf((int) data.getMainClass().getPlayerData().getMana());
             }
             if (identifier.equals("default_currentmaxhealth")) {
-                double maxHP = player.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                double maxHP = player.getPlayer().getAttribute(AttributeCompat.MAX_HEALTH).getBaseValue();
                 return String.valueOf(maxHP);
             }
             if (identifier.equals("default_scurrentmaxhealth")) {
-                double maxHP = player.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                double maxHP = player.getPlayer().getAttribute(AttributeCompat.MAX_HEALTH).getBaseValue();
                 return String.valueOf((int) maxHP);
             }
             if (identifier.equals("default_currenthealth")) {
@@ -439,7 +439,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                         return String.valueOf((int) currentHP);
                     }
                     if (identifier.equals("player_" + groupName + "_smaxhealth")) {
-                        double maxHP = player.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                        double maxHP = player.getPlayer().getAttribute(AttributeCompat.MAX_HEALTH).getBaseValue();
                         return String.valueOf((int) maxHP);
                     }
                     if (identifier.startsWith("player_" + groupName + "_skillevel:")) {

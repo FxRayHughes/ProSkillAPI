@@ -33,6 +33,7 @@ import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
+import com.sucy.skill.compat.bukkit.PotionCompat;
 import com.sucy.skill.data.TitleType;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.manager.TitleManager;
@@ -47,7 +48,6 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -145,7 +145,9 @@ public class StatusListener extends SkillAPIListener
         {
             if (!(event.getEntity() instanceof Player))
             {
-                event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, event.getTicks(), 100));
+                if (PotionCompat.SLOWNESS != null) {
+                    event.getEntity().addPotionEffect(new PotionEffect(PotionCompat.SLOWNESS, event.getTicks(), 100));
+                }
             }
         }
     }

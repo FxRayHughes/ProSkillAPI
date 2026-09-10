@@ -34,9 +34,11 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.ComboManager;
+import com.sucy.skill.serialization.gson.GsonUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,13 +114,53 @@ public abstract class IOManager
     public abstract void saveData(PlayerAccounts data);
 
     /**
+     * Writes a backend-specific JSON backup. Implementations override this
+     * because local SQLite and remote SQL have different document repositories.
+     *
+     * @param directory destination directory
+     * @return number of documents written
+     * @throws Exception when the backend cannot be read or the files cannot be written
+     */
+    public int backupTo(File directory) throws Exception
+    {
+        throw new UnsupportedOperationException("The active storage has no backup implementation");
+    }
+
+    /**
+     * Releases storage resources. File-based and database implementations can
+     * override this without forcing callers to know which backend is active.
+     */
+    public void close()
+    {
+    }
+
+    /**
+     * Signals that a player's data has left memory.
+     *
+     * <p>Backends that track per-player concurrency state override this to drop
+     * it; called only after the player's final save has completed.</p>
+     *
+     * @param player player that was unloaded
+     */
+    public void unloaded(OfflinePlayer player)
+    {
+    }
+
+    /**
      * Saves all player data
      */
     public void saveAll()
     {
         for (PlayerAccounts data : SkillAPI.getPlayerAccountData().values())
         {
-            if (!MainListener.loadingPlayers.containsKey(data.getOfflinePlayer().getUniqueId())) {
+            if (data.getOfflinePlayer() == null)
+            {
+                continue;
+            }
+            // A player mid-load has no authoritative data in memory yet, so
+            // saving would write a placeholder over their real account.
+            if (!MainListener.isLoading(data.getOfflinePlayer().getUniqueId()))
+            {
                 saveData(data);
             }
         }
@@ -284,6 +326,34 @@ public abstract class IOManager
         data.getActiveData().setMana(file.getDouble(MANA, data.getActiveData().getMana()));
 
         return data;
+    }
+
+    /**
+     * Converts the business data tree to the only persisted representation
+     * supported by the plugin. DataSection remains an internal compatibility
+     * tree because the existing load logic depends on it; Gson owns the actual
+     * serialization boundary.
+     *
+     * @param data player data to serialize
+     * @return JSON document or null when the data cannot be represented
+     */
+    protected String saveJson(PlayerAccounts data)
+    {
+        DataSection file = save(data);
+        return file == null ? null : GsonUtils.toJson(file);
+    }
+
+    /**
+     * Restores the existing business tree from a Gson JSON document.
+     *
+     * @param player owner of the data
+     * @param json JSON document
+     * @return loaded account data
+     */
+    protected PlayerAccounts loadJson(OfflinePlayer player, String json)
+    {
+        DataSection file = GsonUtils.toDataSection(json);
+        return file == null ? null : load(player, file);
     }
 
     protected DataSection save(PlayerAccounts data)

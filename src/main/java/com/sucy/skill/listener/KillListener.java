@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.listener;
 
-import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
@@ -36,6 +35,8 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.nms.NmsProvider;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -43,9 +44,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.UUID;
 
 /**
  * Tracks who kills what entities and awards experience accordingly
@@ -54,26 +55,12 @@ public class KillListener extends SkillAPIListener
 {
     private static final String S_TYPE  = "sType";
     private static final int    SPAWNER = 0, EGG = 1;
-
-    private Method handle;
-    private Field  killer;
-    private Field  damageTime;
-
-    public KillListener()
-    {
-        try
-        {
-            Class<?> living = Reflection.getNMSClass("EntityLiving");
-            handle = Reflection.getCraftClass("entity.CraftEntity").getDeclaredMethod("getHandle");
-            killer = living.getDeclaredField("killer");
-            damageTime = living.getDeclaredField("lastDamageByPlayerTime");
-            damageTime.setAccessible(true);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
+    /**
+     * Metadata fallback for modern cores where the vanilla killer fields are not
+     * part of a stable public API. It only affects SkillAPI's own experience
+     * calculation and is cleared when the entity dies.
+     */
+    private static final String SKILL_KILLER = "skillapi:killer";
 
     /**
      * Grants experience upon killing a monster and blocks experience when
@@ -87,7 +74,8 @@ public class KillListener extends SkillAPIListener
         FlagManager.clearFlags(event.getEntity());
         BuffManager.clearData(event.getEntity());
 
-        giveExp(event.getEntity(), event.getEntity().getKiller(), event.getDroppedExp());
+        giveExp(event.getEntity(), getKiller(event.getEntity()), event.getDroppedExp());
+        event.getEntity().removeMetadata(SKILL_KILLER, SkillAPI.singleton);
     }
 
     public static void giveExp(LivingEntity entity, Player killer, int exp) {
@@ -188,13 +176,20 @@ public class KillListener extends SkillAPIListener
 
     private void setKiller(LivingEntity entity, Player player)
     {
-        try
-        {
-            Object hit = handle.invoke(entity);
-            Object source = handle.invoke(player);
-            killer.set(hit, source);
-            damageTime.set(hit, 100);
+        if (!NmsProvider.bridge().markKiller(entity, player)) {
+            entity.setMetadata(SKILL_KILLER, new FixedMetadataValue(SkillAPI.singleton, player.getUniqueId().toString()));
         }
-        catch (Exception ex) { /* */ }
+    }
+
+    private Player getKiller(LivingEntity entity) {
+        Player killer = entity.getKiller();
+        if (killer != null || !entity.hasMetadata(SKILL_KILLER)) {
+            return killer;
+        }
+        try {
+            return Bukkit.getPlayer(UUID.fromString(entity.getMetadata(SKILL_KILLER).get(0).asString()));
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }

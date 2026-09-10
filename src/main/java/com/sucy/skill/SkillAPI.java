@@ -39,8 +39,8 @@ import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
-import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
+import com.sucy.skill.data.io.SQLiteIO;
 import com.sucy.skill.data.io.SQLIO;
 import com.sucy.skill.data.io.SavePlayer;
 import com.sucy.skill.dynamic.DynamicClass;
@@ -53,6 +53,7 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.mechanic.MythicListener;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
+import com.sucy.skill.module.ModuleBootstrap;
 import com.sucy.skill.packet.PacketInjector;
 import com.sucy.skill.task.*;
 import com.sucy.skill.thread.MainThread;
@@ -144,12 +145,19 @@ public class SkillAPI extends JavaPlugin {
         comboManager = new ComboManager();
         registrationManager = new RegistrationManager(this);
         cmd = new CmdManager(this);
-        io = settings.isUseSql() ? new SQLIO(this) : new ConfigIO(this);
+        // Keep both storage modes: false uses local SQLite JSON and true uses
+        // the pooled remote SQL JSON backend. Each implementation migrates its
+        // own historical payloads without changing the business loader.
+        io = settings.isUseSql() ? new SQLIO(this) : new SQLiteIO(this);
         PlayerStats.init();
         ClassBoardManager.registerText();
         if (settings.isAttributesEnabled()) {
             attributeManager = new AttributeManager(this);
         }
+
+        // Optional modules register their dynamic components before skills are
+        // loaded so existing configs can reference provider-backed mechanics.
+        ModuleBootstrap.install(this);
 
         // Load classes and skills
         registrationManager.initialize();
@@ -287,6 +295,7 @@ public class SkillAPI extends JavaPlugin {
         }
 
         io.saveAll();
+        io.close();
 
         skills.clear();
         classes.clear();
@@ -576,6 +585,14 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * @return the active player data manager, primarily for maintenance tools
+     *         such as the JSON backup command
+     */
+    public IOManager getIOManager() {
+        return io;
+    }
+
+    /**
      * Checks whether or not SkillAPI currently has loaded data for the
      * given player. This returning false doesn't necessarily mean the
      * player doesn't have any data at all, just not data that is
@@ -609,6 +626,10 @@ public class SkillAPI extends JavaPlugin {
                 singleton.io.saveData(accounts);
             }
             singleton.players.remove(new VersionPlayer(player).getIdString());
+            // Drop the tracked revision only after the save, so the save still
+            // guards against a concurrent write, and a rejoin re-reads whatever
+            // the store holds at that point.
+            singleton.io.unloaded(player);
         });
     }
 

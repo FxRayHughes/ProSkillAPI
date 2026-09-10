@@ -29,24 +29,16 @@ package com.sucy.skill.cmd;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
-import com.rit.sucy.config.parse.YAMLParser;
-import com.rit.sucy.sql.direct.SQLDatabase;
-import com.rit.sucy.sql.direct.SQLTable;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.data.Settings;
-import com.sucy.skill.data.io.SQLIO;
+import com.sucy.skill.data.io.IOManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.sql.ResultSet;
 
 /**
- * Backs up SQL data into local config files
+ * Backs up the active player JSON store into local JSON files.
  */
 public class CmdBackup implements IFunction
 {
@@ -71,7 +63,7 @@ public class CmdBackup implements IFunction
     }
 
     /**
-     * The task for backing up SQL data
+     * The task for backing up player JSON data
      */
     private class BackupTask extends BukkitRunnable
     {
@@ -90,39 +82,19 @@ public class CmdBackup implements IFunction
         }
 
         /**
-         * Runs the backup task, backing up the entire SQL database locally
+         * Runs the backup task, backing up the active player repository locally
          */
         @Override
         public void run()
         {
-            Settings settings = SkillAPI.getSettings();
             int count = 0;
-            SQLDatabase database = new SQLDatabase(api, settings.getSQLHost(), settings.getSQLPort(), settings.getSQLDatabase(), settings.getSQLUser(), settings.getSQLPass());
             try
             {
-                database.openConnection();
-                SQLTable table = database.createTable(api, "players");
-                ResultSet query = table.queryAll();
-
                 final File file = new File(api.getDataFolder(), "players");
-                file.mkdir();
-
-                // Go through every entry, saving it to disk
-                while (query.next())
-                {
-                    String sqlYaml = query.getString(SQLIO.DATA);
-                    String yaml = YAMLParser.parseText(sqlYaml, SQLIO.STRING).toString();
-                    String name = query.getString("Name");
-
-                    FileOutputStream out = new FileOutputStream(new File(file, name + ".yml"));
-                    BufferedWriter write = new BufferedWriter(new OutputStreamWriter(out));
-
-                    write.write(yaml);
-
-                    write.close();
-
-                    count++;
-                }
+                IOManager manager = api.getIOManager();
+                // Backups use the same JSON document as the active backend so
+                // restore tooling never creates a second YAML persistence path.
+                count = manager.backupTo(file);
                 cmd.sendMessage(sender, DONE, "&2SQL database backup has finished successfully");
             }
             catch (Exception ex)
@@ -135,7 +107,6 @@ public class CmdBackup implements IFunction
                 );
                 ex.printStackTrace();
             }
-            database.closeConnection();
         }
     }
 }

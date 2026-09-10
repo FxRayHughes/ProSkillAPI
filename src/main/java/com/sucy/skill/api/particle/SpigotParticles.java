@@ -1,10 +1,11 @@
 package com.sucy.skill.api.particle;
 
-import com.google.common.collect.ImmutableList;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,17 +17,20 @@ public class SpigotParticles {
     private static boolean error = true;
 
     public static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material, final int data) {
-        Particle effect;
-        try {
-            effect = Particle.valueOf(particle.toUpperCase().replace(' ', '_'));
-        } catch (IllegalArgumentException e) {
-            effect = CONVERSION.get(particle.toLowerCase().replace('_', ' '));
-        }
+        Particle effect = findParticle(particle);
         if (effect == null) return;
         try {
-            final Object packet = com.sucy.skill.api.particle.Particle.make(
-                    effect.name(), loc.getX(), loc.getY(), loc.getZ(), dx, dy, dz, speed, count, material, 0);
-            com.sucy.skill.api.particle.Particle.send(loc, ImmutableList.of(packet), distance);
+            ArrayList<Player> players = new ArrayList<>();
+            double range = distance * distance;
+            for (Player player : loc.getWorld().getPlayers()) {
+                if (player.getLocation().distanceSquared(loc) < range) {
+                    players.add(player);
+                }
+            }
+
+            com.sucy.skill.api.particle.Particle.play(
+                    players, effect, loc.getX(), loc.getY(), loc.getZ(),
+                    count, dx, dy, dz, speed, material, data);
         } catch (final Exception ex) {
             if (error) {
                 ex.printStackTrace();
@@ -37,57 +41,73 @@ public class SpigotParticles {
 
     private static final Map<String, Particle> CONVERSION = getter();
 
+    /**
+     * Finds a Bukkit particle by current API name, legacy Bukkit name, or the
+     * editor-facing SkillAPI name. Paper 26.2 renamed many constants, while old
+     * configs still store names like "block crack" and "red dust".
+     */
+    public static Particle findParticle(String particle) {
+        Particle effect = resolve(particle.toUpperCase().replace(' ', '_'));
+        if (effect != null) {
+            return effect;
+        }
+        return CONVERSION.get(particle.toLowerCase().replace('_', ' '));
+    }
+
     public static Map<String, Particle> getter() {
         HashMap<String, Particle> map = new HashMap<>();
-        map.put("angry villager", Particle.VILLAGER_ANGRY);
-        map.put("block crack", Particle.BLOCK_CRACK);
-        map.put("bubble", Particle.WATER_BUBBLE);
-        map.put("cloud", Particle.CLOUD);
-        map.put("crit", Particle.CRIT);
-        map.put("damage indicator", Particle.DAMAGE_INDICATOR);
-        map.put("death", Particle.SUSPENDED);
-        map.put("death suspend", Particle.SUSPENDED_DEPTH);
-        map.put("dragon breath", Particle.DRAGON_BREATH);
-        map.put("drip lava", Particle.DRIP_LAVA);
-        map.put("drip water", Particle.DRIP_WATER);
-        map.put("enchantment table", Particle.ENCHANTMENT_TABLE);
-        map.put("end rod", Particle.END_ROD);
-        map.put("ender signal", Particle.PORTAL);
-        map.put("explode", Particle.EXPLOSION_NORMAL);
-        map.put("firework spark", Particle.FIREWORKS_SPARK);
-        map.put("flame", Particle.FLAME);
-        map.put("footstep", Particle.CLOUD);
-        map.put("happy villager", Particle.VILLAGER_HAPPY);
-        map.put("heart", Particle.HEART);
-        map.put("huge explosion", Particle.EXPLOSION_HUGE);
-        map.put("hurt", Particle.DAMAGE_INDICATOR);
-        map.put("icon crack", Particle.ITEM_CRACK);
-        map.put("instant spell", Particle.SPELL_INSTANT);
-        map.put("large explode", Particle.EXPLOSION_LARGE);
-        map.put("large smoke", Particle.SMOKE_LARGE);
-        map.put("lava", Particle.LAVA);
-        map.put("magic crit", Particle.CRIT_MAGIC);
-        map.put("mob spell", Particle.SPELL_MOB);
-        map.put("mob spell ambient", Particle.SPELL_MOB_AMBIENT);
-        map.put("mobspawner flames", Particle.FLAME);
-        map.put("note", Particle.NOTE);
-        map.put("portal", Particle.PORTAL);
-        map.put("potion break", Particle.SPELL);
-        map.put("red dust", Particle.REDSTONE);
-        map.put("sheep eat", Particle.MOB_APPEARANCE);
-        map.put("slime", Particle.SLIME);
-        map.put("smoke", Particle.SMOKE_NORMAL);
-        map.put("snowball poof", Particle.SNOWBALL);
-        map.put("snow shovel", Particle.SNOW_SHOVEL);
-        map.put("spell", Particle.SPELL);
-        map.put("splash", Particle.WATER_SPLASH);
-        map.put("sweep attack", Particle.SWEEP_ATTACK);
-        map.put("suspend", Particle.SUSPENDED);
-        map.put("town aura", Particle.TOWN_AURA);
-        map.put("water drop", Particle.WATER_DROP);
-        map.put("water wake", Particle.WATER_WAKE);
-        map.put("witch magic", Particle.SPELL_WITCH);
-        map.put("wolf hearts", Particle.HEART);
+        put(map, "angry villager", "ANGRY_VILLAGER", "VILLAGER_ANGRY");
+        put(map, "block crack", "BLOCK", "BLOCK_CRACK");
+        put(map, "block dust", "BLOCK", "BLOCK_DUST");
+        put(map, "bubble", "BUBBLE", "WATER_BUBBLE");
+        put(map, "cloud", "CLOUD");
+        put(map, "crit", "CRIT");
+        put(map, "damage indicator", "DAMAGE_INDICATOR");
+        put(map, "death", "UNDERWATER", "SUSPENDED");
+        put(map, "death suspend", "UNDERWATER", "SUSPENDED_DEPTH");
+        put(map, "depth suspend", "UNDERWATER", "SUSPENDED_DEPTH");
+        put(map, "dragon breath", "DRAGON_BREATH");
+        put(map, "drip lava", "DRIPPING_LAVA", "DRIP_LAVA");
+        put(map, "drip water", "DRIPPING_WATER", "DRIP_WATER");
+        put(map, "enchantment table", "ENCHANT", "ENCHANTMENT_TABLE");
+        put(map, "end rod", "END_ROD");
+        put(map, "ender signal", "PORTAL");
+        put(map, "explode", "EXPLOSION", "EXPLOSION_NORMAL");
+        put(map, "firework spark", "FIREWORK", "FIREWORKS_SPARK");
+        put(map, "flame", "FLAME");
+        put(map, "footstep", "CLOUD");
+        put(map, "happy villager", "HAPPY_VILLAGER", "VILLAGER_HAPPY");
+        put(map, "heart", "HEART");
+        put(map, "huge explosion", "EXPLOSION_EMITTER", "EXPLOSION_HUGE");
+        put(map, "hurt", "DAMAGE_INDICATOR");
+        put(map, "icon crack", "ITEM", "ITEM_CRACK");
+        put(map, "instant spell", "INSTANT_EFFECT", "SPELL_INSTANT");
+        put(map, "large explode", "EXPLOSION_EMITTER", "EXPLOSION_LARGE");
+        put(map, "large smoke", "LARGE_SMOKE", "SMOKE_LARGE");
+        put(map, "lava", "LAVA");
+        put(map, "magic crit", "ENCHANTED_HIT", "CRIT_MAGIC");
+        put(map, "mob appearance", "ELDER_GUARDIAN", "MOB_APPEARANCE");
+        put(map, "mob spell", "ENTITY_EFFECT", "SPELL_MOB");
+        put(map, "mob spell ambient", "ENTITY_EFFECT", "SPELL_MOB_AMBIENT");
+        put(map, "mobspawner flames", "FLAME");
+        put(map, "note", "NOTE");
+        put(map, "portal", "PORTAL");
+        put(map, "potion break", "EFFECT", "SPELL");
+        put(map, "red dust", "DUST", "REDSTONE");
+        put(map, "sheep eat", "ELDER_GUARDIAN", "MOB_APPEARANCE");
+        put(map, "slime", "ITEM_SLIME", "SLIME");
+        put(map, "smoke", "SMOKE", "SMOKE_NORMAL");
+        put(map, "snowball poof", "ITEM_SNOWBALL", "SNOWBALL");
+        put(map, "snow shovel", "POOF", "SNOW_SHOVEL");
+        put(map, "spell", "EFFECT", "SPELL");
+        put(map, "splash", "SPLASH", "WATER_SPLASH");
+        put(map, "sweep attack", "SWEEP_ATTACK");
+        put(map, "suspend", "UNDERWATER", "SUSPENDED");
+        put(map, "town aura", "MYCELIUM", "TOWN_AURA");
+        put(map, "water drop", "RAIN", "WATER_DROP");
+        put(map, "water wake", "FISHING", "WATER_WAKE");
+        put(map, "witch magic", "WITCH", "SPELL_WITCH");
+        put(map, "wolf hearts", "HEART");
 
         for (Particle value : Particle.values()) {
             map.put(value.name(), value);
@@ -95,5 +115,28 @@ public class SpigotParticles {
             map.put(value.name().toLowerCase().replace("_", " "), value);
         }
         return map;
+    }
+
+    /**
+     * Adds the first particle name supported by the running Bukkit/Paper API.
+     * The ordered list keeps modern Paper names first and falls back to older
+     * Bukkit names on legacy servers.
+     */
+    private static void put(Map<String, Particle> map, String key, String... names) {
+        Particle particle = resolve(names);
+        if (particle != null) {
+            map.put(key, particle);
+        }
+    }
+
+    private static Particle resolve(String... names) {
+        for (String name : names) {
+            try {
+                return Particle.valueOf(name);
+            } catch (IllegalArgumentException ignored) {
+                // Try the next known alias for this particle.
+            }
+        }
+        return null;
     }
 }

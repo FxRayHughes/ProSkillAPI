@@ -3,3 +3,31 @@
  */
 
 rootProject.name = "ProSkillAPI"
+
+include(":compat:bukkit-api")
+
+include(":serialization:serialization-api")
+include(":serialization:serialization-gson")
+include(":serialization:serialization-legacy-nbt")
+
+include(":integration:dragoncore")
+
+// One module per NMS generation. Each one owns a disjoint version window and
+// extends the generation below it, so a version-specific fix has exactly one
+// home and cannot silently change another core's behaviour.
+include(":nms:nms-api")
+include(":nms:nms-v1_8")
+include(":nms:nms-v1_9")
+include(":nms:nms-v1_10")
+include(":nms:nms-v1_11")
+include(":nms:nms-v1_12")
+include(":nms:nms-v1_13")
+include(":nms:nms-v1_16")
+include(":nms:nms-v1_17")
+include(":nms:nms-v1_20")
+include(":nms:nms-v1_21")
+include(":nms:nms-v26")
+
+include(":storage:storage-api")
+include(":storage:storage-sqlite")
+include(":storage:storage-sql")

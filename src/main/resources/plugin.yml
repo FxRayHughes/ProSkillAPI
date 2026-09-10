@@ -3,9 +3,11 @@ main: com.sucy.skill.SkillAPI
 version: R-1.2.15
 authors: [Eniripsa96, Sentropic, 枫溪]
 depend: [MCCore]
-softdepend: [Vault, ProtocolLib, Parties, RPGInventory, LibsDisguises, PlaceholderAPI, NoCheatPlus, MythicMobs, WorldGuard, WorldEdit]
+softdepend: [Vault, ProtocolLib, Parties, RPGInventory, LibsDisguises, PlaceholderAPI, NoCheatPlus, MythicMobs, WorldGuard, WorldEdit, DragonCore]
 loadbefore: [Quests]
-api-version: 1.16
+# Keep the declared Bukkit API floor low so every intermediate Paper core can
+# load the plugin; version modules handle behavior that differs up through 26.2.
+api-version: '1.13'
 
 permissions:
   skillapi.basic:

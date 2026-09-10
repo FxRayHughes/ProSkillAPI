@@ -503,6 +503,7 @@ public class Settings {
     private int minutes;
     private int sqlDelay;
 
+    private String sqlType;
     private String sqlHost;
     private String sqlPort;
     private String sqlDatabase;
@@ -528,12 +529,23 @@ public class Settings {
     }
 
     /**
-     * Checks whether or not the plugin is using SQL Database saving
+     * Checks whether remote SQL mode is enabled. When false, player data uses
+     * the local SQLite JSON store; when true, the pooled remote SQL backend is
+     * selected and its old payloads are migrated in place.
      *
-     * @return true if enabled, false otherwise
+     * @return true when remote SQL storage is enabled
      */
     public boolean isUseSql() {
         return useSql;
+    }
+
+    /**
+     * Retrieves the configured remote database server type.
+     *
+     * @return database type such as mysql, mariadb, or postgresql
+     */
+    public String getSQLType() {
+        return sqlType;
     }
 
     /**
@@ -597,6 +609,9 @@ public class Settings {
         sqlDelay = details.getInt("delay");
 
         if (useSql) {
+            // Blank keeps the historical behaviour for configs written before
+            // PostgreSQL was supported, where MySQL was the only option.
+            sqlType = details.getString("type", "mysql");
             sqlHost = details.getString("host");
             sqlPort = details.getString("port");
             sqlDatabase = details.getString("database");

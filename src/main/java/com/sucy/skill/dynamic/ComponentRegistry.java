@@ -8,15 +8,16 @@ import com.sucy.skill.dynamic.custom.EditorOption;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
 import com.sucy.skill.dynamic.trigger.*;
+import com.sucy.skill.serialization.gson.GsonUtils;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.EventExecutor;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,22 +70,23 @@ public class ComponentRegistry {
     }
 
     public static void save() {
-        final StringBuilder builder = new StringBuilder("[");
-        TRIGGERS.values().forEach(trigger -> append(trigger, builder));
-        COMPONENTS.forEach((type, map) -> map.keySet().forEach(key -> append(getComponent(type, key), builder)));
-        if (builder.length() > 2) {
-            builder.replace(builder.length() - 1, builder.length(), "]");
-        } else {
-            builder.append(']');
-        }
-
         final File file = new File(SkillAPI.getPlugin(SkillAPI.class).getDataFolder(), "tool-config.json");
-        try (final FileOutputStream out = new FileOutputStream(file)) {
-            final BufferedWriter write = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-            write.write(builder.toString());
-            write.close();
+        try {
+            List<Map<String, Object>> values = new ArrayList<Map<String, Object>>();
+            TRIGGERS.values().forEach(trigger -> appendMap(trigger, values));
+            COMPONENTS.forEach((type, map) ->
+                    map.keySet().forEach(key -> appendMap(getComponent(type, key), values)));
+            // GsonUtils is the single JSON writer for generated editor data,
+            // avoiding hand-built JSON that breaks on quotes or backslashes.
+            GsonUtils.writeJson(file, values);
         } catch (Exception var4) {
             var4.printStackTrace();
+        }
+    }
+
+    private static void appendMap(final Object obj, final List<Map<String, Object>> values) {
+        if (obj instanceof CustomComponent) {
+            values.add(toMap((CustomComponent) obj));
         }
     }
 
@@ -94,35 +96,58 @@ public class ComponentRegistry {
         }
 
         final CustomComponent component = (CustomComponent) obj;
-        builder.append("{\"type\":\"").append(component.getType().name())
-                .append("\",\"key\":\"").append(component.getKey())
-                .append("\",\"display\":\"").append(component.getDisplayName())
-                .append("\",\"container\":\"").append(component.isContainer())
-                .append("\",\"description\":\"").append(component.getDescription())
-                .append("\",\"options\":[");
+        // Keep the public helper for binary/source compatibility, but route
+        // its output through GsonUtils so special characters remain valid JSON.
+        builder.append(GsonUtils.toJson(toMap(component))).append(',');
+    }
 
-        boolean first = true;
+    private static Map<String, Object> toMap(final CustomComponent component) {
+        Map<String, Object> value = new LinkedHashMap<String, Object>();
+        value.put("type", component.getType().name());
+        value.put("key", component.getKey());
+        value.put("display", component.getDisplayName());
+        value.put("container", component.isContainer());
+        value.put("description", component.getDescription());
+
+        List<Map<String, Object>> options = new ArrayList<Map<String, Object>>();
         for (EditorOption option : component.getOptions()) {
-            if (!first) {
-                builder.append(',');
-            }
-            first = false;
-
-            builder.append("{\"type\":\"").append(option.type)
-                    .append("\",\"key\":\"").append(option.key)
-                    .append("\",\"display\":\"").append(option.name)
-                    .append("\",\"description\":\"").append(option.description)
-                    .append("\"");
-            option.extra.forEach((key, value) -> builder.append(",\"").append(key).append("\":").append(value));
-            builder.append("}");
+            Map<String, Object> optionValue = new LinkedHashMap<String, Object>();
+            optionValue.put("type", option.type);
+            optionValue.put("key", option.key);
+            optionValue.put("display", option.name);
+            optionValue.put("description", option.description);
+            option.extra.forEach((key, rawValue) -> {
+                optionValue.put(key, parseExtraValue(rawValue));
+            });
+            options.add(optionValue);
         }
+        value.put("options", options);
+        return value;
+    }
 
-        builder.append("]},");
+    private static Object parseExtraValue(String rawValue) {
+        try {
+            Object parsed = GsonUtils.fromJson(rawValue, Object.class);
+            return parsed == null ? rawValue : parsed;
+        } catch (RuntimeException ignored) {
+            // A third-party editor option may contain plain text rather than a
+            // JSON literal; retain it instead of making tool-config generation fail.
+            return rawValue;
+        }
     }
 
     public static void register(final EffectComponent component) {
         COMPONENTS.computeIfAbsent(component.getType(), t -> new HashMap<>())
                 .put(component.getKey().toLowerCase(), component.getClass());
+    }
+
+    /**
+     * Registers a component supplied by a folded optional module. The method is
+     * separate from core bootstrap registration so integration modules can be
+     * installed conditionally after Bukkit confirms their provider plugin exists.
+     */
+    public static void registerModuleComponent(final EffectComponent component) {
+        register(component);
     }
 
     static {
@@ -283,9 +308,5 @@ public class ComponentRegistry {
         register(new MythicCastMechanic());
         register(new MythicCastTargetMechanic());
         register(new SnowStormMechanic());
-        register(new DragonAnimationStartMechanic());
-        register(new DragonAnimationStopMechanic());
-        register(new DragonAnimationBlockMechanic());
-        register(new DragonAnimationItemMechanic());
     }
 }

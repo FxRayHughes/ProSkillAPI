@@ -143,7 +143,7 @@ public class PotionProjectileMechanic extends MechanicComponent
         }
         if (targets.size() == 0)
         {
-            LivingEntity locTarget = new TempEntity(loc);
+            LivingEntity locTarget = TempEntity.create(loc);
             targets.add(locTarget);
         }
         executeChildren(caster, level, targets);

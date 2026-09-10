@@ -42,13 +42,16 @@ public class ParticleLookup
         } catch (IllegalArgumentException e) {
             key = key.toLowerCase();
             ParticleType type = BY_EDITOR.get(key);
-            if (type == null)
-                type = getByName(key);
+            if (type == null) {
+                try {
+                    type = getByName(key);
+                } catch (IllegalArgumentException ignored) {
+                    // Unknown config text may still be a modern Bukkit/Paper particle alias.
+                }
+            }
             if (type == null)
                 type = BY_OLD.get(key);
-            try {
-                return Particle.valueOf(type.name());
-            } catch (IllegalArgumentException ex) { return null; }
+            return type == null ? SpigotParticles.findParticle(key) : SpigotParticles.findParticle(type.name());
         }
     }
 

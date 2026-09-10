@@ -79,13 +79,20 @@ Saving:
   # How often to auto-save in minutes
   minutes: 30
   #
-  # Whether or not to use an SQL database to save
+  # false: store player data in the local players.db SQLite file as Gson JSON.
+  # true: store player data in the configured remote SQL database as Gson JSON.
+  # Existing YAML/legacy SQL payloads are recognized and migrated automatically.
   sql-database: false
   #
   # Details for connecting to the database
   sql-details:
+    # Database server type: mysql, mariadb, or postgresql.
+    # Leave as mysql when upgrading; the schema is migrated in place.
+    type: mysql
     host: localhost
-    port: 54321
+    # Leave blank to use the server type's default port
+    # (3306 for MySQL/MariaDB, 5432 for PostgreSQL).
+    port: 3306
     database: plugins
     username: username
     password: password

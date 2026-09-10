@@ -51,6 +51,7 @@ import com.sucy.skill.gui.handlers.DetailsHandler;
 import com.sucy.skill.gui.handlers.ProfessHandler;
 import com.sucy.skill.gui.handlers.SkillHandler;
 import com.sucy.skill.gui.tool.GUITool;
+import com.sucy.skill.compat.bukkit.AttributeCompat;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
@@ -62,7 +63,6 @@ import com.sucy.skill.task.ScoreboardTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
@@ -1404,7 +1404,7 @@ public class PlayerData {
      * intentionally left untouched so another health plugin can own it safely.
      */
     private static void updateHealthModifier(Player player, double desiredHealth) {
-        AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance attribute = player.getAttribute(AttributeCompat.MAX_HEALTH);
         if (attribute == null) {
             return;
         }
@@ -1433,7 +1433,7 @@ public class PlayerData {
 
     /** Removes the plugin-owned modifier without changing another plugin's base health. */
     public static void clearHealthModifier(Player player) {
-        AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance attribute = player.getAttribute(AttributeCompat.MAX_HEALTH);
         if (attribute == null) {
             return;
         }

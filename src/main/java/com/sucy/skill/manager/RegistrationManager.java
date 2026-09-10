@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.manager;
 
-import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.SkillPlugin;
@@ -37,6 +36,7 @@ import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.serialization.GsonConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -70,8 +70,8 @@ public class RegistrationManager {
 
     private final SkillAPI api;
 
-    private CommentedConfig skillConfig;
-    private CommentedConfig classConfig;
+    private GsonConfig skillConfig;
+    private GsonConfig classConfig;
 
     private Mode mode = Mode.STARTUP;
 
@@ -83,8 +83,8 @@ public class RegistrationManager {
      */
     public RegistrationManager(SkillAPI api) {
         this.api = api;
-        skillConfig = new CommentedConfig(api, "dynamic" + File.separator + "skills");
-        classConfig = new CommentedConfig(api, "dynamic" + File.separator + "classes");
+        skillConfig = new GsonConfig(api, "dynamic" + File.separator + "skills");
+        classConfig = new GsonConfig(api, "dynamic" + File.separator + "classes");
         new File(api.getDataFolder()
                 .getAbsolutePath() + File.separator + "dynamic" + File.separator + "skill").mkdirs();
         new File(api.getDataFolder()
@@ -111,18 +111,18 @@ public class RegistrationManager {
         getFiles(skillRoot);
         for (File file : filesC) {
             if (file.exists()) {
-                if (!file.getName().endsWith(".yml")) {
+                if (!file.getName().endsWith(".yml") && !file.getName().endsWith(".json")) {
                     continue;
                 }
-                String name = file.getName().replace(".yml", "");
+                String name = file.getName().replaceFirst("\\.(yml|json)$", "");
                 try {
                     // MCCore 3.0 removed the File constructor; pass the config
                     // path relative to the plugin data folder instead.
                     String configPath = api.getDataFolder().toPath().relativize(file.toPath()).toString();
-                    if (configPath.endsWith(".yml")) {
-                        configPath = configPath.substring(0, configPath.length() - 4);
+                    if (configPath.endsWith(".yml") || configPath.endsWith(".json")) {
+                        configPath = configPath.substring(0, configPath.lastIndexOf('.'));
                     }
-                    CommentedConfig sConfig = new CommentedConfig(api, configPath);
+                    GsonConfig sConfig = new GsonConfig(api, configPath);
                     DynamicSkill skill = new DynamicSkill(name);
                     skill.load(sConfig.getConfig().getSection(name));
                     if (!SkillAPI.isSkillRegistered(skill.getName())) {
@@ -193,10 +193,11 @@ public class RegistrationManager {
             }
         }
 
-        // Load dynamic skills from skills.yml
+        // Load dynamic skills from the JSON registry, with legacy skills.yml
+        // accepted by GsonConfig as a read-only migration source.
         mode = Mode.DYNAMIC;
         if (!skillConfig.getConfig().getBoolean("loaded", false)) {
-            Logger.log(LogType.REGISTRATION, 1, "Loading dynamic skills from skills.yml...");
+            Logger.log(LogType.REGISTRATION, 1, "Loading dynamic skills from skills.json...");
             skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().keys()) {
                 if (!skillConfig.getConfig().isSection(key)) {
@@ -212,7 +213,7 @@ public class RegistrationManager {
                     if (!SkillAPI.isSkillRegistered(skill.getName())) {
                         api.addDynamicSkill(skill);
                         skill.registerEvents(api);
-                        CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + key);
+                        GsonConfig sConfig = new GsonConfig(api, SKILL_DIR + key);
                         sConfig.clear();
                         skill.save(sConfig.getConfig().createSection(key));
                         skill.save(skillConfig.getConfig().createSection(key));
@@ -227,45 +228,12 @@ public class RegistrationManager {
                 }
             }
         } else {
-            Logger.log(LogType.REGISTRATION, 1, "skills.yml doesn't have any changes, skipping it");
+            Logger.log(LogType.REGISTRATION, 1, "skills.json doesn't have any changes, skipping it");
         }
 
         // Load individual dynamic skills
         Logger.log(LogType.REGISTRATION, 1, "Loading individual dynamic skill files...");
         loadSkills();
-//        File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
-//        if (skillRoot.exists()) {
-//            File[] files = skillRoot.listFiles();
-//            if (files != null) {
-//                for (File file : files) {
-//                    if (!file.getName().endsWith(".yml")) {
-//                        continue;
-//                    }
-//                    String name = file.getName().replace(".yml", "");
-//                    try {
-//                        CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
-//                        DynamicSkill skill = new DynamicSkill(name);
-//                        skill.load(sConfig.getConfig().getSection(name));
-//                        if (!SkillAPI.isSkillRegistered(skill.getName())) {
-//                            api.addDynamicSkill(skill);
-//                            skill.registerEvents(api);
-//                            sConfig.clear();
-//                            skill.save(sConfig.getConfig().createSection(name));
-//                            skill.save(skillConfig.getConfig().createSection(name));
-//                            sConfig.save();
-//                            Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + name);
-//                        } else if (SkillAPI.getSkill(name) instanceof DynamicSkill) {
-//                            Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");
-//                        } else {
-//                            Logger.invalid("Duplicate skill detected: " + name);
-//                        }
-//                    } catch (Exception ex) {
-//                        Logger.invalid("Failed to load skill: " + name + " - " + ex.getMessage());
-//                        ex.printStackTrace();
-//                    }
-//                }
-//            }
-//        }
 
         Logger.log(LogType.REGISTRATION, 1, "Loading classes...");
 
@@ -283,9 +251,10 @@ public class RegistrationManager {
             }
         }
 
-        // Load dynamic classes from classes.yml
+        // Load dynamic classes from the JSON registry, with legacy classes.yml
+        // accepted by GsonConfig as a read-only migration source.
         if (!classConfig.getConfig().getBoolean("loaded", false)) {
-            Logger.log(LogType.REGISTRATION, 1, "Loading dynamic classes from classes.yml...");
+            Logger.log(LogType.REGISTRATION, 1, "Loading dynamic classes from classes.json...");
             classConfig.getConfig().set("loaded", true);
             for (String key : classConfig.getConfig().keys()) {
                 if (key.equals("loaded")) {
@@ -296,7 +265,7 @@ public class RegistrationManager {
                     tree.load(classConfig.getConfig().getSection(key));
                     if (!SkillAPI.isClassRegistered(tree.getName())) {
                         api.addDynamicClass(tree);
-                        CommentedConfig cConfig = new CommentedConfig(api, CLASS_DIR + key);
+                        GsonConfig cConfig = new GsonConfig(api, CLASS_DIR + key);
                         cConfig.clear();
                         tree.save(cConfig.getConfig().createSection(key));
                         tree.save(classConfig.getConfig().createSection(key));
@@ -311,7 +280,7 @@ public class RegistrationManager {
                 }
             }
         } else {
-            Logger.log(LogType.REGISTRATION, 1, "classes.yml doesn't have any changes, skipping it");
+            Logger.log(LogType.REGISTRATION, 1, "classes.json doesn't have any changes, skipping it");
         }
 
         // Load individual dynamic classes
@@ -321,12 +290,12 @@ public class RegistrationManager {
             File[] files = classRoot.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (!file.getName().endsWith(".yml")) {
+                    if (!file.getName().endsWith(".yml") && !file.getName().endsWith(".json")) {
                         continue;
                     }
                     try {
-                        String name = file.getName().replace(".yml", "");
-                        CommentedConfig cConfig = new CommentedConfig(api, CLASS_DIR + name);
+                        String name = file.getName().replaceFirst("\\.(yml|json)$", "");
+                        GsonConfig cConfig = new GsonConfig(api, CLASS_DIR + name);
                         DynamicClass tree = new DynamicClass(api, name);
                         tree.load(cConfig.getConfig().getSection(name));
                         if (!SkillAPI.isClassRegistered(tree.getName())) {
@@ -391,7 +360,7 @@ public class RegistrationManager {
         // Save new data to config
         else {
 
-            CommentedConfig singleFile = new CommentedConfig(api, "skill" + File.separator + skill.getName());
+            GsonConfig singleFile = new GsonConfig(api, "skill" + File.separator + skill.getName());
             DataSection config = singleFile.getConfig();
 
             try {
@@ -448,7 +417,7 @@ public class RegistrationManager {
         // Save new data to config
         else {
 
-            CommentedConfig singleFile = new CommentedConfig(api, "class" + File.separator + rpgClass.getName());
+            GsonConfig singleFile = new GsonConfig(api, "class" + File.separator + rpgClass.getName());
             DataSection config = singleFile.getConfig();
 
             try {

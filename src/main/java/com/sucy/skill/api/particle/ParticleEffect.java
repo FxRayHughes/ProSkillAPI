@@ -166,7 +166,10 @@ public class ParticleEffect {
                         players.add(player);
                     }
                 }
-                org.bukkit.Particle effect = org.bukkit.Particle.valueOf(this.particle.type.name());
+                org.bukkit.Particle effect = SpigotParticles.findParticle(this.particle.type.name());
+                if (effect == null) {
+                    return;
+                }
                 int count = this.particle.amount;
                 double dx = this.particle.dx;
                 double dy = this.particle.dy;

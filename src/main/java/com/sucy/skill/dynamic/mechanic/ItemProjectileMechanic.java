@@ -228,7 +228,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
     @Override
     public void callback(CustomProjectile projectile, LivingEntity hit) {
         if (hit == null) {
-            hit = new TempEntity(projectile.getLocation());
+            hit = TempEntity.create(projectile.getLocation());
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);

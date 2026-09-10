@@ -10,11 +10,41 @@ plugins {
 repositories {
     mavenLocal()
     maven {
+        url = uri("https://maven.aliyun.com/repository/public")
+        metadataSources {
+            mavenPom()
+            artifact()
+            ignoreGradleMetadataRedirection()
+        }
+    }
+
+    maven {
+        url = uri("https://mirrors.tuna.tsinghua.edu.cn/maven2/")
+        metadataSources {
+            mavenPom()
+            artifact()
+            ignoreGradleMetadataRedirection()
+        }
+    }
+
+    maven {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 
     maven {
         url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    }
+
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+        // Paper 26.2 publishes Gradle metadata with a Java 25 variant. The
+        // plugin compiles on Java 25 but targets Java 8, so use its Maven POM
+        // here to avoid Gradle rejecting the API as an incompatible variant.
+        metadataSources {
+            mavenPom()
+            artifact()
+            ignoreGradleMetadataRedirection()
+        }
     }
 
     maven {
@@ -51,11 +81,32 @@ repositories {
 
     maven {
         url = uri("https://repo.maven.apache.org/maven2/")
+        metadataSources {
+            mavenPom()
+            artifact()
+            ignoreGradleMetadataRedirection()
+        }
     }
 }
 
+// Compile-only Paper API. See gradle.properties for why this is the newest
+// API rather than the oldest supported server.
+val paperApi = "io.papermc.paper:paper-api:${property("paperApiVersion")}"
+
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT")
+    compileOnly(paperApi)
+    implementation(project(":compat:bukkit-api"))
+    implementation(project(":serialization:serialization-api"))
+    implementation(project(":serialization:serialization-gson"))
+    implementation(project(":serialization:serialization-legacy-nbt"))
+    // One NMS module per generation. The newest is enough at compile time
+    // because each generation extends the one below it.
+    implementation(project(":nms:nms-api"))
+    implementation(project(":nms:nms-v1_12"))
+    implementation(project(":nms:nms-v26"))
+    implementation(project(":storage:storage-api"))
+    implementation(project(":storage:storage-sqlite"))
+    implementation(project(":storage:storage-sql"))
     compileOnly("io.netty:netty-all:4.1.51.Final")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.1") {
         // Brigadier is not referenced by this plugin and the old snapshot is unavailable.
@@ -73,8 +124,175 @@ group = "com.sucy.skill"
 version = "R-1.2.15"
 description = "ProSkillAPI"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
 
+java {
+    // Gradle itself runs with the modern toolchain, while --release below keeps
+    // the generated plugin classes loadable on Java 8 server environments.
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
 
 tasks.withType<JavaCompile>() {
+    // The Gradle daemon may run on Java 25/26, but plugin classes must stay
+    // Java 8-compatible for older Minecraft server runtimes.
+    options.release.set(8)
     options.encoding = "UTF-8"
+}
+
+subprojects {
+    apply(plugin = "java")
+
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri("https://maven.aliyun.com/repository/public")
+            metadataSources {
+                mavenPom()
+                artifact()
+                ignoreGradleMetadataRedirection()
+            }
+        }
+        maven {
+            url = uri("https://mirrors.tuna.tsinghua.edu.cn/maven2/")
+            metadataSources {
+                mavenPom()
+                artifact()
+                ignoreGradleMetadataRedirection()
+            }
+        }
+        maven {
+            url = uri("https://repo.papermc.io/repository/maven-public/")
+            metadataSources {
+                mavenPom()
+                artifact()
+                ignoreGradleMetadataRedirection()
+            }
+        }
+        maven {
+            url = uri("https://repo.maven.apache.org/maven2/")
+            metadataSources {
+                mavenPom()
+                artifact()
+                ignoreGradleMetadataRedirection()
+            }
+        }
+    }
+
+    dependencies {
+        "compileOnly"(paperApi)
+        "compileOnly"("io.netty:netty-all:4.1.51.Final")
+        "compileOnly"("net.md-5:bungeecord-api:1.16-R0.1") {
+            exclude(group = "net.md-5", module = "brigadier")
+        }
+    }
+
+    extensions.configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(25))
+        }
+    }
+
+    tasks.withType<JavaCompile>() {
+        // Keep NMS modules on the same Java 8 bytecode contract as the plugin jar.
+        options.release.set(8)
+        options.encoding = "UTF-8"
+    }
+}
+
+/**
+ * Modules that must always be present at runtime.
+ *
+ * Every NMS generation is folded in, not just the newest: which one is used is
+ * a runtime decision made by NmsProvider against the running core, so shipping
+ * a subset would silently drop support for the versions left out.
+ */
+val bundledModules = listOf(
+    ":compat:bukkit-api",
+    ":serialization:serialization-api",
+    ":serialization:serialization-gson",
+    ":serialization:serialization-legacy-nbt",
+    ":nms:nms-api",
+    ":nms:nms-v1_8",
+    ":nms:nms-v1_9",
+    ":nms:nms-v1_10",
+    ":nms:nms-v1_11",
+    ":nms:nms-v1_12",
+    ":nms:nms-v1_13",
+    ":nms:nms-v1_16",
+    ":nms:nms-v1_17",
+    ":nms:nms-v1_20",
+    ":nms:nms-v1_21",
+    ":nms:nms-v26",
+    ":storage:storage-api",
+    ":storage:storage-sqlite",
+    ":storage:storage-sql"
+)
+
+/**
+ * Third-party libraries with no server-provided equivalent.
+ *
+ * Optional server APIs stay compileOnly and are deliberately absent here.
+ */
+val shadedLibraryPrefixes = listOf(
+    "gson-",
+    "sqlite-jdbc-",
+    "HikariCP-",
+    "mysql-connector-j-",
+    "postgresql-",
+    "checker-qual-"
+)
+
+/**
+ * Optional integrations, each shipped as its own artifact.
+ *
+ * These are genuinely optional: they are not in the main jar at all, so a
+ * server without the corresponding plugin does not carry their classes.
+ * ModuleBootstrap discovers whichever ones the administrator dropped in, which
+ * is what makes "enabled according to what is installed" true of the
+ * distribution and not only of the code path.
+ *
+ * Add `-Pbundle.integrations=true` to fold them into the main jar instead, for
+ * distributions that prefer a single file.
+ */
+val optionalIntegrations = listOf(":integration:dragoncore")
+
+val bundleIntegrations = (findProperty("bundle.integrations") as String?)?.toBoolean() ?: false
+
+tasks.jar {
+    // Required modules are folded in so administrators still deploy one jar
+    // while the source tree keeps versioned concerns isolated.
+    bundledModules.forEach { path ->
+        from(project(path).tasks.named("jar").map { zipTree(it.outputs.files.singleFile) })
+    }
+    if (bundleIntegrations) {
+        optionalIntegrations.forEach { path ->
+            from(project(path).tasks.named("jar").map { zipTree(it.outputs.files.singleFile) })
+        }
+    }
+    from(configurations.runtimeClasspath.get()
+            .filter { artifact -> shadedLibraryPrefixes.any { artifact.name.startsWith(it) } }
+            .map { zipTree(it) })
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+/**
+ * Builds the optional integration jars alongside the plugin jar so a release
+ * ships them as separate, droppable artifacts.
+ */
+val integrationJars by tasks.registering(Copy::class) {
+    description = "Collects optional integration module jars into build/integrations"
+    group = "build"
+    optionalIntegrations.forEach { path ->
+        from(project(path).tasks.named("jar"))
+    }
+    into(layout.buildDirectory.dir("integrations"))
+}
+
+tasks.named("assemble") {
+    dependsOn(integrationJars)
 }

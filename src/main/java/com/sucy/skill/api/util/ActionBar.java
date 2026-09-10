@@ -26,73 +26,16 @@
  */
 package com.sucy.skill.api.util;
 
-import com.rit.sucy.reflect.Reflection;
 import com.rit.sucy.text.TextFormatter;
-import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.log.Logger;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
+import com.sucy.skill.nms.NmsProvider;
 import org.bukkit.entity.Player;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 /**
  * Handles sending text to players using the action bar.
  */
 public class ActionBar
 {
-    private static Class<?> craftPlayer;
-    private static Class<?> chatPacket;
-    private static Class<?> packet;
-    private static Class<?> chatText;
-    private static Class<?> chatBase;
-
-    private static Method getHandle;
-
-    private static Constructor<?> constructPacket;
-    private static Constructor<?> constructText;
-
-    private static Object messageType = (byte)2;
-
-    private static boolean initialized = false;
-    private static boolean supported   = false;
-
-    private static void initialize()
-    {
-        initialized = true;
-        try
-        {
-            craftPlayer = Reflection.getCraftClass("entity.CraftPlayer");
-            chatPacket = Reflection.getNMSClass("PacketPlayOutChat");
-            packet = Reflection.getNMSClass("Packet");
-            chatBase = Reflection.getNMSClass("IChatBaseComponent");
-            chatText = Reflection.getNMSClass("ChatComponentText");
-            if (VersionManager.isVersionAtLeast(11200)) {
-                Class<?> chatMessageType = Reflection.getNMSClass("ChatMessageType");
-                messageType = chatMessageType.getMethod("a", byte.class).invoke(null, messageType);
-                constructPacket = chatPacket.getConstructor(chatBase, chatMessageType);
-            }
-            else {
-                constructPacket = chatPacket.getConstructor(chatBase, byte.class);
-            }
-            constructText = chatText.getConstructor(String.class);
-            getHandle = craftPlayer.getDeclaredMethod("getHandle");
-
-            supported = true;
-        }
-        catch (Exception ex)
-        {
-            try {
-                Player.Spigot.class.getMethod("sendMessage", ChatMessageType.class, BaseComponent.class);
-                supported = true;
-            } catch (NoSuchMethodException e) {
-                ex.printStackTrace();
-                Logger.invalid("Failed to setup Action Bar utility - not supported on pre-1.8 servers");
-            }
-        }
-    }
-
     /**
      * Checks whether or not the action bar is supported
      *
@@ -100,8 +43,7 @@ public class ActionBar
      */
     public static boolean isSupported()
     {
-        if (!initialized) initialize();
-        return supported;
+        return NmsProvider.bridge().isActionBarSupported();
     }
 
     /**
@@ -112,24 +54,10 @@ public class ActionBar
      */
     public static void show(Player player, String message)
     {
-        if (!initialized) initialize();
         if (!isSupported()) return;
 
-        try
-        {
-            Object text = constructText.newInstance(TextFormatter.colorString(message));
-            Object data = constructPacket.newInstance(text, messageType);
-            Object handle = getHandle.invoke(player);
-            Object connection = Reflection.getValue(handle, "playerConnection");
-            Method send = Reflection.getMethod(connection, "sendPacket", packet);
-            send.invoke(connection, data);
-        }
-        catch (Exception ex)
-        {
+        if (!NmsProvider.bridge().sendActionBar(player, TextFormatter.colorString(message))) {
             Logger.bug("Failed to apply Action Bar");
-            ex.printStackTrace();
-            // Failed to send
-            supported = false;
         }
     }
 }

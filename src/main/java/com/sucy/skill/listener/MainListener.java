@@ -61,6 +61,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -72,7 +73,22 @@ public class MainListener extends SkillAPIListener {
     private static final List<Consumer<Player>> JOIN_HANDLERS = new ArrayList<>();
     private static final List<Consumer<Player>> CLEAR_HANDLERS = new ArrayList<>();
 
-    public static final Map<UUID, BukkitTask> loadingPlayers = new HashMap<>();
+    /**
+     * Players whose data load is still in flight.
+     *
+     * <p>Written from the main thread on join and quit, but read by the async
+     * save task, which is why it is concurrent: a plain map here could hand the
+     * saver a torn view and let it write a placeholder over real player data.</p>
+     */
+    public static final Map<UUID, BukkitTask> loadingPlayers = new ConcurrentHashMap<>();
+
+    /**
+     * @param id player identifier
+     * @return true when this player's data has not finished loading
+     */
+    public static boolean isLoading(final UUID id) {
+        return loadingPlayers.containsKey(id);
+    }
 
     public static void registerJoin(final Consumer<Player> joinHandler) {
         JOIN_HANDLERS.add(joinHandler);

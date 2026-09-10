@@ -34,6 +34,7 @@ import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.PlayerEquipsRead;
+import com.sucy.skill.compat.bukkit.AttributeCompat;
 import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
@@ -95,23 +96,26 @@ public class AttributeListener extends SkillAPIListener {
         player.setWalkSpeed(0.2f);
 
         if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
-            clear(player, Attribute.GENERIC_ATTACK_SPEED, AttributeManager.ATTACK_SPEED);
-            clear(player, Attribute.GENERIC_ARMOR, AttributeManager.ARMOR);
-            clear(player, Attribute.GENERIC_LUCK, AttributeManager.LUCK);
-            clear(player, Attribute.GENERIC_KNOCKBACK_RESISTANCE, AttributeManager.LUCK);
+            clear(player, AttributeCompat.ATTACK_SPEED, AttributeManager.ATTACK_SPEED);
+            clear(player, AttributeCompat.ARMOR, AttributeManager.ARMOR);
+            clear(player, AttributeCompat.LUCK, AttributeManager.LUCK);
+            clear(player, AttributeCompat.KNOCKBACK_RESISTANCE, AttributeManager.LUCK);
         }
         if (VersionManager.isVersionAtLeast(11200)) {
-            clear(player, Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS);
+            clear(player, AttributeCompat.ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS);
         }
     }
 
-    private static void clear(Player player, Object attribute, String attribKey) {
-        if (!BONUSES.containsKey(attribKey)) {
+    private static void clear(Player player, Attribute attribute, String attribKey) {
+        if (attribute == null || !BONUSES.containsKey(attribKey)) {
             return;
         }
 
         double bonus = BONUSES.remove(attribKey);
-        AttributeInstance instance = player.getAttribute((Attribute) attribute);
+        AttributeInstance instance = player.getAttribute(attribute);
+        if (instance == null) {
+            return;
+        }
         instance.setBaseValue(instance.getBaseValue() - bonus);
     }
 
@@ -310,13 +314,13 @@ public class AttributeListener extends SkillAPIListener {
             player.setWalkSpeed(player.getWalkSpeed() + (float) change);
 
             if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
-                update(data, player, Attribute.GENERIC_ATTACK_SPEED, AttributeManager.ATTACK_SPEED, 0, 1024);
-                update(data, player, Attribute.GENERIC_ARMOR, AttributeManager.ARMOR, 0, 30);
-                update(data, player, Attribute.GENERIC_LUCK, AttributeManager.LUCK, -1024, 1024);
-                update(data, player, Attribute.GENERIC_KNOCKBACK_RESISTANCE, AttributeManager.KNOCKBACK_RESIST, 0, 1.0);
+                update(data, player, AttributeCompat.ATTACK_SPEED, AttributeManager.ATTACK_SPEED, 0, 1024);
+                update(data, player, AttributeCompat.ARMOR, AttributeManager.ARMOR, 0, 30);
+                update(data, player, AttributeCompat.LUCK, AttributeManager.LUCK, -1024, 1024);
+                update(data, player, AttributeCompat.KNOCKBACK_RESISTANCE, AttributeManager.KNOCKBACK_RESIST, 0, 1.0);
             }
             if (VersionManager.isVersionAtLeast(110200)) {
-                update(data, player, Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS, 0, 20);
+                update(data, player, AttributeCompat.ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS, 0, 20);
             }
         }
     }
@@ -324,12 +328,18 @@ public class AttributeListener extends SkillAPIListener {
     private static void update(
             final PlayerData data,
             final Player player,
-            final Object attribute,
+            final Attribute attribute,
             final String attribKey,
             final double min,
             final double max) {
 
-        final AttributeInstance instance = player.getAttribute((Attribute) attribute);
+        if (attribute == null) {
+            return;
+        }
+        final AttributeInstance instance = player.getAttribute(attribute);
+        if (instance == null) {
+            return;
+        }
         final double change = updateStat(data, attribKey, instance.getBaseValue(), min, max);
         instance.setBaseValue(instance.getBaseValue() + change);
     }

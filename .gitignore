@@ -1,5 +1,7 @@
 .idea/
 *.iml
+.DS_Store
+.codegraph/
 /*target
 editor/js/data/data generator/Biome.java
 editor/js/data/data generator/EntityDamageEvent.java
@@ -10,6 +12,9 @@ editor/js/data/data generator/PotionEffectType.java
 editor/js/data/data generator/Sound.java
 
 # 项目排除路径
-/.gradle/
-/build/
-/build/classes/java/main/
+# 不加前导斜杠：现在是多模块工程，每个子模块都有自己的 build/ 与 .gradle/
+.gradle/
+build/
+
+# Local jars downloaded only for API/NMS signature inspection.
+/.codex-cache/
