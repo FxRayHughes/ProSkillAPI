@@ -1,0 +1,57 @@
+# ---------------------------------------------- #
+#             语言配置文件                        #
+# ---------------------------------------------- #
+Notifications:
+  cast: '&8>> &7{player} &f施放了 &b{skill}'
+  gain-exp: '&8+ &a+{exp} &7经验'
+  gain-lvl: '&8* &6升级! &f你现在是 &e{level}级 &b{class}'
+  lose-exp: '&8x &c-{exp} &7{class} 经验'
+Errors:
+  on-cooldown: '&8> &f{skill} &7冷却中 &8| &f{cooldown}秒'
+  no-mana: '&8> &7法力不足 &8| &f还需 &b{missing}'
+  no-skills: '&8x &7该职业没有技能'
+  cannot-use: '&8x &7无法装备该物品'
+GUI:
+  attribute-title: '* 属性分配（剩余 {points} 点）'
+  skill-tree: '{class} {points}'
+  skill-class-list: '{player}'
+Skill Tree:
+  title: '{name}（{level}/{max}）'
+  type: '&2类型: &6{name}'
+  requirement:
+    met: '&2'
+    not-met: '&4'
+  attribute:
+    changing: '&e{value} &7→ &a{new}'
+    not-changing: '&f{value}'
+  layout:
+    - '&d{name} &7({level}/{max})'
+    - '&f类型: &b{type}'
+    - ''
+    - '{req:lvl}等级: {attr:level}'
+    - '{req:cost}消耗: {attr:cost}'
+    - ''
+    - '&b> &f法力: {attr:mana}'
+    - '&e> &f冷却: {attr:cooldown}'
+    - '&a> &f范围: {attr:range}'
+    - ''
+    - '&7{desc:1}'
+    - '&7{desc:2-x}'
+Stats:
+  health: '&c+'
+  points: '&a*'
+  level: '&eLv'
+  exp: '&bEXP'
+  attrib: '&d*'
+Status:
+  silenced: '&8# &7沉默中 &8| &f{duration}秒'
+  stunned: '&8# &7眩晕中 &8| &f{duration}秒'
+  rooted: '&8# &7定身中 &8| &f{duration}秒'
+  disarmed: '&8# &7缴械中 &8| &f{duration}秒'
+  invincible: '&8# &7目标无敌 &8| &f{duration}秒'
+  absorbed: '&8# &7目标吸收中 &8| &f{duration}秒'
+  channeling: '&8# &7引导中 &8| &f{duration}秒'
+Combo:
+  left: '&f左键'
+  right: '&f右键'
+  shift: '&f潜行'

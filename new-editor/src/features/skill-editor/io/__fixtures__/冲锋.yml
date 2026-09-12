@@ -1,0 +1,276 @@
+冲锋: 
+  name: '冲锋'
+  type: '主动技能'
+  max-level: 3
+  skill-req-lvl: 10
+  needs-permission: 'false'
+  attributes: 
+    level-base: '10'
+    level-scale: '5'
+    cost-base: '0'
+    cost-scale: '0'
+    cooldown-base: '15'
+    cooldown-scale: '0'
+    mana-base: '14'
+    mana-scale: '0'
+    points-spent-req-base: '0'
+    points-spent-req-scale: '0'
+    incompatible: 
+    - ''
+  msg: '&8» &7{player} &f施放了 &b{skill}'
+  icon: 'STAINED_GLASS_PANE'
+  icon-durability: 1
+  icon-data: 1
+  icon-lore: 
+  - '&e{name} &7({level}/{max})'
+  - '{req:level}&7领悟等级: {attr:level}'
+  - ''
+  - '&7获得4倍速度持续1秒'
+  - '&75秒内下一次普通攻击附带{attr:damage.value}&7的物理伤害'
+  - ''
+  - '&7法力消耗: {attr:mana}'
+  - '&7冷却时间: {attr:cooldown}'
+  desc:  []
+  components: 
+    Cast: 
+      type: 'trigger'
+      indicator: '3D'
+      data: 
+        icon-key: ''
+        indicator: '2D'
+      children: 
+        Skill Level-b: 
+          type: 'condition'
+          indicator: '3D'
+          data: 
+            icon-key: ''
+            skill: '强化冲锋'
+            min-level: '0'
+            max-level: '0'
+            indicator: '2D'
+          children: 
+            Self-c: 
+              type: 'target'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                indicator: '2D'
+                group: 'enemy'
+                wall: 'false'
+                caster: 'false'
+              children: 
+                Speed-d: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    multiplier-base: '4'
+                    multiplier-scale: '0'
+                    duration-base: '1'
+                    duration-scale: '0'
+                    indicator: '2D'
+                  children:  {}
+                Particle-e: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Explode'
+                    arrangement: 'Circle'
+                    radius-base: '1'
+                    radius-scale: '0'
+                    particles-base: '50'
+                    particles-scale: '0'
+                    direction: 'XZ'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0.1'
+                    amount: '1'
+                    forward: '0'
+                    upward: '0.75'
+                    right: '0'
+                    indicator: '2D'
+                  children:  {}
+                Trigger-f: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    trigger: 'Physical Damage'
+                    duration-base: '5'
+                    duration-scale: '0'
+                    stackable: 'False'
+                    once: 'True'
+                    type: 'Both'
+                    target: 'False'
+                    dmg-min: '0.01'
+                    dmg-max: '999999'
+                    indicator: '2D'
+                  children: 
+                    Damage-g: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: 'damage'
+                        counts: 'True'
+                        type: 'Damage'
+                        value-base: '4'
+                        value-scale: '1'
+                        true: 'False'
+                        classifier: 'wuli'
+                        indicator: '2D'
+                      children:  {}
+                Sound-h: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    sound: 'Entity Endermen Teleport'
+                    volume-base: '200'
+                    volume-scale: '0'
+                    pitch-base: '0.6'
+                    pitch-scale: '0'
+                    indicator: '2D'
+                  children:  {}
+                Sound-i: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    sound: 'Block Anvil Land'
+                    volume-base: '200'
+                    volume-scale: '0'
+                    pitch-base: '1'
+                    pitch-scale: '0'
+                    indicator: '2D'
+                  children:  {}
+        Skill Level-j: 
+          type: 'condition'
+          indicator: '3D'
+          data: 
+            icon-key: ''
+            skill: '强化冲锋'
+            min-level: '1'
+            max-level: '1'
+            indicator: '2D'
+          children: 
+            Self-k: 
+              type: 'target'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                indicator: '2D'
+                group: 'enemy'
+                wall: 'false'
+                caster: 'false'
+              children: 
+                Speed-l: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    multiplier-base: '4'
+                    multiplier-scale: '0'
+                    duration-base: '1'
+                    duration-scale: '0'
+                    indicator: '2D'
+                  children:  {}
+                Particle-m: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Explode'
+                    arrangement: 'Circle'
+                    radius-base: '1'
+                    radius-scale: '0'
+                    particles-base: '50'
+                    particles-scale: '0'
+                    direction: 'XZ'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0.1'
+                    amount: '1'
+                    forward: '0'
+                    upward: '0.75'
+                    right: '0'
+                    indicator: '2D'
+                  children:  {}
+                Trigger-n: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    trigger: 'Physical Damage'
+                    duration-base: '5'
+                    duration-scale: '0'
+                    stackable: 'False'
+                    once: 'True'
+                    type: 'Both'
+                    target: 'False'
+                    dmg-min: '0.01'
+                    dmg-max: '999999'
+                    indicator: '2D'
+                  children: 
+                    Damage-o: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        type: 'Damage'
+                        value-base: '4'
+                        value-scale: '1'
+                        true: 'False'
+                        classifier: 'wuli'
+                        indicator: '2D'
+                      children:  {}
+                    Status-p: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        status: 'Stun'
+                        duration-base: '2'
+                        duration-scale: '0'
+                        indicator: '2D'
+                      children:  {}
+                Sound-q: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    sound: 'Block Anvil Land'
+                    volume-base: '200'
+                    volume-scale: '0'
+                    pitch-base: '1'
+                    pitch-scale: '0'
+                    indicator: '2D'
+                  children:  {}
+                Sound-r: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    sound: 'Entity Endermen Teleport'
+                    volume-base: '200'
+                    volume-scale: '0'
+                    pitch-base: '0.6'
+                    pitch-scale: '0'
+                    indicator: '2D'
+                  children:  {}

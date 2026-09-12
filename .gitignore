@@ -18,3 +18,21 @@ build/
 
 # Local jars downloaded only for API/NMS signature inspection.
 /.codex-cache/
+
+# 构建期下载的 Mojang 语言文件缓存，可随时重新拉取
+buildSrc/.cache/
+
+# 一次性迁移脚本：完成后无需保留，逻辑已落到源码里
+buildSrc/*.mjs
+buildSrc/.doc-batch-*.txt
+buildSrc/.doc-result-*.json
+buildSrc/.doc-batches.json
+
+# 枚举表由 exportEnums 生成（5.6MB，25 个版本），尚未被编辑器引用；
+# nodes.generated.json 则被 legacyCatalog 直接 import，必须入库。
+new-editor/src/features/generated/enums/
+
+# MythicMobs 服务端 jar 仅用于 v4/v5 模块的编译期签名检查（约 28MB）。
+# 由本地提供，见 root/mythic/*/build.gradle.kts 的 compileOnly(fileTree("lib"))。
+root/mythic/v4/lib/*.jar
+root/mythic/v5/lib/*.jar

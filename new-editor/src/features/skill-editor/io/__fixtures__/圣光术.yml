@@ -1,0 +1,408 @@
+圣光术: 
+  name: '圣光术'
+  type: '主动技能'
+  max-level: 3
+  skill-req-lvl: 1
+  needs-permission: 'false'
+  attributes: 
+    level-base: '5'
+    level-scale: '5'
+    cost-base: '0'
+    cost-scale: '0'
+    cooldown-base: '10'
+    cooldown-scale: '0'
+    mana-base: '15'
+    mana-scale: '0'
+    points-spent-req-base: '0'
+    points-spent-req-scale: '0'
+    incompatible: 
+    - ''
+  msg: '&8» &7{player} &f施放了 &b{skill}'
+  icon: 'STAINED_GLASS_PANE'
+  icon-durability: 3
+  icon-data: 3
+  icon-lore: 
+  - '&e{name} &7({level}/{max})'
+  - '{req:level}&7领悟等级: {attr:level}'
+  - ''
+  - '&7治疗友方目标 {attr:heal.value} &7生命值'
+  - '&7若无目标则治疗自身'
+  - ''
+  - '&7施法距离: &f8'
+  - '&7法力消耗: {attr:mana}'
+  - '&7冷却时间: {attr:cooldown}'
+  desc:  []
+  components: 
+    Cast: 
+      type: 'trigger'
+      indicator: '3D'
+      data: 
+        icon-key: ''
+        indicator: '2D'
+      children: 
+        Skill Level-b: 
+          type: 'condition'
+          indicator: '3D'
+          data: 
+            icon-key: ''
+            skill: '强化圣光术'
+            min-level: '0'
+            max-level: '0'
+            indicator: '2D'
+          children: 
+            Single-c: 
+              type: 'target'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                range-base: '8'
+                range-scale: '0'
+                tolerance-base: '0.5'
+                tolerance-scale: '0'
+                group: 'Ally'
+                wall: 'False'
+                indicator: '2D'
+                caster: 'false'
+              children: 
+                Heal-d: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: 'heal'
+                    counts: 'True'
+                    type: 'Health'
+                    value-base: '24'
+                    value-scale: '8'
+                    apply-stats: 'True'
+                    indicator: '2D'
+                  children:  {}
+                Particle Point Line-e: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Red Dust'
+                    visible-radius: '32'
+                    dx: '0.99'
+                    dy: '0.95'
+                    dz: '0.4'
+                    speed: '1'
+                    amount: '0'
+                    density-base: '10'
+                    density-scale: '0'
+                    start-forward: '0'
+                    start-upward: '4'
+                    start-right: '0'
+                    end-forward: '0'
+                    end-upward: '2.5'
+                    end-right: '0'
+                    indicator: '2D'
+                  children:  {}
+                Particle Point Line-f: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Red Dust'
+                    visible-radius: '32'
+                    dx: '0.99'
+                    dy: '0.95'
+                    dz: '0.4'
+                    speed: '1'
+                    amount: '0'
+                    density-base: '10'
+                    density-scale: '0'
+                    start-forward: '0'
+                    start-upward: '3.6'
+                    start-right: '0.5'
+                    end-forward: '0'
+                    end-upward: '3.6'
+                    end-right: '-0.5'
+                    indicator: '2D'
+                  children:  {}
+            Else-g: 
+              type: 'condition'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                indicator: '2D'
+              children: 
+                Self-h: 
+                  type: 'target'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    indicator: '2D'
+                    group: 'enemy'
+                    wall: 'false'
+                    caster: 'false'
+                  children: 
+                    Heal-i: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        type: 'Health'
+                        value-base: '24'
+                        value-scale: '8'
+                        apply-stats: 'True'
+                        indicator: '2D'
+                      children:  {}
+                    Particle Point Line-j: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        particle: 'Red Dust'
+                        visible-radius: '32'
+                        dx: '0.99'
+                        dy: '0.95'
+                        dz: '0.4'
+                        speed: '1'
+                        amount: '0'
+                        density-base: '10'
+                        density-scale: '0'
+                        start-forward: '0'
+                        start-upward: '4'
+                        start-right: '0'
+                        end-forward: '0'
+                        end-upward: '2.5'
+                        end-right: '0'
+                        indicator: '2D'
+                      children:  {}
+                    Particle Point Line-k: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        particle: 'Red Dust'
+                        visible-radius: '32'
+                        dx: '0.99'
+                        dy: '0.95'
+                        dz: '0.4'
+                        speed: '1'
+                        amount: '0'
+                        density-base: '10'
+                        density-scale: '0'
+                        start-forward: '0'
+                        start-upward: '3.6'
+                        start-right: '0.5'
+                        end-forward: '0'
+                        end-upward: '3.6'
+                        end-right: '-0.5'
+                        indicator: '2D'
+                      children:  {}
+        Skill Level-l: 
+          type: 'condition'
+          indicator: '3D'
+          data: 
+            icon-key: ''
+            skill: '强化圣光术'
+            min-level: '1'
+            max-level: '1'
+            indicator: '2D'
+          children: 
+            Single-m: 
+              type: 'target'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                range-base: '8'
+                range-scale: '0'
+                tolerance-base: '0.5'
+                tolerance-scale: '0'
+                group: 'Ally'
+                wall: 'False'
+                indicator: '2D'
+                caster: 'false'
+              children: 
+                Particle Point Line-n: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Red Dust'
+                    visible-radius: '32'
+                    dx: '0.99'
+                    dy: '0.95'
+                    dz: '0.4'
+                    speed: '1'
+                    amount: '0'
+                    density-base: '10'
+                    density-scale: '0'
+                    start-forward: '0'
+                    start-upward: '4'
+                    start-right: '0'
+                    end-forward: '0'
+                    end-upward: '2.5'
+                    end-right: '0'
+                    indicator: '2D'
+                  children:  {}
+                Particle Point Line-o: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Red Dust'
+                    visible-radius: '32'
+                    dx: '0.99'
+                    dy: '0.95'
+                    dz: '0.4'
+                    speed: '1'
+                    amount: '0'
+                    density-base: '10'
+                    density-scale: '0'
+                    start-forward: '0'
+                    start-upward: '3.6'
+                    start-right: '0.5'
+                    end-forward: '0'
+                    end-upward: '3.6'
+                    end-right: '-0.5'
+                    indicator: '2D'
+                  children:  {}
+                Self-p: 
+                  type: 'target'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    indicator: '2D'
+                    group: 'enemy'
+                    wall: 'false'
+                    caster: 'false'
+                  children: 
+                    Attribute-q: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        key: '治疗暴击'
+                        amount-base: '15'
+                        amount-scale: '0'
+                        seconds-base: '0.01'
+                        seconds-scale: '0'
+                        stackable: 'False'
+                        indicator: '2D'
+                      children:  {}
+                    Attribute-r: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        key: '治疗暴击效果'
+                        amount-base: '15'
+                        amount-scale: '0'
+                        seconds-base: '0.01'
+                        seconds-scale: '0'
+                        stackable: 'False'
+                        indicator: '2D'
+                      children:  {}
+                Heal-s: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    type: 'Health'
+                    value-base: '24'
+                    value-scale: '8'
+                    apply-stats: 'True'
+                    indicator: '2D'
+                  children:  {}
+            Else-t: 
+              type: 'condition'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                indicator: '2D'
+              children: 
+                Self-u: 
+                  type: 'target'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    indicator: '2D'
+                    group: 'enemy'
+                    wall: 'false'
+                    caster: 'false'
+                  children: 
+                    Particle Point Line-v: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        particle: 'Red Dust'
+                        visible-radius: '32'
+                        dx: '0.99'
+                        dy: '0.95'
+                        dz: '0.4'
+                        speed: '1'
+                        amount: '0'
+                        density-base: '10'
+                        density-scale: '0'
+                        start-forward: '0'
+                        start-upward: '4'
+                        start-right: '0'
+                        end-forward: '0'
+                        end-upward: '2.5'
+                        end-right: '0'
+                        indicator: '2D'
+                      children:  {}
+                    Particle Point Line-w: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        particle: 'Red Dust'
+                        visible-radius: '32'
+                        dx: '0.99'
+                        dy: '0.95'
+                        dz: '0.4'
+                        speed: '1'
+                        amount: '0'
+                        density-base: '10'
+                        density-scale: '0'
+                        start-forward: '0'
+                        start-upward: '3.6'
+                        start-right: '0.5'
+                        end-forward: '0'
+                        end-upward: '3.6'
+                        end-right: '-0.5'
+                        indicator: '2D'
+                      children:  {}
+                    Attribute-x: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        key: '治疗暴击'
+                        amount-base: '25'
+                        amount-scale: '0'
+                        seconds-base: '0.01'
+                        seconds-scale: '0'
+                        stackable: 'False'
+                        indicator: '2D'
+                      children:  {}
+                    Heal-y: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        type: 'Health'
+                        value-base: '24'
+                        value-scale: '8'
+                        apply-stats: 'True'
+                        indicator: '2D'
+                      children:  {}

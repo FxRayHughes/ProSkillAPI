@@ -1,0 +1,6 @@
+# esbuild ships a platform binary; dependency install scripts are unnecessary here.
+allowBuilds:
+  esbuild: false
+# Older Zustand pins the shim to React 18 peer metadata; v1.6 also supports React 19.
+overrides:
+  use-sync-external-store: ^1.6.0

@@ -1,0 +1,63 @@
+# 是否启用方块/合成经验控制
+enabled: 'false'
+# 非战斗经验设置。战斗经验由原版经验球或config.yml中的yields控制。
+
+# 玩家挖掘方块获得的经验值
+break:
+  # 是否允许玩家重新放置方块后再次挖掘获得经验
+  # 禁用此项会追踪所有方块变化以记住哪些是玩家放置的
+  allow-replace: 'true'
+
+  # 每种方块的经验值。可以添加任何未列出的方块类型
+  # 方块类型参考: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+  # 不区分大小写
+  types:
+    # 可以按职业分类，让特定职业才能从特定方块获得经验
+    # 例如矿工从矿石获益，农夫从作物获益:
+
+    # # 仅矿工
+    # miner:
+    #   COAL: 1
+    #   IRON_ORE: 10
+    # # 仅农夫
+    # farmer:
+    #   CROPS: 5
+    default:
+      COAL: '1'
+      QUARTZ_ORE: '1'
+      IRON_ORE: '10'
+      GOLD_ORE: '15'
+      REDSTONE_ORE: '20'
+      LAPIS_ORE: '25'
+      DIAMOND_ORE: '50'
+      EMERALD_ORE: '100'
+
+# 玩家放置��块获得的经验值
+# 注意: 没有内置方式检测重复放置，请谨慎使用
+place:
+  default:
+    DIAMOND_BLOCK: '1'
+
+# 玩家合成物品获得的经验值
+# 同样可以按职业分类
+craft:
+  default:
+    BOW: '5'
+    IRON_CHESTPLATE: '80'
+    IRON_LEGGINGS: '70'
+    IRON_HELMET: '50'
+    IRON_BOOTS: '40'
+    IRON_SWORD: '20'
+    IRON_AXE: '30'
+    GOLD_CHESTPLATE: '120'
+    GOLD_LEGGINGS: '105'
+    GOLD_HELMET: '75'
+    GOLD_BOOTS: '60'
+    GOLD_SWORD: '30'
+    GOLD_AXE: '45'
+    DIAMOND_CHESTPLATE: '400'
+    DIAMOND_LEGGINGS: '350'
+    DIAMOND_HELMET: '250'
+    DIAMOND_BOOTS: '200'
+    DIAMOND_SWORD: '100'
+    DIAMOND_AXE: '150'

@@ -1,0 +1,131 @@
+.grow {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.inspectorHeader {
+  background: var(--mantine-color-dark-6);
+  border-color: var(--mantine-color-dark-4);
+}
+.inspectorAside {
+  min-width: 300px;
+}
+.resizeHandle {
+  position: absolute;
+  z-index: 10;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+  touch-action: none;
+}
+.resizeHandle::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  width: 2px;
+  height: 44px;
+  border-radius: 2px;
+  background: var(--mantine-color-dark-3);
+  transform: translateY(-50%);
+  transition:
+    background 120ms ease,
+    height 120ms ease;
+}
+.resizeHandle:hover::after,
+.resizeHandle:focus-visible::after {
+  height: 68px;
+  background: var(--mantine-color-teal-5);
+}
+@media (max-width: 62em) {
+  .resizeHandle {
+    display: none;
+  }
+}
+.inspectorHeader :global(.mantine-Badge-root) {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nodeFieldLabel {
+  display: block;
+  margin-bottom: 4px;
+}
+.canvas {
+  height: calc(100dvh - 64px);
+  min-height: 260px;
+  width: 100%;
+  /* Canvas colors follow Mantine's scheme so the workspace remains readable after theme changes. */
+  background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
+}
+.editorShell :global(.mantine-AppShell-main) {
+  /* Preserve AppShell offsets so fixed sidebars and header cannot cover the canvas. */
+  overflow: hidden;
+}
+.editorMain {
+  height: 100dvh;
+  min-height: 0;
+}
+.editorMain > .canvas {
+  height: 100%;
+}
+.libraryItem {
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+}
+.libraryItem:hover {
+  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+}
+.folderList :global(.mantine-Accordion-item) {
+  background: transparent;
+  border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+.libraryItem:hover {
+  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+}
+.node {
+  width: 220px;
+  border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  border-radius: 5px;
+  background: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
+  color: light-dark(var(--mantine-color-dark-9), var(--mantine-color-gray-1));
+}
+.node[data-selected='true'] {
+  outline: 2px solid var(--mantine-color-teal-5);
+}
+.nodeHeader {
+  padding: 10px 14px;
+  border-top: 3px solid;
+  border-radius: 4px 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.pins {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+  padding: 8px 0;
+}
+.pin {
+  position: relative;
+  padding: 5px 14px;
+  font-size: 12px;
+  min-height: 28px;
+  overflow-wrap: anywhere;
+}
+.output {
+  text-align: right;
+}
+.pin :global(.react-flow__handle) {
+  width: 10px;
+  height: 10px;
+  background: light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-3));
+  border: 2px solid light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
+}
+@media (max-width: 48em) {
+  .canvas :global(.react-flow__minimap) {
+    display: none;
+  }
+}

@@ -1,0 +1,270 @@
+class:
+  name: 'class'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+bind:
+  name: 'bind'
+  description: '绑定技能'
+  permission: 'skillapi.basic'
+  args: '<skill>'
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+cast:
+  name: 'cast'
+  description: '施放技能'
+  permission: 'skillapi.basic'
+  args: '<skill>'
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+fcast:
+  name: 'fcast'
+  description: '施放任意技能(走冷却+蓝耗)'
+  permission: 'skillapi.basic'
+  args: '<skill>'
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    on-cooldown: '&c技能冷却中: 4秒'
+    group-cooldown: '&c技能组 [测试] 冷却中: 6秒'
+changeclass:
+  name: 'changeclass'
+  description: '切换职业'
+  permission: 'skillapi.force'
+  args: '<player> <group> <class>'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+clearbind:
+  name: 'clearbind'
+  description: '清除绑定'
+  permission: 'skillapi.basic'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+customize:
+  name: 'customize'
+  description: 'GUI编辑'
+  permission: 'skillapi.gui'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+exp:
+  name: 'exp'
+  description: '发放经验'
+  permission: 'skillapi.level'
+  args: '[player] <amount> [group]'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+info:
+  name: 'info'
+  description: '查看信息'
+  permission: 'skillapi.basic'
+  args: '[player]'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+level:
+  name: 'level'
+  description: '发放等级'
+  permission: 'skillapi.level'
+  args: '[player] <amount> [group]'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    received-level: '&2你收到了 &6{level} 等级 &2来自 &6{player}'
+list:
+  name: 'list'
+  description: '账号列表'
+  permission: 'skillapi.basic'
+  args: '[player]'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    title: '&8--&2 {player} &8-----------'
+    line: '&7[&6{id}&7] &2Lv&6{level} {class}'
+    end: '&8----------------------------'
+lore:
+  name: 'lore'
+  description: '添加Lore'
+  permission: 'skillapi.lore'
+  args: '<lore>'
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+mana:
+  name: 'mana'
+  description: '发放法力'
+  permission: 'skillapi.mana'
+  args: '[player] <amount>'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    received-mana: '&2你收到了 &6{mana} 法力值 &2来自 &6{player}'
+options:
+  name: 'options'
+  description: '转职选项'
+  permission: 'skillapi.basic'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    title: '&8--&2 可转职列表 &8-----------'
+    category: '&6{category}&7: '
+    option: '&d{option}&7'
+    separator: '&8----------------------------'
+    no-options: '&7无'
+    end: '&8----------------------------'
+points:
+  name: 'points'
+  description: '发放技能点'
+  permission: 'skillapi.points'
+  args: '[player] <amount>'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+profess:
+  name: 'profess'
+  description: '选择职业'
+  permission: 'skillapi.basic'
+  args: '<class>'
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    professed: '&2你已转职为 &6{class}'
+    invalid-class: '&c该职业不存在'
+reload:
+  name: 'reload'
+  description: '重载插件'
+  permission: 'skillapi.reload'
+  args: ''
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    done: '&2插件已重载'
+reset:
+  name: 'reset'
+  description: '重置数据'
+  permission: 'skillapi.basic'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+  messages:
+    reset: '&2已重置当前账号数据'
+skill:
+  name: 'skill'
+  description: '技能列表'
+  permission: 'skillapi.basic'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+unbind:
+  name: 'unbind'
+  description: '解绑技能'
+  permission: 'skillapi.basic'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+world:
+  name: 'world'
+  description: '传送世界'
+  permission: 'skillapi.world'
+  args: '<world>'
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+forceaccount:
+  name: 'forceaccount'
+  description: '强制切换账号'
+  permission: 'skillapi.force'
+  args: '<player> <accountId>'
+  sender: 'CONSOLE_ONLY'
+  enabled: 'true'
+  cooldown: 0
+forceattr:
+  name: 'forceattr'
+  description: '强制属性操作'
+  permission: 'skillapi.force'
+  args: '<player> [attr] [amount]'
+  sender: 'CONSOLE_ONLY'
+  enabled: 'true'
+  cooldown: 0
+forcecast:
+  name: 'forcecast'
+  description: '强制施放技能'
+  permission: 'skillapi.force'
+  args: '<player> <skill> [level]'
+  sender: 'CONSOLE_ONLY'
+  enabled: 'true'
+  cooldown: 0
+forceprofess:
+  name: 'forceprofess'
+  description: '强制转职'
+  permission: 'skillapi.force'
+  args: '<player> <class>'
+  sender: 'CONSOLE_ONLY'
+  enabled: 'true'
+  cooldown: 0
+forcereset:
+  name: 'forcereset'
+  description: '强制重置'
+  permission: 'skillapi.force'
+  args: '<player> [account]'
+  sender: 'CONSOLE_ONLY'
+  enabled: 'true'
+  cooldown: 0
+forceskill:
+  name: 'forceskill'
+  description: '强制改技能'
+  permission: 'skillapi.force'
+  args: '<player> <up|down|reset> <skill>'
+  sender: 'CONSOLE_ONLY'
+  enabled: 'true'
+  cooldown: 0
+acc:
+  name: 'acc'
+  description: '切换账号'
+  permission: 'skillapi.basic'
+  args: '<accountId>'
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+bar:
+  name: 'bar'
+  description: '技能栏'
+  permission: 'skillapi.basic'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0
+ap:
+  name: 'ap'
+  description: '发放属性点'
+  permission: 'skillapi.attrib'
+  args: '[player] <amount>'
+  sender: 'ANYONE'
+  enabled: 'true'
+  cooldown: 0
+attr:
+  name: 'attr'
+  description: '属性面板'
+  permission: 'skillapi.basic'
+  args: ''
+  sender: 'PLAYER_ONLY'
+  enabled: 'true'
+  cooldown: 0

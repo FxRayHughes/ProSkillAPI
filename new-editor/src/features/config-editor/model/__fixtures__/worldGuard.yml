@@ -1,0 +1,9 @@
+# 禁止施放技能的WorldGuard区域ID
+disable-skills:
+  - 'fakeZoneId1'
+  - 'fakeZoneId2'
+
+# 禁止获得经验的WorldGuard区域ID
+disable-exp:
+  - 'fakeZoneId1'
+  - 'fakeZoneId2'

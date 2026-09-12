@@ -1,0 +1,384 @@
+# ============================================================
+#  stat-key 速查表
+# ============================================================
+# stat-key 是属性绑定的英文标识，display 才是中文显示名
+#
+# === 基础属性 ===
+#   health             - 玩家最大生命值
+#   mana               - 玩家法力值上限
+#   mana-regen         - 法力恢复速度
+#   move-speed         - 移动速度
+#   exp                - 经验获得加成
+#
+# === 攻击属性（造成伤害方）===
+#   physical-damage    - 普通攻击伤害加成
+#   melee-damage       - 近战攻击伤害加成（叠加于 physical-damage 之后）
+#   projectile-damage  - 远程攻击伤害加成（叠加于 physical-damage 之后）
+#   skill-damage       - 技能伤害（通用，所有非 physical 分类技能）
+#   skill-damage-<分类> - 按分类的技能伤害（如 skill-damage-wuli/mofa/default）
+#   control-power      - 控制强度（增强禁锢、眩晕、沉默时长）
+#
+# === 防御属性（承受伤害方）===
+#   physical-defense   - 物理防御（普攻+物理分类技能）
+#   melee-defense      - 近战减伤（叠加于 physical-defense 之后）
+#   projectile-defense - 远程减伤（叠加于 physical-defense 之后）
+#   skill-defense      - 技能防御（通用）
+#   skill-defense-<分类> - 按分类的技能防御（如 skill-defense-default/wuli/mofa）
+#   natural-defense    - 自然伤害防御（燃烧/岩浆/摔落/中毒/凋零/魔法等）
+#   tenacity           - 韧性（降低受到暴击部分的伤害，100%时收到暴击等于普通伤害）
+#   control-resistance - 控制抗性（受到禁锢、眩晕、沉默时长降低）
+#
+#
+# === 战斗扩展属性 ===
+#   crit-rate          - 暴击率（百分比，30 = 30%概率暴击）
+#   crit-damage        - 暴击伤害加成（百分比，50 表示在基础暴击倍率1.75 上再加 0.5x）
+#   dodge              - 闪避率（百分比，20 = 20%概率完全闪避伤害）
+#   lifesteal          - 吸血率（百分比，10 = 造成伤害的10%回血）
+#   armor-penetration  - 百分比破甲（100=完全无视目标防御，公式建议 v/(a*0.01+1)）
+#   armor-penetration-flat - 固定穿透（直接从目标防御点数中扣除，公式建议 a+v）
+#
+# === 治疗系属性（仅作用于 Heal 组件）===
+#   heal-power         - 治疗强度（直接加成 Heal 组件治疗量，公式建议 a+v）
+#   heal-crit-rate     - 治疗暴击率（百分比，30 = 30%概率治疗暴击）
+#   heal-crit-effect   - 治疗暴击效果（百分比，50 表示在基础暴击倍率1.75 上再加 0.5x）
+#   注意：治疗暴击与物理暴击完全独立。计算顺序：
+#         基础治疗值 → heal-power 加成 → heal-crit-rate 判定暴击
+#         → (× 1.75 + heal-crit-effect/100) → SkillHealEvent → 最终治疗
+#         减疗（mortal-wound）在 SkillHealEvent 阶段生效，作用于暴击后的值。
+#
+# === 公式说明 ===
+# a = 当前基础值（被传入 scaleStat 的值）
+# v = 玩家投入的属性点数
+# 例如 'a+v'                 → 每投入1点增加1点效果（线性累加）
+# 例如 'a*0.025+1*v'         → 每点增加2.5%
+# 例如 'v/(a*0.01+1)'        → 防御类公式（百分比减伤）
+#
+# ============================================================
+#  MythicMobs 怪物兼容（直接在 MM 怪物配置中写中文字段）
+# ============================================================
+# 怪物配置示例:
+#   史莱姆王:
+#     Type: SLIME
+#     暴击率: 30          # 30%暴击概率
+#     暴击伤害: 50        # 暴击倍率额外+0.5x
+#     闪避: 10            # 10%闪避概率
+#     吸血: 5             # 5%吸血
+#     破甲: 50            # 50%百分比破甲
+#     固定穿透: 100       # 直接扣除目标100点防御
+#     防御力: 600         # 防御点数（参与减伤公式）
+#     自然防御: 200       # 自然伤害防御（燃烧/岩浆/中毒等）
+#
+# CombatListener / AttributeListener 会自动读取这些字段参与战斗计算。
+# MM 怪物的暴击/闪避/吸血/破甲对玩家完全生效，玩家的对应属性对怪物也完全生效。
+#
+# ============================================================
+#  完整伤害计算流程
+# ============================================================
+# 原始伤害 → 增伤(scaleStat physical/skill-damage)
+#         → 暴击 (× 1.75 + crit-damage/100)
+#         → 减防 (有效防御 = 目标防御 - 固定穿透; 减伤后 = 原 / (有效防御*0.01+1))
+#         → 百分比破甲修正 (减伤后 + (原-减伤后) × min(1, 破甲/100))
+#         → 最终伤害
+# 吸血基于"暴击后伤害"× 吸血率/100
+# ============================================================
+
+暴击:
+  display: '暴击'
+  stats:
+    crit-rate: 'a+v'
+暴击效果:
+  display: '暴击效果'
+  stats:
+    crit-damage: 'a+v'
+
+武器伤害:
+  display: '武器伤害'
+  max: '999999'
+  icon: 'ink_Sack'
+  icon-data: '1'
+  icon-lore:
+    - '&7提高普通攻击力和技能效果'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    physical-damage: 'a+v'
+法杖伤害:
+  display: '法杖伤害'
+  max: '999999'
+  icon: 'ink_Sack'
+  icon-data: '1'
+  icon-lore:
+    - '&7提高普通攻击力和技能效果'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    skill-damage-fazhang: 'a+v'
+伤害强度:
+  display: '伤害强度'
+  max: '999999'
+  icon: 'ink sack'
+  icon-data: '8'
+  icon-lore:
+    - '&6提高伤害类技能最终数值'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    physical-damage: 'a*0.01+1*v'
+    skill-damage-default: 'a*0.01+1*v'
+    skill-damage-wuli: 'a*0.01+1*v'
+    skill-damage-mofa: 'a*0.01+1*v'
+    skill-damage-fazhang: 'a*0.01+1*v'
+    skill-damage-mofachixu: 'a*0.01+1*v'
+    skill-damage-wulichixu: 'a*0.01+1*v'
+治疗强度:
+  display: '治疗强度'
+  max: '999999'
+  icon: 'ink sack'
+  icon-data: '6'
+  icon-lore:
+    - '&6影响治疗系技能最终数值'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    heal-power: 'a*0.01+1*v'
+治疗暴击:
+  display: '治疗暴击'
+  max: '100'
+  icon: 'ink sack'
+  icon-data: '6'
+  icon-lore:
+    - '&6每点提高1%治疗技能暴击概率'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    heal-crit-rate: 'a+v'
+治疗暴击效果:
+  display: '治疗暴击效果'
+  max: '999999'
+  icon: 'ink sack'
+  icon-data: '6'
+  icon-lore:
+    - '&6每点在治疗暴击的基础倍率(1.75)上再加0.01x'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    heal-crit-effect: 'a+v'
+力量:
+  display: '力量'
+  max: '15'
+  icon: 'ink sack'
+  icon-data: '1'
+  icon-lore:
+    - '&6力量 &e( &b{amount} / 15 &e)'
+    - ''
+    - '&f每点力量提高2%普通攻击伤害'
+    - '&7(法杖除外)'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    physical-damage: 'a*0.02+1*v'
+体质:
+  display: '体质'
+  max: '15'
+  icon: 'ink sack'
+  icon-data: '13'
+  icon-lore:
+    - '&6体质 &e( &b{amount} / 15 &e)'
+    - ''
+    - '&f每点体质提高5点生命值'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    health: 'a*5+v'
+智力:
+  display: '智力'
+  max: '15'
+  icon: 'ink sack'
+  icon-data: '6'
+  icon-lore:
+    - '&6智力 &e( &b{amount} / 15 &e)'
+    - ''
+    - '&f每点智力提高5点法力值'
+    - '&f提高2%法杖伤害'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    mana: 'a*5+v'
+    skill-damage-fazhang: 'a*0.02+1*v'
+敏捷:
+  display: '敏捷'
+  max: '15'
+  icon: 'ink sack'
+  icon-data: '11'
+  icon-lore:
+    - '&6敏捷 &e( &b{amount} / 15 &e)'
+    - ''
+    - '&f每点敏捷提高0.4%移动速度'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    move-speed: 'a*0.004+1*v'
+#melee-defense: 'v/(a*0.01+1)'
+#projectile-defense: 'v/(a*0.01+1)'
+生命值:
+  display: '生命值'
+  max: '20'
+  icon: 'ink sack'
+  icon-data: '9'
+  icon-lore:
+    - '&6提高生命最大值 &7(&2{amount}&7)'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    health: 'a+v'
+魔力值:
+  display: '魔力值'
+  max: '999999'
+  icon: 'ink sack'
+  icon-data: '7'
+  icon-lore:
+    - '&6提高最大法力值'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    mana: 'a+v'
+魔力恢复:
+  display: '魔力恢复'
+  max: '999999'
+  icon: 'ink sack'
+  icon-data: '7'
+  icon-lore:
+    - '&6提高魔法最大值'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    mana-regen: 'a+v'
+防击退:
+  display: '防击退'
+  max: '999999'
+  icon: 'ink_Sack'
+  icon-data: '1'
+  icon-lore:
+    - ''
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    knockback-resist: 'a+v'
+防御力:
+  display: '防御力'
+  max: '999999'
+  icon: 'ink sack'
+  icon-data: '11'
+  icon-lore:
+    - '&6减少所受到的伤害'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    skill-defense-wuli: 'v/(a*0.005+1)'
+    skill-defense-wulichixu: 'v/(a*0.005+1)'
+    skill-defense-mofachixu: 'v/(a*0.005+1)'
+    skill-defense-fazhang: 'v/(a*0.005+1)'
+    skill-defense-mofa: 'v/(a*0.005+1)'
+    physical-defense: 'v/(a*0.005+1)'
+    skill-defense-default: 'v/(a*0.005+1)'
+冷却缩减:
+  display: '冷却缩减'
+  max: '999999'
+  icon: 'ink sack'
+  icon-data: '6'
+  icon-lore:
+    - '§6降低技能冷却时间'
+  global:
+    condition: ' {}'
+    mechanic: ' {}'
+    target: ' {}'
+  stats:
+    cooldown: 'v-(v*(a*0.01))'
+闪避:
+  display: '闪避'
+  stats:
+    dodge: 'a+v'
+生命偷取:
+  display: '生命偷取'
+  stats:
+    lifesteal: 'a+v'
+穿透:
+  stats:
+    armor-penetration: 'a+v'
+固定穿透:
+  stats:
+    armor-penetration-flat: 'a+v'
+自然防御:
+  stats:
+    natural-defense: 'v/(a*0.01+1)'
+仇恨强度:
+  display: '仇恨强度'
+  stats:
+    threat-power: 'a+v'
+怪物等级:
+  display: '怪物等级'
+
+韧性:
+  display: '韧性'
+  max: '100'
+  icon: 'ink_sack'
+  icon-data: '8'
+  icon-lore:
+    - '&c降低受到的暴击"额外"伤害'
+    - '&7属性值100 = 暴击对你等同于普通伤害'
+    - '&7超过100 视为100，不会将伤害压到普通值以下'
+  stats:
+    tenacity: 'a+v'
+
+控制强度:
+  display: '控制强度'
+  max: '999999'
+  icon: 'ink_sack'
+  icon-data: '4'
+  icon-lore:
+    - '&c提高自身对目标施加的眩晕/禁锢/沉默时长'
+    - '&7实际时长 = 基础 × (1 + 控制强度/100) × (1 - 目标控制抗性/100)'
+  stats:
+    control-power: 'a+v'
+
+控制抗性:
+  display: '控制抗性'
+  max: '100'
+  icon: 'ink_sack'
+  icon-data: '10'
+  icon-lore:
+    - '&c降低自身受到的眩晕/禁锢/沉默时长'
+    - '&7属性值100 = 完全免疫（时长为 0）'
+    - '&7超过100 视为100'
+  stats:
+    control-resistance: 'a+v'

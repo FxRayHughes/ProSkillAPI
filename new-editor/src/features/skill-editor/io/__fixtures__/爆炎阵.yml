@@ -1,0 +1,391 @@
+爆炎阵: 
+  name: '爆炎阵'
+  type: '主动技能'
+  max-level: 3
+  skill-req-lvl: 1
+  needs-permission: 'false'
+  attributes: 
+    level-base: '20'
+    level-scale: '5'
+    cost-base: '0'
+    cost-scale: '0'
+    cooldown-base: '25'
+    cooldown-scale: '0'
+    mana-base: '20'
+    mana-scale: '0'
+    points-spent-req-base: '0'
+    points-spent-req-scale: '0'
+    incompatible: 
+    - ''
+  msg: '&8» &7{player} &f施放了 &b{skill}'
+  icon: 'STAINED_GLASS_PANE'
+  icon-durability: 10
+  icon-data: 10
+  icon-lore: 
+  - '&e{name} &7({level}/{max})'
+  - '{req:level}&7领悟等级: {attr:level}'
+  - ''
+  - '&7在指针指向位置召唤爆炎阵'
+  - '&7短暂延迟后造成范围性{attr:damage.value}&7的魔法伤害'
+  - ''
+  - '&7选中距离: &f4'
+  - '&7法力消耗: {attr:mana}'
+  - '&7冷却时间: {attr:cooldown}'
+  desc:  []
+  components: 
+    Cast: 
+      type: 'trigger'
+      indicator: '3D'
+      data: 
+        icon-key: ''
+        indicator: '2D'
+      children: 
+        Skill Level-b: 
+          type: 'condition'
+          indicator: '3D'
+          data: 
+            icon-key: ''
+            skill: '强化爆炎阵'
+            min-level: '0'
+            max-level: '0'
+            indicator: '2D'
+          children: 
+            Location-c: 
+              type: 'target'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                range-base: '15'
+                range-scale: '0'
+                ground: 'True'
+                indicator: '2D'
+                group: 'enemy'
+                wall: 'false'
+                caster: 'false'
+              children: 
+                Particle Ring-d: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Flame'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0'
+                    amount: '1'
+                    ring-radius-base: '3'
+                    ring-radius-scale: '0'
+                    particle-count-base: '150'
+                    particle-count-scale: '0'
+                    height-offset: '0'
+                    rotation: '0'
+                    plane: 'XZ'
+                    indicator: '2D'
+                  children:  {}
+                Particle Polygon-e: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Flame'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0'
+                    amount: '1'
+                    sides-base: '3'
+                    sides-scale: '0'
+                    polygon-radius-base: '3'
+                    polygon-radius-scale: '0'
+                    density-base: '8'
+                    density-scale: '0'
+                    height-offset: '0'
+                    rotation: '0'
+                    plane: 'XZ'
+                    indicator: '2D'
+                  children:  {}
+                Particle Polygon-f: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Flame'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0'
+                    amount: '1'
+                    sides-base: '3'
+                    sides-scale: '0'
+                    polygon-radius-base: '3'
+                    polygon-radius-scale: '0'
+                    density-base: '8'
+                    density-scale: '0'
+                    height-offset: '0'
+                    rotation: '180'
+                    plane: 'XZ'
+                    indicator: '2D'
+                  children:  {}
+                Delay-g: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    delay-base: '1'
+                    delay-scale: '0'
+                    indicator: '2D'
+                  children: 
+                    Particle-h: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        particle: 'Flame'
+                        arrangement: 'Circle'
+                        radius-base: '2.5'
+                        radius-scale: '0'
+                        particles-base: '300'
+                        particles-scale: '0'
+                        direction: 'XZ'
+                        visible-radius: '32'
+                        dx: '0.01'
+                        dy: '0.5'
+                        dz: '0.01'
+                        speed: '0.05'
+                        amount: '1'
+                        forward: '0'
+                        upward: '0.75'
+                        right: '0'
+                        indicator: '2D'
+                      children:  {}
+                    Area-i: 
+                      type: 'target'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        radius-base: '3'
+                        radius-scale: '0'
+                        group: 'Enemy'
+                        wall: 'False'
+                        caster: 'False'
+                        max-base: '99'
+                        max-scale: '0'
+                        random: 'False'
+                        indicator: '2D'
+                      children: 
+                        Damage-j: 
+                          type: 'mechanic'
+                          indicator: '3D'
+                          data: 
+                            icon-key: 'damage'
+                            counts: 'True'
+                            type: 'Damage'
+                            value-base: '50'
+                            value-scale: '10'
+                            true: 'False'
+                            classifier: 'mofa'
+                            indicator: '2D'
+                          children:  {}
+        Skill Level-k: 
+          type: 'condition'
+          indicator: '3D'
+          data: 
+            icon-key: ''
+            skill: '强化爆炎阵'
+            min-level: '1'
+            max-level: '1'
+            indicator: '2D'
+          children: 
+            Location-l: 
+              type: 'target'
+              indicator: '3D'
+              data: 
+                icon-key: ''
+                range-base: '15'
+                range-scale: '0'
+                ground: 'True'
+                indicator: '2D'
+                group: 'enemy'
+                wall: 'false'
+                caster: 'false'
+              children: 
+                Particle Ring-m: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Flame'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0'
+                    amount: '1'
+                    ring-radius-base: '3'
+                    ring-radius-scale: '0'
+                    particle-count-base: '150'
+                    particle-count-scale: '0'
+                    height-offset: '0'
+                    rotation: '0'
+                    plane: 'XZ'
+                    indicator: '2D'
+                  children:  {}
+                Particle Polygon-n: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Flame'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0'
+                    amount: '1'
+                    sides-base: '3'
+                    sides-scale: '0'
+                    polygon-radius-base: '3'
+                    polygon-radius-scale: '0'
+                    density-base: '8'
+                    density-scale: '0'
+                    height-offset: '0'
+                    rotation: '0'
+                    plane: 'XZ'
+                    indicator: '2D'
+                  children:  {}
+                Particle Polygon-o: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    particle: 'Flame'
+                    visible-radius: '32'
+                    dx: '0'
+                    dy: '0'
+                    dz: '0'
+                    speed: '0'
+                    amount: '1'
+                    sides-base: '3'
+                    sides-scale: '0'
+                    polygon-radius-base: '3'
+                    polygon-radius-scale: '0'
+                    density-base: '8'
+                    density-scale: '0'
+                    height-offset: '0'
+                    rotation: '180'
+                    plane: 'XZ'
+                    indicator: '2D'
+                  children:  {}
+                Delay-p: 
+                  type: 'mechanic'
+                  indicator: '3D'
+                  data: 
+                    icon-key: ''
+                    counts: 'True'
+                    delay-base: '1'
+                    delay-scale: '0'
+                    indicator: '2D'
+                  children: 
+                    Particle-q: 
+                      type: 'mechanic'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        counts: 'True'
+                        particle: 'Flame'
+                        arrangement: 'Circle'
+                        radius-base: '2.5'
+                        radius-scale: '0'
+                        particles-base: '300'
+                        particles-scale: '0'
+                        direction: 'XZ'
+                        visible-radius: '32'
+                        dx: '0.01'
+                        dy: '0.5'
+                        dz: '0.01'
+                        speed: '0.05'
+                        amount: '1'
+                        forward: '0'
+                        upward: '0.75'
+                        right: '0'
+                        indicator: '2D'
+                      children:  {}
+                    Area-r: 
+                      type: 'target'
+                      indicator: '3D'
+                      data: 
+                        icon-key: ''
+                        radius-base: '3'
+                        radius-scale: '0'
+                        group: 'Enemy'
+                        wall: 'False'
+                        caster: 'False'
+                        max-base: '99'
+                        max-scale: '0'
+                        random: 'False'
+                        indicator: '2D'
+                      children: 
+                        Entity Type-s: 
+                          type: 'condition'
+                          indicator: '3D'
+                          data: 
+                            icon-key: ''
+                            types: 
+                            - 'Player'
+                            indicator: '2D'
+                          children: 
+                            Fire-t: 
+                              type: 'mechanic'
+                              indicator: '3D'
+                              data: 
+                                icon-key: ''
+                                counts: 'True'
+                                seconds-base: '5'
+                                seconds-scale: '0'
+                                indicator: '2D'
+                              children:  {}
+                            Damage-u: 
+                              type: 'mechanic'
+                              indicator: '3D'
+                              data: 
+                                icon-key: ''
+                                counts: 'True'
+                                type: 'Damage'
+                                value-base: '50'
+                                value-scale: '10'
+                                true: 'False'
+                                classifier: 'mofa'
+                                indicator: '2D'
+                              children:  {}
+                        Else-v: 
+                          type: 'condition'
+                          indicator: '3D'
+                          data: 
+                            icon-key: ''
+                            indicator: '2D'
+                          children: 
+                            Damage-w: 
+                              type: 'mechanic'
+                              indicator: '3D'
+                              data: 
+                                icon-key: ''
+                                counts: 'True'
+                                type: 'Damage'
+                                value-base: '70'
+                                value-scale: '15'
+                                true: 'False'
+                                classifier: 'mofa'
+                                indicator: '2D'
+                              children:  {}

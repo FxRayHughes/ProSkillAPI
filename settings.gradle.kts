@@ -4,30 +4,44 @@
 
 rootProject.name = "ProSkillAPI"
 
-include(":compat:bukkit-api")
+// 仓库根只承载构建配置，全部代码位于 root/ 子项目及其下属模块。
+include(":root")
 
-include(":serialization:serialization-api")
-include(":serialization:serialization-gson")
-include(":serialization:serialization-legacy-nbt")
+// 跨版本的 Bukkit API 垫片
+include(":root:compat:bukkit-api")
 
-include(":integration:dragoncore")
+// 序列化后端
+include(":root:serialization:serialization-api")
+include(":root:serialization:serialization-gson")
+include(":root:serialization:serialization-legacy-nbt")
+
+// 第三方插件集成
+include(":root:integration:dragoncore")
 
 // One module per NMS generation. Each one owns a disjoint version window and
 // extends the generation below it, so a version-specific fix has exactly one
 // home and cannot silently change another core's behaviour.
-include(":nms:nms-api")
-include(":nms:nms-v1_8")
-include(":nms:nms-v1_9")
-include(":nms:nms-v1_10")
-include(":nms:nms-v1_11")
-include(":nms:nms-v1_12")
-include(":nms:nms-v1_13")
-include(":nms:nms-v1_16")
-include(":nms:nms-v1_17")
-include(":nms:nms-v1_20")
-include(":nms:nms-v1_21")
-include(":nms:nms-v26")
+include(":root:nms:nms-api")
+include(":root:nms:nms-v1_8")
+include(":root:nms:nms-v1_9")
+include(":root:nms:nms-v1_10")
+include(":root:nms:nms-v1_11")
+include(":root:nms:nms-v1_12")
+include(":root:nms:nms-v1_13")
+include(":root:nms:nms-v1_16")
+include(":root:nms:nms-v1_17")
+include(":root:nms:nms-v1_20")
+include(":root:nms:nms-v1_21")
+include(":root:nms:nms-v26_1")
+include(":root:nms:nms-v26_2")
 
-include(":storage:storage-api")
-include(":storage:storage-sqlite")
-include(":storage:storage-sql")
+// MythicMobs 4 与 5 的包名完全不同，各自的适配实现拆成独立模块，
+// 以便两版都能得到真正的编译期检查。
+include(":root:mythic")
+include(":root:mythic:v4")
+include(":root:mythic:v5")
+
+// 存储后端
+include(":root:storage:storage-api")
+include(":root:storage:storage-sqlite")
+include(":root:storage:storage-sql")

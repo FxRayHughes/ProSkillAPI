@@ -1,0 +1,46 @@
+刺客: 
+  name: '刺客'
+  action-bar: ''
+  prefix: '&6刺客'
+  group: '职业'
+  mana: '&b法力值'
+  max-level: 30
+  parent: ''
+  needs-permission: 'false'
+  attributes: 
+    health-base: '55'
+    health-scale: '5'
+    mana-base: '200'
+    mana-scale: '0'
+    防御力-base: '1'
+    防御力-scale: '1'
+    物理强度-base: '1'
+    物理强度-scale: '1'
+    魔法强度-base: '1'
+    魔法强度-scale: '1'
+    治疗强度-base: '1'
+    治疗强度-scale: '1'
+    暴击-base: '3'
+    防击退-base: '1'
+  mana-regen: 3.0
+  tree: 'REQUIREMENT'
+  blacklist:  []
+  skills: 
+  - '被动脱战回血'
+  - '被动攻击速度'
+  - '影袭'
+  - '刺杀'
+  - '风身'
+  - '云体'
+  - '绞杀'
+  - '强化影袭'
+  - '强化刺杀'
+  - '强化风身'
+  - '强化云体'
+  - '强化绞杀'
+  icon: 'DARK_OAK_DOOR'
+  icon-durability: 0
+  icon-data: 0
+  icon-lore: 
+  - '&dClass 1'
+  exp-source: 273

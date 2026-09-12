@@ -1,0 +1,26 @@
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+* {
+  box-sizing: border-box;
+  letter-spacing: 0;
+}
+body {
+  overflow: hidden;
+  background: var(--mantine-color-body);
+}
+.mantine-AppShell-header {
+  background: color-mix(in srgb, var(--mantine-color-body) 94%, var(--mantine-color-teal-6));
+  border-bottom-color: var(--mantine-color-default-border);
+}
+.mantine-AppShell-navbar {
+  background: var(--mantine-color-body);
+  border-right-color: var(--mantine-color-default-border);
+}
+:focus-visible {
+  outline: 2px solid var(--mantine-color-teal-5);
+  outline-offset: 3px;
+}

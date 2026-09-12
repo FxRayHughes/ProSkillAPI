@@ -1,0 +1,6 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+# Byte-identical copies of real server files; reformatting would invalidate the round-trip tests.
+src/features/skill-editor/io/__fixtures__
