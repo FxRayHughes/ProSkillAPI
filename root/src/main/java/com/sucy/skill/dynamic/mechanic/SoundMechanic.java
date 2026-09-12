@@ -26,6 +26,8 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.compat.bukkit.EnumCompat;
+import org.bukkit.Registry;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -97,7 +99,12 @@ public class SoundMechanic extends MechanicComponent
         String type = settings.getString(SOUND, settings.getString(SOUND2, "")).toUpperCase().replace(" ", "_");
         try
         {
-            Sound sound = Sound.valueOf(type);
+            // 走反射解析：Sound 从 1.21.3 起是 interface，直接 valueOf 会在
+            // 方法链接期抛 IncompatibleClassChangeError，此处的 catch 拦不住。
+            Sound sound = EnumCompat.valueOf(Sound.class, type, Registry.SOUNDS);
+            if (sound == null) {
+                return false;
+            }
             float volume = (float) parseValues(caster, VOLUME, level, 100.0) / 100;
             float pitch = (float) parseValues(caster, PITCH, level, 0.0);
 

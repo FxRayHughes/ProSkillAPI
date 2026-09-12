@@ -6,6 +6,7 @@
  */
 package com.sucy.skill.compat.bukkit;
 
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 
 /**
@@ -32,12 +33,12 @@ public final class AttributeCompat {
      */
     private static Attribute find(String... names) {
         for (String name : names) {
-            try {
-                return Attribute.valueOf(name);
-            } catch (IllegalArgumentException ignored) {
-                // Continue through the known aliases for this logical attribute.
+            Attribute resolved = EnumCompat.valueOf(Attribute.class, name, Registry.ATTRIBUTE);
+            if (resolved != null) {
+                return resolved;
             }
         }
         return null;
     }
+
 }
