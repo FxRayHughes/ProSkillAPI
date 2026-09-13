@@ -34,6 +34,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryView;
+import com.cryptomorin.xseries.inventory.XInventoryView;
 
 public class ToolListener extends SkillAPIListener
 {
@@ -76,10 +77,10 @@ public class ToolListener extends SkillAPIListener
     public void onQuit(PlayerQuitEvent event)
     {
         InventoryView view = event.getPlayer().getOpenInventory();
-        if (view != null && view.getTopInventory().getHolder() instanceof ToolMenu)
+        if (view != null && XInventoryView.of(view).getTopInventory().getHolder() instanceof ToolMenu)
         {
             event.getPlayer().setItemOnCursor(null);
-            ((ToolMenu) view.getTopInventory().getHolder()).restore();
+            ((ToolMenu) XInventoryView.of(view).getTopInventory().getHolder()).restore();
         }
     }
 }

@@ -43,6 +43,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import com.cryptomorin.xseries.inventory.XInventoryView;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -202,7 +203,7 @@ public abstract class InventoryTree extends SkillTree {
         InventoryView view = player.getPlayer().getOpenInventory();
         for (Map.Entry<Integer, Skill> skills : skillSlots.entrySet())
         {
-            view.setItem(skills.getKey(), skills.getValue().getIndicator(player.getSkill(skills.getValue().getName()), false));
+            XInventoryView.of(view).setItem(skills.getKey(), skills.getValue().getIndicator(player.getSkill(skills.getValue().getName()), false));
         }
     }
 

@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import com.cryptomorin.xseries.inventory.XInventoryView;
 
 /**
  * Helper class for listeners
@@ -39,10 +40,10 @@ public class ListenerUtil {
         InventoryView view = event.getView();
         if (slot < 0) {
             return null;
-        } else if ((view.getTopInventory() != null) && (slot < view.getTopInventory().getSize())) {
-            return view.getTopInventory();
+        } else if ((XInventoryView.of(view).getTopInventory() != null) && (slot < XInventoryView.of(view).getTopInventory().getSize())) {
+            return XInventoryView.of(view).getTopInventory();
         } else {
-            return view.getBottomInventory();
+            return XInventoryView.of(view).getBottomInventory();
         }
     }
 
