@@ -7,6 +7,7 @@
 package com.sucy.skill.compat.bukkit;
 
 import org.bukkit.attribute.Attribute;
+import com.cryptomorin.xseries.XAttribute;
 
 /**
  * Resolves Bukkit attributes across legacy GENERIC_* names and modern Paper
@@ -32,21 +33,10 @@ public final class AttributeCompat {
      */
     private static Attribute find(String... names) {
         for (String name : names) {
-            Attribute resolved = EnumCompat.valueOf(Attribute.class, name, attributeRegistry());
-            if (resolved != null) {
-                return resolved;
-            }
+            Attribute resolved = XAttribute.of(name).map(XAttribute::get).orElse(null);
+            if (resolved != null) return resolved;
         }
         return null;
-    }
-
-    /** Looks up the modern registry lazily so 1.12 can load this class. */
-    private static Object attributeRegistry() {
-        try {
-            return Class.forName("org.bukkit.Registry").getField("ATTRIBUTE").get(null);
-        } catch (ReflectiveOperationException | LinkageError ignored) {
-            return null;
-        }
     }
 
 }

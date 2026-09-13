@@ -52,6 +52,8 @@ public class CmdMana implements IFunction
     private static final String NOT_POSITIVE  = "not-positive";
     private static final String GAVE_MANA     = "gave-mana";
     private static final String RECEIVED_MANA = "received-mana";
+    private static final String TOOK_MANA     = "took-mana";
+    private static final String LOST_MANA     = "lost-mana";
     private static final String DISABLED      = "world-disabled";
 
     /**
@@ -82,11 +84,17 @@ public class CmdMana implements IFunction
                 return;
             }
 
+            PlayerData data = SkillAPI.getPlayerData(target);
+
             // Parse the mana
             double amount;
+            String rawAmount = args[args.length == 1 ? 0 : 1];
             try
             {
-                amount = NumberParser.parseDouble(args[args.length == 1 ? 0 : 1]);
+                boolean percent = rawAmount.endsWith("%");
+                String numeric = percent ? rawAmount.substring(0, rawAmount.length() - 1) : rawAmount;
+                amount = NumberParser.parseDouble(numeric);
+                if (percent) amount = data.getMaxMana() * amount / 100.0;
             }
             catch (Exception ex)
             {
@@ -95,24 +103,23 @@ public class CmdMana implements IFunction
             }
 
             // Invalid amount of mana
-            if (amount <= 0)
+            if (amount == 0)
             {
-                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "You must give a positive amount of mana");
+                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "Mana amount cannot be zero");
                 return;
             }
 
             // Give mana
-            PlayerData data = SkillAPI.getPlayerData(target);
             data.giveMana(amount, ManaSource.COMMAND);
 
             // Messages
             if (target != sender)
             {
-                cmd.sendMessage(sender, GAVE_MANA, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {mana} mana", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.MANA.setReplacement("" + amount));
+                cmd.sendMessage(sender, amount < 0 ? TOOK_MANA : GAVE_MANA, ChatColor.DARK_GREEN + "You have changed " + ChatColor.GOLD + "{player} {mana} mana", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.MANA.setReplacement("" + amount));
             }
             if (target.isOnline())
             {
-                cmd.sendMessage(target.getPlayer(), RECEIVED_MANA, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{mana} mana " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.MANA.setReplacement("" + amount));
+                cmd.sendMessage(target.getPlayer(), amount < 0 ? LOST_MANA : RECEIVED_MANA, ChatColor.DARK_GREEN + "Your mana changed by " + ChatColor.GOLD + "{mana} " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.MANA.setReplacement("" + amount));
             }
         }
 

@@ -51,12 +51,16 @@ import java.util.regex.Pattern;
  */
 public class CmdLevel implements IFunction
 {
+    private final boolean set;
+    public CmdLevel() { this(false); }
+    public CmdLevel(boolean set) { this.set = set; }
     private static final Pattern IS_NUMBER = Pattern.compile("[0-9]+");
     private static final Pattern IS_BOOL   = Pattern.compile("(true)|(false)");
 
     private static final String NOT_PLAYER     = "not-player";
     private static final String NOT_POSITIVE   = "not-positive";
     private static final String GAVE_LEVEL     = "gave-level";
+    private static final String SET_LEVEL      = "set-level";
     private static final String RECEIVED_LEVEL = "received-level";
     private static final String DISABLED       = "world-disabled";
     private static final String NO_CLASSES     = "no-classes";
@@ -121,13 +125,16 @@ public class CmdLevel implements IFunction
                     return;
                 }
 
-                playerClass.giveLevels(amount);
+                if (set) playerClass.setLevel(amount); else playerClass.giveLevels(amount);
                 success = true;
             }
 
             // Give levels
             else
-                success = data.giveLevels(amount, ExpSource.COMMAND);
+                if (set) {
+                    success = !data.getClasses().isEmpty();
+                    data.getClasses().forEach(c -> c.setLevel(amount));
+                } else success = data.giveLevels(amount, ExpSource.COMMAND);
 
             // Messages
             if (showMessage) {
@@ -143,7 +150,7 @@ public class CmdLevel implements IFunction
                 else if (target != sender) {
                     cmd.sendMessage(
                             sender,
-                            GAVE_LEVEL,
+                            set ? SET_LEVEL : GAVE_LEVEL,
                             ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {level} levels",
                             Filter.PLAYER.setReplacement(target.getName()),
                             RPGFilter.LEVEL.setReplacement("" + amount));
