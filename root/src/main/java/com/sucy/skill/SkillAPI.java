@@ -84,6 +84,18 @@ import java.util.stream.Collectors;
  * <p>You can retrieve a reference to this through Bukkit the same way as any other plugin.</p>
  */
 public class SkillAPI extends JavaPlugin {
+    /** 可选治疗桥；返回 true 表示外部插件已完成治疗，避免再次写入 Bukkit。 */
+    public interface SkillHealHandler { boolean heal(Player source, org.bukkit.entity.LivingEntity target, double amount); }
+    private static volatile SkillHealHandler skillHealHandler;
+    public static void setSkillHealHandler(SkillHealHandler handler) { skillHealHandler = handler; }
+    public static boolean handleExternalHeal(Player source, org.bukkit.entity.LivingEntity target, double amount) {
+        SkillHealHandler handler = skillHealHandler;
+        return handler != null && handler.heal(source, target, amount);
+    }
+    /** Compatibility query used by equipment refresh hooks; casting state is not globally tracked. */
+    public static boolean isCasting(Player player) {
+        return false;
+    }
     public static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
     public static SkillAPI singleton;
 
@@ -173,6 +185,8 @@ public class SkillAPI extends JavaPlugin {
 
         // Set up listeners
         listen(new BindListener(), true);
+        // Lore 技能槽绑定只在配置启用且技能栏可用时注册，避免无关服务器事件开销。
+        listen(new ArmorBindListener(), settings.isSkillBarEnabled() && settings.isArmorAutoBindEnabled());
         listen(new BuffListener(), true);
         listen(new MainListener(), true);
         listen(new MechanicListener(), true);
@@ -343,6 +357,11 @@ public class SkillAPI extends JavaPlugin {
      */
     public static Settings getSettings() {
         return singleton().settings;
+    }
+
+    /** Allows Settings to publish itself during construction because GUI defaults are parsed reentrantly. */
+    public static void setSettingsDuringBootstrap(Settings value) {
+        if (singleton != null && singleton.settings == null) singleton.settings = value;
     }
 
     /**

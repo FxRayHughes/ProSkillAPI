@@ -1,202 +1,137 @@
 # ---------------------------------------------- #
-#              General Configuration             #
+#              SkillAPI 主配置文件                #
 # ---------------------------------------------- #
-# If you are unsure of how to use this file,     #
-# but would like to change how the plugin shows  #
-# text, visit the BukkitDev page at:             #
-# http://dev.bukkit.org/bukkit-plugins/skillapi/ #
-# and look at the default configuration section  #
+# 插件官网:                                       #
+# http://dev.bukkit.org/bukkit-plugins/skillapi/  #
 # ---------------------------------------------- #
 Accounts:
   #
-  # The main class group used for GUI displays
+  # GUI显示中使用的主职业组
   main-class-group: class
   #
-  # Allows one "account" per class, providing the "/class switch"
-  # command to change between them. This is an alternative to
-  # using "/class acc <id>" which professes as a class at the same
-  # time and makes it easier to correlate an account to a class.
-  # This will not work well if you have one common class
-  # that turns into the rest.
+  # 暂时禁用，忽略此项
   one-per-class: false
   #
-  # The max number of accounts a normal user can use
+  # 普通玩家可使用的最大账号数量
   max-accounts: 3
   #
-  # The max number of accounts users can have with certain permissions
-  # must be in the format '<permission>:<accounts>'
+  # 拥有特定权限的玩家可拥有的最大账号数
+  # 格式: '<权限节点>:<账号数>'
   perm-accounts:
   - 'skillapi.account.admin:10'
 #
-# While targeting settings aren't necessary most of the time,
-# they can help make running ally checks much faster if
-# you are able to use them.
+# 目标选择设置
 Targeting:
   #
-  # Whether or not all monsters are enemies.
-  # If you are using pets that include zombies/spiders/etc,
-  # you shouldn't enable this.
-  # If you want to enable it for specific worlds, list out the
-  # worlds it should apply to in a list format such as:
-  # monsters-enemy:
-  # - world1
-  # - world2
+  # 是否将所有怪物视为敌人
+  # 如果宠物包含僵尸/蜘蛛等，不要启用
   monsters-enemy: false
   #
-  # Whether or not all passive mobs are allies.
-  # If there are custom passive mobs that you can fight,
-  # you should not enable this.
-  # If you want to enable it for specific worlds, list out the
-  # worlds it should apply to in a list format such as:
-  # passive-ally:
-  # - world1
-  # - world2
+  # 是否将所有被动生物视为友军
   passive-ally: false
   #
-  # Whether or not all players are allies.
-  # If you have any PvP, this should not be enabled.
-  # If you want to enable it for specific worlds, list out the
-  # worlds it should apply to in a list format such as:
-  # player-ally:
-  # - world1
-  # - world2
+  # 是否将所有玩家视为友军（有PvP时不要启用）
   player-ally: false
-  #
-  # Whether or not to check for player allies via Parties
-  parties-ally: false
-  #
-  # Whether or not for skills to affect NPCs
-  affect-npcs: false
-  #
-  # Whether or not for skills to affect armor stands
-  affect-armor-stands: false
 #
+# 数据保存设置
 Saving:
   #
-  # Whether or not to auto save data periodically
+  # 是否定期自动保存数据
   auto-save: false
   #
-  # How often to auto-save in minutes
+  # 自动保存间隔（分钟）
   minutes: 30
   #
-  # false: store player data in the local players.db SQLite file as Gson JSON.
-  # true: store player data in the configured remote SQL database as Gson JSON.
-  # Existing YAML/legacy SQL payloads are recognized and migrated automatically.
+  # 是否使用SQL数据库保存
   sql-database: false
   #
-  # Details for connecting to the database
+  # 数据库连接详情
   sql-details:
-    # Database server type: mysql, mariadb, or postgresql.
-    # Leave as mysql when upgrading; the schema is migrated in place.
-    type: mysql
     host: localhost
-    # Leave blank to use the server type's default port
-    # (3306 for MySQL/MariaDB, 5432 for PostgreSQL).
-    port: 3306
+    port: 54321
     database: plugins
     username: username
     password: password
-    # Time to wait on loading data from the SQL database in ticks.
-    # Can be used to give time for other servers to synchronize data. Note:
-    # this does not apply when loading player data on server startup since
-    # players wouldn't be coming from another server.
     delay: 0
 #
+# 职业设置
 Classes:
   #
-  # Whether ProSkillAPI should apply its class health modifier.
-  # Set this to false to disable every player-health mutation by ProSkillAPI.
-  modify-health: true
+  # 是否使用SkillAPI的生命值系统
+  # SX-Attribute 握手开启时由 SX 独占写入 Bukkit 最大生命，避免重复 modifier。
+  modify-health: false
   #
-  # The default health for players without a class
+  # 没有职业的玩家的默认生命值
   classless-hp: 20
   #
-  # Whether or not non-castable auto-leveled skills are shown
+  # 是否显示自动升级的非施放型技能
   show-auto-skills: false
   #
-  # Whether or not attributes are enabled
-  attributes-enabled: false
-
-  #启用怪物读取SkillAPI属性
-  attributes-mob-enabled: true
-
+  # 是否启用属性系统
+  attributes-enabled: true
   #
-  # Whether or not attributes can be refunded
+  # 是否允许退还属性点
   attributes-downgrade: false
   #
-  # Master switch for ProSkillAPI health handling.
-  # Set this to false when another plugin should control all player health.
-  # Reloading ProSkillAPI removes any modifier left by an earlier enabled state.
-  attributes-heal: true
-  #
-  # This casts the dynamic skill for the player when they level up,
-  # allowing you to use dynamic mechanics for level up effects. If
-  # there is no existing dynamic skill with the name, no effect
-  # will be played. For level-specific effects, use the level condition.
+  # 升级时施放的动态技能（用于升级特效）
   level-up-skill: 'lvlup'
 #
-Mana:
-  #
-  # Whether or not to use SkillAPI's mana system
-  enabled: true
-  #
-  # How frequently mana is gained in seconds
-  freq: 1
-#
+# ---------------------------------------------- #
+#              战斗属性设置                        #
+# ---------------------------------------------- #
 Combat:
   #
-  # Threat table used by the "threat highest/lowest/random" targets and the
-  # taunt, clear threat and shuffle threat mechanics. Threat only applies to
-  # MythicMobs monsters; without that plugin these settings have no effect.
-  threat:
-    #
-    # Whether or not to track threat
-    enabled: true
-    #
-    # Maximum distance in blocks for a heal to generate threat on a monster
-    heal-range: 25.0
-    #
-    # Healing done is multiplied by this to get the threat generated
-    heal-multiplier: 0.5
-    #
-    # Seconds without new threat before a monster forgets a player
-    combat-timeout: 5.0
-  #
-  # Base critical hit multiplier. 1.75 means a crit deals 175% damage.
-  # The final multiplier is this value plus the crit-damage attribute / 100.
+  # 暴击基础倍率（1.75 = 175%伤害）
   base-crit-damage: 1.75
   #
-  # Which attributes.yml attribute backs each combat stat. The value here is
-  # the attribute name as written at the top level of attributes.yml.
-  attributes:
-    crit-rate: '暴击率'
-    crit-damage: '暴击伤害'
-    dodge: '闪避'
-    lifesteal: '吸血'
-    # Tenacity reduces the bonus part of incoming crits. 100 makes crits
-    # deal the same damage as a normal hit.
-    tenacity: '韧性'
+  # 各战斗属性的基础值
+  base-values:
+    crit-rate: '100.0'
+    crit-damage: '100.0'
+    dodge: '100.0'
+    lifesteal: '100.0'
+    armor-penetration: '100.0'
+    threat-power: '100.0'
+    tenacity: '100.0'
+    control-power: '100.0'
+    control-resistance: '100.0'
   #
-  # How each combat stat is derived from its attribute formula. The stat has no
-  # storage of its own: the base value 100 is run through the formula and the
-  # offset is read back.
-  #   inverse  - for formulas like v/(a*0.01+1), reads base - scaled
-  #   additive - for formulas like a+v, reads scaled - base
+  # 各战斗属性的计算模式
+  # inverse(递减): 适用公式 v/(a*0.01+1), 取 base - scaled, 属性越高增益递减
+  # additive(线性): 适用公式 a+v 或 a*0.5+v, 取 scaled - base, 属性=直接增益值
   calc-mode:
     crit-rate: 'inverse'
     crit-damage: 'inverse'
     dodge: 'inverse'
     lifesteal: 'inverse'
-    # Tenacity works best as additive so the attribute value is the
-    # percentage of the crit bonus it cancels out.
+    armor-penetration: 'inverse'
+    # 仇恨强度: additive(线性)推荐，属性值直接等于仇恨加成百分比
+    threat-power: 'additive'
+    # 韧性：additive 推荐（属性值直接等于抵消百分比）
     tenacity: 'additive'
+    # 控制强度：additive 推荐（属性值直接等于增加百分比）
+    control-power: 'additive'
+    # 控制抗性：additive 推荐（属性值直接等于抵消百分比）
+    control-resistance: 'additive'
   #
-  # Combat feedback messages. Placeholders: {attacker} {target} {skill}
-  # {damage} {heal}
+  # 战斗属性对应的属性名称
+  attributes:
+    crit-rate: '暴击率'
+    crit-damage: '暴击伤害'
+    dodge: '闪避'
+    lifesteal: '吸血'
+    armor-penetration: '破甲'
+    threat-power: '仇恨强度'
+    # 韧性：降低受到的暴击"额外"伤害。100 表示暴击等同于普通伤害
+    tenacity: '韧性'
+    # 控制强度：按百分比提升自身对目标施加的眩晕/禁锢/沉默时长
+    control-power: '控制强度'
+    # 控制抗性：按百分比降低自身受到的眩晕/禁锢/沉默时长
+    control-resistance: '控制抗性'
+  #
+  # 战斗消息配置
   message:
-    #
-    # Whether or not to send combat messages to players
-    enabled: false
+    enabled: true
     deal-damage: '&8>> &7你对 &f{target} &7造成了 &c{damage} &7点伤害'
     deal-skill-damage: '&8>> &7你使用 &b{skill} &7对 &f{target} &7造成了 &c{damage} &7点伤害'
     take-damage: '&8<< &f{attacker} &7对你造成了 &c{damage} &7点伤害'
@@ -205,28 +140,116 @@ Combat:
     dodge-attacker: '&8- &f{target} &7闪避了你的攻击'
     dodge-target: '&8- &a你闪避了 &f{attacker} &a的攻击'
     lifesteal-tag: ' &a+{heal}'
+    stun-apply: '&8# &7你对 &f{target} &7施加了 &e眩晕 &8| &f{duration}秒'
+    stun-target: '&8# &f{attacker} &7对你施加了 &e眩晕 &8| &f{duration}秒'
+    root-apply: '&8# &7你对 &f{target} &7施加了 &e禁锢 &8| &f{duration}秒'
+    root-target: '&8# &f{attacker} &7对你施加了 &e禁锢 &8| &f{duration}秒'
+    silence-apply: '&8# &7你对 &f{target} &7施加了 &e沉默 &8| &f{duration}秒'
+    silence-target: '&8# &f{attacker} &7对你施加了 &e沉默 &8| &f{duration}秒'
+    # 隐身消息（仅隐身者自己可见）
+    invis-enter: '&8* &7你进入了 &f隐身 &8| &7持续 &f{duration}秒'
+    invis-end: '&8* &7你的 &f隐身 &7已解除'
+    # 减疗消息（mortal-wound：所有回血来源削减50%）
+    mortal-wound-apply: '&8# &7你对 &f{target} &7施加了 &c减疗 &8| &f{duration}秒'
+    mortal-wound-target: '&8# &f{attacker} &7对你施加了 &c减疗 &8| &f{duration}秒'
+    mortal-wound-expire: '&8* &7你的 &c减疗 &7已解除'
+    # 自然伤害消息（燃烧/摔落/岩浆等）{type}=伤害类型中文名, {damage}=伤害值
+    natural-damage: '&8<< &7你受到了 &e{type} &7伤害 &c{damage}'
+    # 治疗消息 {target}=被治疗者, {healer}=施术者, {amount}=治疗量
+    heal-deal: '&8>> &7你对 &f{target} &7恢复了 &a{amount} &7点生命值'
+    heal-receive: '&8<< &f{healer} &7为你恢复了 &a{amount} &7点生命值'
+  #
+  # 越级作战设置（仅对 MythicMobs 怪物生效）
+  # 依赖 MM 怪物配置中的"怪物等级"字段（未配置时视为 0，此机制不会生效）
+  # 说明：
+  #   - curve 键 = 等级差，值 = 伤害/经验倍率；查表用 floor(diff)
+  #   - damage: diff = 怪物等级 - 玩家等级
+  #   - exp:    diff = 玩家等级 - 怪物等级
+  #   - 首次加载时若 level-gap 段完全缺失，插件会写入默认曲线；已存在则不动
+  #   - 用户可自由删除/新增 curve 条目，插件不会再自动补回被删除的键
+  #   - 请勿在 curve 数值后写行内注释（会被序列化进字符串导致解析失败）
+  level-gap: {}
+  #
+  # 仇恨系统设置（仅对 MythicMobs 怪物生效）
+  threat:
+    # 是否启用仇恨系统
+    enabled: true
+    # 治疗仇恨的最大距离（格）
+    heal-range: 25.0
+    # 治疗仇恨倍率（治疗量 × 此值 = 仇恨值）
+    heal-multiplier: 0.5
+    # 脱战时间（秒），超过此时间无新仇恨则清空仇恨表
+    combat-timeout: 5.0
 #
+# 回血控制设置
+Healing:
+  #
+  # 是否允许饱食度满时自然恢复生命值
+  # false = 饱食度满了也不会自然回血（药水和技能治疗不受影响）
+  allow-saturation-regen: false
+#
+# 自然伤害百分比扣除（按原版20点最大生命值为基准换算）
+# 公式：新伤害 = 目标最大生命值 × (原始伤害 / 20)
+# 例如玩家最大生命200，仙人掌原本扣1点 → 现在扣 200 × (1/20) = 10点
+NaturalDamage:
+  #
+  # 总开关（关闭时所有自然伤害保持原版数值）
+  enabled: true
+  #
+  # 仅对玩家生效（关闭时怪物也按比例缩放）
+  player-only: true
+  #
+  # 应用 SkillAPI 自然伤害防御减伤（玩家用 natural-defense 字段，MM怪物用"自然防御"字段）
+  # 开启后：燃烧/岩浆/中毒等会被独立的"自然防御"减免，与物理防御解耦
+  # 关闭后：百分比伤害穿透防御，强制环境威胁
+  apply-defense: true
+  #
+  # 每种伤害类型的独立开关
+  types:
+    fire: true              # 直接火焰伤害（站在火上）
+    fire-tick: true         # 燃烧持续伤害
+    lava: true              # 岩浆
+    drowning: true          # 缺氧
+    suffocation: true       # 窒息（卡方块）
+    contact: true           # 接触伤害（仙人掌）
+    fall: true              # 摔落伤害
+    poison: true            # 中毒
+    wither: true            # 凋零效果
+    magic: true             # 瞬间伤害药水/末影龙吐息
+    starvation: true        # 饥饿
+    hot-floor: true         # 岩浆块灼烧
+    cramming: true          # 拥挤伤害（1.13+）
+    dragon-breath: true     # 末影龙吐息
+    fly-into-wall: true     # 撞墙（鞘翅）
+    lightning: true         # 闪电
+    thorns: true            # 荆棘附魔反伤
+    void: false             # 虚空（建议关闭，避免百分比换算导致死不掉）
+#
+# 法力值设置
+Mana:
+  #
+  # 是否启用法力值系统
+  enabled: true
+  #
+  # 法力恢复间隔（秒）
+  freq: 5
+#
+# 技能设置
 Skills:
   #
-  # Whether or not players are allowed to downgrade skills
+  # 是否允许降级技能
   allow-downgrade: true
   #
-  # Whether or not messages should be shown on casting a skill
+  # 施放技能时是否显示消息
   show-messages: true
   #
-  # The radius in which to show cast messages to nearby players
+  # 技能施放消息的显示范围（格）
   message-radius: 20
   #
-  # Whether or not to apply damage knockback when damage is blocked
-  # by defensive or offesnive buffs and debuffs
+  # 伤害被增减效果抵消时是否仍然产生击退
   knockback-no-damage: false
   #
-  # Whether the 'data' or 'icon-data' entry in skill mechanics use CustomModelData (1.14+ only).
-  # If false, defaults to material data or durability.
-  use-custommodeldata: false
-  #
-  # Blocks to ignore when using the Block mechanic in dynamic skills
-  # End values in an * to do all materials containing the value
+  # 动态技能方块机制忽略的方块（末尾加*为模糊匹配）
   block-filter:
   - 'chest'
   - 'ender chest'
@@ -235,310 +258,162 @@ Skills:
   - 'wall sign'
   - 'sign post'
 #
+# 物品设置
 Items:
   #
-  # Whether or not to check for class, level, and attribute
-  # requirements in an item's lore
-  lore-requirements: false
+  # 是否检查物品lore中的职业/等级/属性需求
+  lore-requirements: true
   #
-  # Whether or not to check for skill requirements
-  # in an item's lore
+  # 是否检查物品lore中的技能需求
   skill-requirements: false
   #
-  # Whether or not to check for stat bonuses in an item's lore
-  lore-attributes: false
+  # 是否检查物品lore中的属性加成
+  lore-attributes: true
   #
-  # Whether or not to drop weapons when unable to use them
-  drop-weapon: false
+  # 无法使用武器时是否掉落
+  drop-weapon: true
   #
-  # The text used for class requirements in the lore
-  lore-class-text: 'Class Req: '
+  # lore中职业需求的文本
+  lore-class-text: '职业要求: '
   #
-  # The text used for skill requirements in lore
+  # lore中技能需求的文本
   lore-skill-text: 'Requires {skill}: '
   #
-  # the text used for level requirements in the lore
-  lore-level-text: 'Level Req: '
+  # lore中等级需求的文本
+  lore-level-text: '等级要求: '
   #
-  # The text used for excluded classes in the lore
-  lore-exclude-text: 'Excluded Class: '
+  # lore中排除职业的文本
+  lore-exclude-text: '拒绝职业: '
   #
-  # The text used for attribute requirements
-  lore-attribute-text: '{attr} Req: '
+  # lore中属性需求的文本
+  lore-attribute-text: '需要属性 {attr}: '
   #
-  # The text used for providing attributes
+  # lore中属性加成的文本
   attribute-text: '{attr}: '
   #
-  # The slots to check for items in and apply requirements to.
-  # This does not include held item, as that fluctuates and is assumed
-  # Slots are based on the following:
-  # 0-8 = hot bar
-  # 9-35 = main inventory
-  # 36 = boots
-  # 37 = leggings
-  # 38 = chestplate
-  # 39 = helmet
-  # 40 = off hand
+  # 每tick检查装备需求的玩家数（大服增大此值）
+  players-per-check: 1
+  #
+  # 检查lore属性的装备槽位
+  # 0-8=快捷栏, 36=靴子, 37=护腿, 38=胸甲, 39=头盔, 40=副手
   slots:
-  - 36
-  - 37
-  - 38
-  - 39
-  - 40
+  - '36'
+  - '37'
+  - '38'
+  - '39'
+
 #
+# GUI显示设置
 GUI:
   #
-  # Whether or not to lock the health bar to 10 hearts
-  # This does not affect total health, only the display
+  # 是否锁定血条为10颗心（不影响实际血量）
+  # SX-Attribute 负责血条缩放时关闭本地缩放，避免客户端显示互相覆盖。
   old-health-bar: false
   #
-  # Whether or not to force SkillAPI to override
-  # health scaling of other plugins
-  force-scaling: false
+  # 是否强制覆盖其他插件的血量显示
+  force-scaling: true
   #
-  # This is what to display using the level bar, if anything.
-  # Options are: none, mana, level
-  level-bar: none
+  # 经验条显示内容: none/mana/level
+  level-bar: level
   #
-  # This is what to display using the food bar, if anything.
-  # Options are: none, mana, exp
+  # 饥饿条显示内容: none/mana/exp
   food-bar: none
   #
-  # Whether or not to use the action bar
-  use-action-bar: false
+  # 是否使用ActionBar
+  use-action-bar: true
   #
-  # The text to display on the action bar.
-  # Available filters:
-  #   {combo}       - the player's current click combo
-  #   {class}       - the player's main class name
-  #   {level}       - the player's main class level
-  #   {exp}         - the player's main class exp
-  #   {expReq}      - the player's main class required experience
-  #   {expLeft}     - the player's main class experience until the next level
-  #   {health}      - the player's current health
-  #   {maxHealth}   - the player's max health
-  #   {mana}        - the player's current mana
-  #   {maxMana}     - the player's max mana
-  #   {name}        - the name of the player
-  #   {attr}        - the player's attribute points
-  #   {sp}          - the player's main class skill points
-  #   {value:<key>} - a skill value
-  action-bar-text: '{combo}'
+  # ActionBar显示文本
+  # 可用变量:
+  #   {combo}       - 当前连击组合
+  #   {class}       - 主职业名称
+  #   {level}       - 主职业等级
+  #   {exp}         - 当前经验值
+  #   {expReq}      - 升级所需经验
+  #   {expLeft}     - 距下一级还差多少经验
+  #   {health}      - 当前生命值
+  #   {maxHealth}   - 最大生命值
+  #   {mana}        - 当前法力值
+  #   {maxMana}     - 最大法力值
+  #   {name}        - 玩家名
+  #   {attr}        - 属性点数
+  #   {sp}          - 技能点数
+  #   {value:<key>} - 技能数值
+  action-bar-text: '  &c&l❤:&c{health}&6/&c{maxHealth}    &e&l%sapi_mana_name%:&e{mana}&6/&e{maxMana}    &aExp:{exp}&6/&a{expReq}'
+
   #
-  # Whether or not to use title messages
-  title-enabled: false
+  # 是否使用标题消息
+  title-enabled: true
   #
-  # Duration for title messages in seconds
-  title-duration: 3
+  # 标题持续时间（秒）
+  title-duration: 1
   #
-  # Fade in time for title messages in seconds
+  # 标题淡入时间（秒）
   title-fade-in: 0.5
   #
-  # Fade out time for title messages in seconds
+  # 标题淡出时间（秒）
   title-fade-out: 0.5
   #
-  # Messages to display using the Title bar
-  # Second lines of messages will be displayed in the subtitle
-  # Ones you can use include:
-  #   level_up
-  #   exp_gained
-  #   exp_lost
-  #   status
+  # 使用标题显示的消息类型: level_up, exp_gained, exp_lost, status
   title-messages:
   - level_up
   - exp_lost
   #
-  # Whether or not to display class information on a scoreboard
-  scoreboard-enabled: true
+  # 是否使用计分板显示职业信息
+  scoreboard-enabled: false
   #
-  # Whether or not to add a prefix to players with their class name
-  show-class-name: true
+  # 是否在玩家名前显示职业名前缀
+  show-class-name: false
   #
-  # Whether or not to display a player's level below their name
-  show-class-level: true
+  # 是否在玩家名下方显示等级
+  show-class-level: false
   #
-  # The text to show with the player's level when enabled.
-  # This always appears as {level} {text}
-  class-level-text: 'Level'
+  # 等级文本格式（显示为: {等级} {文本}）
+  class-level-text: 'Lv.'
   #
-  # Whether or not to append text to skill icons to show what type of item the skill is bound to
-  show-binds: false
-  #
-  # Text to show for bound materials
-  show-bind-text: 'Bound to {material}'
-  #
-  # Whether the 'data' or 'icon-data' entry in skill icons and tools uses CustomModelData (1.14+ only).
-  # If false, defaults to material data.
-  use-custommodeldata: false
+  # 是否使用地图技能树（替代常规GUI）
+  # 设为 "partial" 可同时支持两种
+  map-tree-enabled: false
 #
-Casting:
-  #
-  # Whether or not the main casting option is enabled
-  enabled: false
-  #
-  # Whether or not to use the mult-bar implementation.
-  # When enabled:
-  # - Left/Right clicking on item opens skill bars
-  # - Skills assigned through tree
-  # - Preview when hovering in the skill bar
-  # - Limited number of skills can be put on skill bars
-  # When disabled:
-  # - Left/Right clicking on item cycles through skills
-  # - Preview when hovering the item
-  # - No limit on skills (though makes cycling hard to find skills)
-  bars: true
-  #
-  # Whether or not to use the combat bar implementation. Details:
-  # - Specified slot becomes a toggle item
-  # - Can optionally move over or require interacting (left, right, or drop) to swap modes
-  # - Swaps between combat mode and passive mode
-  # - In combat mode, works like the classic skill bar
-  # - In passive mode, no skills are shown
-  # - Passive and combat modes each have their own stored contents
-  # - combat mode uses the skill bar settings
-  combat: false
-  #
-  # Global cooldown between skill casts in seconds
-  cooldown: 0
-  #
-  # Settings for skill target indicators that play effects
-  # to show where a skill will hit
-  cast-indicator:
-    #
-    # Whether or not the feature is enabled
-    enabled: true
-    #
-    # How tightly to pack particles in the effect. A higher
-    # density will play more particles. It represents the
-    # amount of particles played per block units
-    density: 1
-    #
-    # How often the particles are played for the effect
-    # in plays per second
-    frequency: 10
-    #
-    # How fast position animations happen in blocks per second
-    animation: 1
-    #
-    # Particle to use when it has a target
-    particle:
-      particle: 'crit'
-      dx: 0
-      dy: 0
-      dz: 0
-      speed: 0
-      amount: 1
-  #
-  # The slot the item is kept in, must be in the range 1-9
-  slot: 9
-  #
-  # The item to use in the cast slot.
-  # When not using bars, this only shows up when no skills
-  # are available for use.
-  item:
-    type: BOOK
-    data: 0
-    durability: 0
-    name: '&dSkills'
-    lore:
-    - ''
-    - '&6Left Click&2 - First skill set'
-    - '&6Right Click&2 - Second skill set'
-    - '&6Q&2 - Organize skills'
-  #
-  # The item used in the bar GUI to describe the hover bar
-  hover-item:
-    type: BOOKSHELF
-    data: 0
-    durability: 0
-    name: '&6Hover Bar'
-    lore:
-    - ''
-    - 'Skills in this row will'
-    - 'be usable via left clicking'
-    - 'the cast item and will let'
-    - 'you see where they will hit'
-    - 'before casting them.'
-  #
-  # The item used in the bar GUI to describe the instant bar
-  instant-item:
-    type: BOOKSHELF
-    data: 0
-    durability: 0
-    name: '&6Instant Bar'
-    lore:
-    - ''
-    - 'Skills in this row will'
-    - 'be usable via right clicking'
-    - 'the cast item and will be'
-    - 'cast immediately when switching'
-    - 'to their slot.'
-#
+# 连击系统设置
 Click Combos:
   #
-  # Whether or not to use click combinations
+  # 是否启用点击连击系统
   enabled: false
   #
-  # Whether or not players can customize their combos
+  # 是否允许玩家自定义连击
   allow-custom: false
   #
-  # Whether or not to automatically assign combos to skills
-  # without a combo manually defined. When disabled, only skills
-  # configured to have a combo or have had a combo set by
-  # a command will have combos.
-  auto-assign: true
-  #
-  # Whether or not left clicks are allowed at all
+  # 是否允许左键点击
   use-click-left: true
   #
-  # Whether or not right clicks are allowed at all
+  # 是否允许右键点击
   use-click-right: true
   #
-  # Whether or not shift clicks are allowed at all
+  # 是否允许Shift点击
   use-click-shift: false
   #
-  # Whether or not right shift clicks are allowed at all
-  # This will disable "use-click-shift" if enabled
-  use-click-right-shift: false
-  #
-  # Whether or not left shift clicks are allowed at all
-  # This will disable "use-click-shift" if enabled
-  use-click-left-shift: false
-  #
-  # Whether or not jump clicks are allowed at all
-  use-click-space: false
-  #
-  # Whether or not Q clicks are allowed at all.
-  # Enabling this disables dropping items via Q outside of menus.
-  use-click-q: false
-  #
-  # Whether or not F clicks are allowed at all.
-  # Enabling this disables swapping items between main and off hand via F.
-  use-click-f: false
-  #
-  # How many clicks are needed to perform a combo
+  # 完成连击所需的点击次数
   combo-size: 4
   #
-  # Inactivity time in seconds before clicks for a combo are reset
+  # 连击重置的无操作时间（秒）
   click-time: 1.0
 #
+# 技能栏设置
 Skill Bar:
   #
-  # Whether or not to use skill bars
+  # 是否启用技能栏
   enabled: false
   #
-  # Whether or not to show skill cooldowns in the skill bar
+  # 是否在技能栏显示冷却时间
   show-cooldown: true
   #
-  # The item to use as a placeholder in the skill bar
+  # 技能栏空位占位物品
   empty-icon:
     material: PUMPKIN_SEEDS
-    durability: 0
     data: 0
-    text: '&7Unassigned'
+    text: '&7未分配'
   #
-  # The default layout for skill bars
-  # Players can customize unlocked slots
+  # 技能栏默认布局（skill=true表示技能槽，false表示物品槽）
   layout:
     1:
       skill: true
@@ -567,116 +442,120 @@ Skill Bar:
     9:
       skill: false
       locked: false
+  #
+  # 防具自动装配技能栏
+  # 启用后，会扫描玩家穿戴防具的lore，匹配 detect-text 中的格式提取技能名，
+  # 然后按 slot-mapping 的对应关系自动装配到技能栏槽位
+  armor-auto-bind:
+    enabled: false
+    # 检测文本模板，{skill}会替换为技能名
+    detect-text: '附带技能: {skill}'
+    # 防具→槽位映射（槽位编号1-9）
+    # helmet=头盔、chestplate=胸甲、leggings=护腿、boots=靴子、offhand=副手
+    slot-mapping:
+      helmet: 1
+      chestplate: 2
+      leggings: 3
+      boots: 4
+      offhand: 5
+    # 副手白名单：只有lore中包含此文本的物品才能放入副手槽
+    # 设为 NONE 则不限制副手
+    offhand-whitelist-lore: 'NONE'
 #
+# 经验值设置
 Experience:
   #
-  # Whether or not to use vanilla exp drops for class exp
-  # Note: any dropped exp will not count towards class exp,
-  # only enabled sources will count. By default, this is only
-  # mob deaths.
+  # 是否使用原版经验球作为职业经验
+  # 注意: 掉落的经验不算职业经验，只有启用的来源才算
   use-exp-orbs: true
   #
-  # Whether or not to prevent gaining experience from mobs
-  # spawned via a mob spawner block
+  # 是否屏蔽刷怪笼产生的怪物经验
   block-mob-spawner: true
   #
-  # Whether or not to prevent gaining experience from mobs
-  # spawned via a mob spawn egg
+  # 是否屏蔽刷怪蛋产生的怪物经验
   block-mob-egg: true
   #
-  # Whether or not to prevent gaining experience while
-  # in creative mode
+  # 是否在创造模式下屏蔽经验获取
   block-creative: true
   #
-  # Whether or not to display a message when gaining experience
+  # 获得经验时是否显示消息
   exp-message-enabled: true
   #
-  # Whether or not to display a message when gaining a level
+  # 升级时是否显示消息
   level-message-enabled: true
   #
-  # Whether or not to show a message when losing exp de to dying
+  # 死亡丢失经验时是否显示消息
   lose-exp-message: true
   #
-  # Worlds where experience is not lost on death
-  lose-exp-blacklist:
-  - 'pvpWorld'
-  #
-  # The formula used for calculating required experience
-  # The formula is: x*lvl*lvl + y*lvl + z
+  # 升级经验公式: x*lvl*lvl + y*lvl + z
   formula:
     x: 1
     y: 8
     z: 16
   #
-  # Whether or not to use a custom equation
+  # 是否使用自定义公式
   use-custom: false
   #
-  # The custom formula to use with 'lvl' being the current player level
-  # Note: this formula does not use x, y, or z. Use numbers directly
-  # in the formula instead.
+  # 自定义公式（lvl为当前等级）
   custom-formula: '25(1.1^(lvl-1))'
   #
-  # The experience yields from each mob type
-  # When exp orbs are enabled, these values are ignored
+  # 各怪物击杀经验值（启用经验球时忽略此项）
   yields:
-    blaze: '10'
-    cavespider: '5'
-    creeper: '3'
-    elderguardian: '10'
-    enderdragon: '400'
-    enderman: '5'
-    endermite: '3'
-    evoker: '10'
-    ghast: '5'
-    giant: '20'
-    guardian: '10'
-    husk: '2'
-    irongolem: '10'
-    magmacube: '1'
-    pigzombie: '5'
-    player: '5'
-    shulker: '5'
-    silverfish: '2'
-    skeleton: '3'
-    slime: '1'
-    spider: '3'
-    stray: '5'
-    vex: '3'
-    vindicator: '5'
-    witch: '3'
-    wither: '500'
-    witherskeleton: '5'
-    zombie: '2'
+    blaze: 10
+    cavespider: 5
+    creeper: 3
+    elderguardian: 10
+    enderdragon: 400
+    enderman: 5
+    endermite: 3
+    ghast: 5
+    giant: 20
+    guardian: 10
+    irongolem: 10
+    magmacube: 1
+    pigzombie: 5
+    player: 5
+    shulker: 5
+    silverfish: 2
+    skeleton: 3
+    slime: 1
+    spider: 3
+    witch: 3
+    wither: 500
+    witherskeleton: 5
+    zombie: 2
 #
-# How much logging to do when loading SkillAPI
-# When testing setting up skills/classes, increase this to 1-5
+# 日志设置（调试用，0=关闭，1-5=详细程度）
 Logging:
   #
-  # Logs for loading attributes
+  # 属性加载日志
   attribute-load: 0
   #
-  # Logs for attack/defense buffs applying
+  # 攻击/防御增减效果日志
   buff: 0
   #
-  # Logs for registration of skills and classes
+  # 技能和职业注册日志
   registration: 0
   #
-  # Logs for GUI updates
+  # GUI更新日志
   gui: 0
   #
-  # Logs for mana updates
+  # 法力更新日志
   mana: 0
 #
+# 世界限制设置
 Worlds:
   #
-  # Whether or not to enable the world restriction
+  # 是否启用世界限制
   enable: false
   #
-  # Whether or not to use the list as an enabling list
-  # If true, only worlds in the list will let players use SkillAPI
-  # If false, any world not in the list will let players use SkillAPI
+  # true=仅列表中的世界可用SkillAPI
+  # false=列表中的世界禁用SkillAPI
   use-as-enabling: true
   #
-  # The worlds to include in the enable/disable list
+  # 世界列表
   worlds:
   - world
+# ProSkillAPI 与 SX-Attribute 双向桥接；SX 侧也必须显式开启。
+SX-Attribute:
+  enabled: false

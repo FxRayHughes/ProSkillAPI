@@ -70,6 +70,17 @@ import java.util.List;
  * the class to extend when creating your own custom skills.
  */
 public abstract class Skill implements IconHolder {
+    /** 外部伤害管线扩展点；未注册时保留原有 Bukkit 行为。 */
+    public interface SkillDamageHandler {
+        boolean damage(Skill skill, LivingEntity target, double amount, LivingEntity source,
+                       String classification, boolean trueDamage);
+    }
+    private static volatile SkillDamageHandler skillDamageHandler;
+
+    /** 注册 SX-Attribute 等外部伤害处理器，传 null 可恢复本地处理。 */
+    public static void setSkillDamageHandler(SkillDamageHandler handler) {
+        skillDamageHandler = handler;
+    }
     private static final DecimalFormat FORMAT = new DecimalFormat("#########0.0#");
 
     private final ArrayList<String> description = new ArrayList<>();
@@ -698,6 +709,8 @@ public abstract class Skill implements IconHolder {
      * @param knockback      whether the damage should apply knockback
      */
     public void damage(LivingEntity target, double damage, LivingEntity source, String classification, boolean knockback) {
+        SkillDamageHandler handler = skillDamageHandler;
+        if (handler != null && handler.damage(this, target, damage, source, classification, false)) return;
         if (target instanceof TempEntity) {
             return;
         }
@@ -755,6 +768,9 @@ public abstract class Skill implements IconHolder {
      */
     public void trueDamage(LivingEntity target, double damage, LivingEntity source) {
         if (target instanceof TempEntity) return;
+
+        SkillDamageHandler handler = skillDamageHandler;
+        if (handler != null && handler.damage(this, target, damage, source, "true", true)) return;
 
         TrueDamageEvent event = new TrueDamageEvent(this, source, target, damage);
         Bukkit.getPluginManager().callEvent(event);

@@ -113,7 +113,11 @@ public class HealMechanic extends MechanicComponent {
             SkillHealEvent event = new SkillHealEvent(other , target, skill, amount);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                VersionManager.heal(target, event.getAmount());
+                // SX-Attribute 开启时在 Bukkit 写入前接管治疗，关闭或不兼容则保持原生路径。
+                if (!(other instanceof org.bukkit.entity.Player)
+                        || !com.sucy.skill.SkillAPI.handleExternalHeal((org.bukkit.entity.Player) other, target, event.getAmount())) {
+                    VersionManager.heal(target, event.getAmount());
+                }
             }
         }
         return targets.size() > 0;
