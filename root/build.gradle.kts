@@ -290,10 +290,16 @@ val optionalIntegrations = listOf(":root:integration:dragoncore")
 val bundleIntegrations = (findProperty("bundle.integrations") as String?)?.toBoolean() ?: false
 
 tasks.jar {
+    // The embedded module jars must be built before their contents are copied;
+    // otherwise Gradle can produce a successful but incomplete plugin jar.
+    dependsOn(bundledModules.map { project(it).tasks.named("classes") })
     // Required modules are folded in so administrators still deploy one jar
     // while the source tree keeps versioned concerns isolated.
     bundledModules.forEach { path ->
-        from(project(path).tasks.named("jar").map { zipTree(it.outputs.files.singleFile) })
+        // Consume compiled classes directly. Some optional modules have
+        // compileOnly server APIs, so relying on runtimeClasspath silently
+        // omits their implementations from the distributable jar.
+        from(project(path).sourceSets.main.get().output)
     }
     if (bundleIntegrations) {
         optionalIntegrations.forEach { path ->
@@ -310,6 +316,11 @@ tasks.jar {
 tasks.shadowJar {
     archiveClassifier.set("")
     configurations = listOf(project.configurations.runtimeClasspath.get())
+    // shadowJar does not inherit custom inputs from jar; repeat the embedded
+    // module outputs so the release artifact contains every implementation.
+    bundledModules.forEach { path ->
+        from(project(path).sourceSets.main.get().output)
+    }
     relocate("com.cryptomorin.xseries", "com.sucy.skill.libs.xseries")
     relocate("de.tr7zw.changeme.nbtapi", "com.sucy.skill.libs.nbtapi")
 }
