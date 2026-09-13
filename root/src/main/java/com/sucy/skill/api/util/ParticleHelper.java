@@ -136,7 +136,8 @@ public class ParticleHelper {
      * @param effect entity effect to play
      */
     public static void play(Location loc, EntityEffect effect) {
-        Wolf wolf = (Wolf) loc.getWorld().spawnEntity(loc, EntityType.WOLF);
+            Wolf wolf = (Wolf) loc.getWorld().spawnEntity(loc,
+                    com.cryptomorin.xseries.XEntityType.WOLF.get());
         wolf.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100));
         wolf.playEffect(effect);
         wolf.remove();
@@ -155,7 +156,7 @@ public class ParticleHelper {
             double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
             int amount = (int) settings.getAttr(PARTICLES_KEY, level, 10);
 
-            String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
+            String arrangement = settings.getString(ARRANGEMENT_KEY, "circle").toLowerCase();
             if (arrangement.equals("circle")) {
                 Direction dir = null;
                 if (settings.has(DIRECTION_KEY)) {

@@ -160,7 +160,7 @@ public class ItemMechanic extends MechanicComponent
             meta.setLore(lore);
         }
         if (SkillAPI.getSettings().useSkillModelData()) {
-            meta.setCustomModelData(data);
+            com.sucy.skill.api.util.MaterialCompat.setCustomModelData(meta, data);
         } else if (!com.sucy.skill.api.util.MaterialCompat.isFlattened()) {
             item.setData(new MaterialData(material, (byte) data));
         }

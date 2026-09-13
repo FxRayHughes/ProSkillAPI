@@ -29,6 +29,7 @@ package com.sucy.skill.api;
 import com.google.common.collect.ImmutableList;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.config.parse.NumberParser;
+import com.sucy.skill.api.util.ConfigValues;
 import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
@@ -244,14 +245,15 @@ public class Settings {
      *
      * @return string list or empty list if not found
      */
-    @SuppressWarnings("unchecked")
     public List<String> getStringList(String key) {
         if (settings.containsKey(key)) {
             final Object value = settings.get(key);
             if (value instanceof List<?>) {
-                return (List<String>) settings.get(key);
+                // JSON arrays are not guaranteed to contain String instances;
+                // normalize every element before exposing the typed API.
+                return ConfigValues.strings((List<?>) value);
             } else {
-                return ImmutableList.of(value.toString());
+                return ImmutableList.of(String.valueOf(value));
             }
         } else {
             return new ArrayList<>();

@@ -80,8 +80,8 @@ public class DirectionCondition extends ConditionComponent
     @Override
     public void load(DynamicSkill skill, DataSection config) {
         super.load(skill, config);
-        towards = settings.getString(DIRECTION).equalsIgnoreCase("towards");
-        test = settings.getString(TYPE).equalsIgnoreCase("target")
+        towards = settings.getString(DIRECTION, "Towards").equalsIgnoreCase("towards");
+        test = settings.getString(TYPE, "Caster").equalsIgnoreCase("target")
                 ? (caster, target) -> TargetHelper.isInFront(target, caster)
                 : TargetHelper::isInFront;
     }

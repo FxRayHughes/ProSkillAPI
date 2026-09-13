@@ -74,7 +74,7 @@ public class ManaCondition extends ConditionComponent {
             return false;
         }
 
-        final String type = settings.getString(TYPE).toLowerCase();
+        final String type = settings.getString(TYPE, "Mana").toLowerCase();
         final double min = parseValues(caster, MIN, level, 0);
         final double max = parseValues(caster, MAX, level, 99);
         final PlayerData data = SkillAPI.getPlayerData((Player) target);

@@ -27,6 +27,7 @@
 package com.sucy.skill.api.particle;
 
 import org.bukkit.Particle;
+import com.cryptomorin.xseries.particles.XParticle;
 
 import java.util.HashMap;
 
@@ -37,6 +38,14 @@ public class ParticleLookup
 
     public static Particle find(String key)
     {
+        if (key == null || key.trim().isEmpty()) return null;
+        // XSeries normalizes renamed particle constants across server versions.
+        try {
+            Particle particle = XParticle.of(key).map(XParticle::get).orElse(null);
+            if (particle != null) return particle;
+        } catch (Throwable ignored) {
+            // Keep the legacy editor/particle table as a fallback.
+        }
         try {
             return Particle.valueOf(key.toUpperCase().replace(" ", "_"));
         } catch (IllegalArgumentException e) {

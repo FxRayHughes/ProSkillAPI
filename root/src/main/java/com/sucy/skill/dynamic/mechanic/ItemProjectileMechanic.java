@@ -247,7 +247,8 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         Material mat = Material.JACK_O_LANTERN;
         try {
-            mat = Material.valueOf(settings.getString(ITEM).toUpperCase().replace(" ", "_"));
+            mat = com.sucy.skill.api.util.MaterialCompat.resolve(
+                    settings.getString(ITEM, "ARROW"), 0, true);
         } catch (Exception ex) {
             // Invalid or missing item material
         }
@@ -255,7 +256,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
         int data = settings.getInt(DATA, 0);
         if (SkillAPI.getSettings().useSkillModelData()) {
             ItemMeta meta = item.getItemMeta();
-            meta.setCustomModelData(data);
+            com.sucy.skill.api.util.MaterialCompat.setCustomModelData(meta, data);
             item.setItemMeta(meta);
         } else {
             item.setDurability((short) data);

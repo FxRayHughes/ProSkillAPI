@@ -29,6 +29,7 @@ package com.sucy.skill.api.util;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -50,17 +51,17 @@ public class Data {
 
     private static ItemStack parse(final String mat, final short dur, final int data, final List<String> lore) {
         try {
-            // Resolve legacy color/data before constructing the flattened item.
-            Material material = MaterialCompat.resolve(mat, data, true);
-            if (material == null) {
-                material = Material.JACK_O_LANTERN;
-            }
-
-            final ItemStack item = new ItemStack(material);
+            // Resolve legacy color/data through the shared material boundary;
+            // this preserves stained-glass colors on flattened servers.
+            final Material resolved = MaterialCompat.resolve(mat, data, true);
+            final ItemStack item = resolved == null
+                    ? XMaterial.JACK_O_LANTERN.parseItem()
+                    : new ItemStack(resolved);
+            final Material material = item.getType();
             final ItemMeta meta = item.getItemMeta();
             if (SkillAPI.getSettings().useGUIModelData()) {
                 if (data!=0) {
-                    meta.setCustomModelData(data);
+                    MaterialCompat.setCustomModelData(meta, data);
                 }
             } else if (!MaterialCompat.isFlattened()) {
                 item.setData(new MaterialData(material, (byte) data));
@@ -85,7 +86,7 @@ public class Data {
             }
             return DamageLoreRemover.removeAttackDmg(item);
         } catch (final Exception ex) {
-            return new ItemStack(Material.JACK_O_LANTERN);
+            return XMaterial.JACK_O_LANTERN.parseItem();
         }
     }
 
@@ -96,11 +97,15 @@ public class Data {
      * @param config config to serialize into
      */
     public static void serializeIcon(ItemStack item, DataSection config) {
+        // Legacy Bukkit may return a null meta for malformed/unsupported icon
+        // data; preserve the material while avoiding startup-wide failure.
+        if (item == null) item = XMaterial.JACK_O_LANTERN.parseItem();
         config.set(MAT, item.getType().name());
 
         ItemMeta meta = item.getItemMeta();
         if (SkillAPI.getSettings().useGUIModelData()) {
-            config.set(DATA, meta.hasCustomModelData() ? meta.getCustomModelData() : 0);
+            Integer modelData = MaterialCompat.getCustomModelData(meta);
+            config.set(DATA, modelData == null ? 0 : modelData);
         } else {
             config.set(DATA, item.getData().getData());
         }
@@ -112,7 +117,7 @@ public class Data {
             else config.set(DURABILITY, 0);
         }
 
-        if (meta.hasDisplayName()) {
+        if (meta != null && meta.hasDisplayName()) {
             List<String> lore = item.getItemMeta().getLore();
             if (lore == null) { lore = new ArrayList<>(); }
             lore.add(0, item.getItemMeta().getDisplayName());
@@ -131,7 +136,7 @@ public class Data {
      */
     public static ItemStack parseIcon(DataSection config) {
         if (config == null) {
-            return new ItemStack(Material.JACK_O_LANTERN);
+            return XMaterial.JACK_O_LANTERN.parseItem();
         }
 
         final int data = config.getInt(DATA, 0);
@@ -139,6 +144,6 @@ public class Data {
                 config.getString(MAT, "JACK_O_LANTERN"),
                 (short) config.getInt(DURABILITY, data),
                 data,
-                config.getList(LORE, null));
+                ConfigValues.strings(config.getList(LORE, null)));
     }
 }

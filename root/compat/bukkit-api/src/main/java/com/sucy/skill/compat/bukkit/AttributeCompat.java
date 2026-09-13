@@ -6,7 +6,6 @@
  */
 package com.sucy.skill.compat.bukkit;
 
-import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 
 /**
@@ -33,12 +32,21 @@ public final class AttributeCompat {
      */
     private static Attribute find(String... names) {
         for (String name : names) {
-            Attribute resolved = EnumCompat.valueOf(Attribute.class, name, Registry.ATTRIBUTE);
+            Attribute resolved = EnumCompat.valueOf(Attribute.class, name, attributeRegistry());
             if (resolved != null) {
                 return resolved;
             }
         }
         return null;
+    }
+
+    /** Looks up the modern registry lazily so 1.12 can load this class. */
+    private static Object attributeRegistry() {
+        try {
+            return Class.forName("org.bukkit.Registry").getField("ATTRIBUTE").get(null);
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            return null;
+        }
     }
 
 }

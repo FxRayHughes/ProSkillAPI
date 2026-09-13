@@ -131,7 +131,7 @@ public class DisguiseMechanic extends MechanicComponent {
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         if (!PluginChecker.isDisguiseActive()) { return false; }
 
-        String type = settings.getString(TYPE);
+        String type = settings.getString(TYPE, "");
 
         // Mob disguises
         if (type.equalsIgnoreCase("mob")) {

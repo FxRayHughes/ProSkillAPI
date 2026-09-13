@@ -75,7 +75,7 @@ public class MessageMechanic extends MechanicComponent
         if (targets.size() == 0 || !settings.has(MESSAGE))
             return false;
 
-        String message = TextFormatter.colorString(settings.getString(MESSAGE));
+        String message = TextFormatter.colorString(settings.getString(MESSAGE, ""));
         if (message == null) return false;
 
         // Display message

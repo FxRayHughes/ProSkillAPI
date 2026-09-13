@@ -103,6 +103,12 @@ public class AttributeMechanic extends MechanicComponent {
      */
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        // 属性管理器只在 attributes-enabled=true 时创建；技能配置可能仍引用
+        // 属性节点，因此必须在事件和属性写入前短路，避免关闭模块时产生 NPE。
+        // 这是可选效果，跳过它仍让同一技能的其他子节点继续执行。
+        if (SkillAPI.getAttributeManager() == null) {
+            return true;
+        }
         String key = settings.getString(KEY, "");
         if (targets.size() == 0) {
             return false;

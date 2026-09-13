@@ -29,6 +29,7 @@ package com.sucy.skill.api.particle;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.particle.direction.Directions;
 import com.sucy.skill.api.particle.target.EffectTarget;
+import com.sucy.skill.api.util.MaterialCompat;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -125,7 +126,8 @@ public class EffectPlayer {
                     (float) settings.getDouble(keyMod + DZ),
                     (float) settings.getDouble(keyMod + SPEED, 1),
                     settings.getInt(keyMod + AMOUNT, 1),
-                    Material.matchMaterial(settings.getString(keyMod + MAT, "DIRT")),
+                    MaterialCompat.resolve(settings.getString(keyMod + MAT, "DIRT"),
+                            settings.getInt(keyMod + DATA, 0), true),
                     settings.getInt(keyMod + DATA, 0)
             );
         } catch (Exception ex) {

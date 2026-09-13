@@ -56,57 +56,57 @@ public class CmdManager {
      * Initializes commands with MCCore's CommandManager
      */
     public void initialize() {
-        ConfigurableCommand root = new ConfigurableCommand(api, "class", SenderType.ANYONE);
+        ConfigurableCommand root = new ChineseConfigurableCommand(api, "class", SenderType.ANYONE);
         root.addSubCommands(
-                new ConfigurableCommand(api, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "Binds a skill", "<skill>", Permissions.BASIC),
-                new ConfigurableCommand(api, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", Permissions.BASIC),
-                new ConfigurableCommand(api, "changeclass", SenderType.ANYONE, new CmdChangeClass(), "Swaps classes", "<player> <group> <class>", Permissions.FORCE),
-                new ConfigurableCommand(api, "clearbind", SenderType.PLAYER_ONLY, new CmdClearBinds(), "Clears skill binds", "", Permissions.BASIC),
-                new ConfigurableCommand(api, "customize", SenderType.PLAYER_ONLY, new CmdCustomize(), "Opens GUI editor", "", Permissions.GUI),
-                new ConfigurableCommand(api, "exp", SenderType.ANYONE, new CmdExp(), "Gives players exp", "[player] <amount> [group]", Permissions.LVL),
-                new ConfigurableCommand(api, "info", SenderType.ANYONE, new CmdInfo(), "Shows class info", "[player]", Permissions.BASIC),
-                new ConfigurableCommand(api, "level", SenderType.ANYONE, new CmdLevel(), "Gives players levels", "[player] <amount> [group]", Permissions.LVL),
-                new ConfigurableCommand(api, "list", SenderType.ANYONE, new CmdList(), "Displays accounts", "[player]", Permissions.BASIC),
-                new ConfigurableCommand(api, "lore", SenderType.PLAYER_ONLY, new CmdLore(), "Adds lore to item", "<lore>", Permissions.LORE),
-                new ConfigurableCommand(api, "mana", SenderType.ANYONE, new CmdMana(), "Gives player mana", "[player] <amount>", Permissions.MANA),
-                new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "", Permissions.BASIC),
-                new ConfigurableCommand(api, "points", SenderType.ANYONE, new CmdPoints(), "Gives player points", "[player] <amount>", Permissions.POINTS),
-                new ConfigurableCommand(api, "setpoints", SenderType.ANYONE, new CmdSkillPoints(), "设置某技能的点数", "<player> <amount> <skill>", Permissions.POINTS),
-                PROFESS_COMMAND = new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC),
-                new ConfigurableCommand(api, "reload", SenderType.ANYONE, new CmdReload(), "Reloads the plugin", "", Permissions.RELOAD),
-                new ConfigurableCommand(api, "reset", SenderType.PLAYER_ONLY, new CmdReset(), "Resets account data", "", Permissions.BASIC),
-                new ConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "Shows player skills", "", Permissions.BASIC),
-                new ConfigurableCommand(api,"skilluplevel", SenderType.PLAYER_ONLY, new CmdSkillUpdate(), "升级技能","技能 等级 玩家ID", Permissions.LVL),
-                new ConfigurableCommand(api, "unbind", SenderType.PLAYER_ONLY, new CmdUnbind(), "Unbinds held item", "", Permissions.BASIC),
-                new ConfigurableCommand(api, "world", SenderType.PLAYER_ONLY, new CmdWorld(), "Moves to world", "<world>", Permissions.WORLD),
-                new ConfigurableCommand(api, "mustcast", SenderType.ANYONE, new CmdForceEntityCast(), "强制实体释放技能", "", Permissions.BASIC)
+                new ChineseConfigurableCommand(api, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "绑定技能", "<技能>", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "释放技能", "<技能>", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "changeclass", SenderType.ANYONE, new CmdChangeClass(), "切换职业", "<玩家> <职业组> <职业>", Permissions.FORCE),
+                new ChineseConfigurableCommand(api, "clearbind", SenderType.PLAYER_ONLY, new CmdClearBinds(), "清除技能绑定", "", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "customize", SenderType.PLAYER_ONLY, new CmdCustomize(), "打开编辑界面", "", Permissions.GUI),
+                new ChineseConfigurableCommand(api, "exp", SenderType.ANYONE, new CmdExp(), "给予经验", "[玩家] <数量> [职业组]", Permissions.LVL),
+                new ChineseConfigurableCommand(api, "info", SenderType.ANYONE, new CmdInfo(), "查看职业信息", "[玩家]", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "level", SenderType.ANYONE, new CmdLevel(), "给予等级", "[玩家] <数量> [职业组]", Permissions.LVL),
+                new ChineseConfigurableCommand(api, "list", SenderType.ANYONE, new CmdList(), "查看账户", "[玩家]", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "lore", SenderType.PLAYER_ONLY, new CmdLore(), "添加物品描述", "<描述>", Permissions.LORE),
+                new ChineseConfigurableCommand(api, "mana", SenderType.ANYONE, new CmdMana(), "给予魔力", "[玩家] <数量>", Permissions.MANA),
+                new ChineseConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "查看转职选项", "", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "points", SenderType.ANYONE, new CmdPoints(), "给予技能点", "[玩家] <数量>", Permissions.POINTS),
+                new ChineseConfigurableCommand(api, "setpoints", SenderType.ANYONE, new CmdSkillPoints(), "设置某技能的点数", "<玩家> <数量> <技能>", Permissions.POINTS),
+                PROFESS_COMMAND = new ChineseConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "转职", "<职业>", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "reload", SenderType.ANYONE, new CmdReload(), "重载插件", "", Permissions.RELOAD),
+                new ChineseConfigurableCommand(api, "reset", SenderType.PLAYER_ONLY, new CmdReset(), "重置账户数据", "", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "查看技能", "", Permissions.BASIC),
+                new ChineseConfigurableCommand(api,"skilluplevel", SenderType.PLAYER_ONLY, new CmdSkillUpdate(), "升级技能","技能 等级 玩家ID", Permissions.LVL),
+                new ChineseConfigurableCommand(api, "unbind", SenderType.PLAYER_ONLY, new CmdUnbind(), "解除手持物品绑定", "", Permissions.BASIC),
+                new ChineseConfigurableCommand(api, "world", SenderType.PLAYER_ONLY, new CmdWorld(), "传送到世界", "<世界>", Permissions.WORLD),
+                new ChineseConfigurableCommand(api, "mustcast", SenderType.ANYONE, new CmdForceEntityCast(), "强制实体释放技能", "<实体UUID> <技能> [等级]", Permissions.BASIC)
         );
         root.addSubCommands(
-                new ConfigurableCommand(api, "forceaccount", SenderType.CONSOLE_ONLY, new CmdForceAccount(), "Changes player's account", "<player> <accountId>", Permissions.FORCE),
-                new ConfigurableCommand(api, "forceattr", SenderType.CONSOLE_ONLY, new CmdForceAttr(), "Refunds/gives attributes", "<player> [attr] [amount]", Permissions.FORCE),
-                new ConfigurableCommand(api, "forcecast", SenderType.CONSOLE_ONLY, new CmdForceCast(), "Player casts the skill", "<player> <skill> [level]", Permissions.FORCE),
-                new ConfigurableCommand(api, "forcecastb", SenderType.CONSOLE_ONLY, new CmdForceCastB(), "Player casts the skill NeedCooldown", "<player> <skill> [level]", Permissions.FORCE),
-                new ConfigurableCommand(api, "forceprofess", SenderType.CONSOLE_ONLY, new CmdForceProfess(), "Professes a player", "<player> <class>", Permissions.FORCE),
-                new ConfigurableCommand(api, "forcereset", SenderType.CONSOLE_ONLY, new CmdForceReset(), "Resets player data", "<player> [account]", Permissions.FORCE),
-                new ConfigurableCommand(api, "forceskill", SenderType.CONSOLE_ONLY, new CmdForceSkill(), "Modifies skill levels", "<player> <up|down|reset> <skill>", Permissions.FORCE)
+                new ChineseConfigurableCommand(api, "forceaccount", SenderType.CONSOLE_ONLY, new CmdForceAccount(), "切换玩家账户", "<玩家> <账户ID>", Permissions.FORCE),
+                new ChineseConfigurableCommand(api, "forceattr", SenderType.CONSOLE_ONLY, new CmdForceAttr(), "返还或给予属性点", "<玩家> [属性] [数量]", Permissions.FORCE),
+                new ChineseConfigurableCommand(api, "forcecast", SenderType.CONSOLE_ONLY, new CmdForceCast(), "强制玩家释放技能", "<玩家> <技能> [等级]", Permissions.FORCE),
+                new ChineseConfigurableCommand(api, "forcecastb", SenderType.CONSOLE_ONLY, new CmdForceCastB(), "强制玩家释放技能（忽略冷却）", "<玩家> <技能> [等级]", Permissions.FORCE),
+                new ChineseConfigurableCommand(api, "forceprofess", SenderType.CONSOLE_ONLY, new CmdForceProfess(), "强制玩家转职", "<玩家> <职业>", Permissions.FORCE),
+                new ChineseConfigurableCommand(api, "forcereset", SenderType.CONSOLE_ONLY, new CmdForceReset(), "重置玩家数据", "<玩家> [账户]", Permissions.FORCE),
+                new ChineseConfigurableCommand(api, "forceskill", SenderType.CONSOLE_ONLY, new CmdForceSkill(), "修改技能等级", "<玩家> <up|down|reset> <技能>", Permissions.FORCE)
         );
         if (SkillAPI.getSettings().isOnePerClass()) {
-            root.addSubCommand(new ConfigurableCommand(api, "switch", SenderType.PLAYER_ONLY, new CmdSwitch(), "Changes class", "<class>", Permissions.BASIC));
+            root.addSubCommand(new ChineseConfigurableCommand(api, "switch", SenderType.PLAYER_ONLY, new CmdSwitch(), "切换职业", "<职业>", Permissions.BASIC));
         } else {
-            root.addSubCommand(new ConfigurableCommand(api, "acc", SenderType.PLAYER_ONLY, new CmdAccount(), "Changes account", "<accountId>", Permissions.BASIC));
+            root.addSubCommand(new ChineseConfigurableCommand(api, "acc", SenderType.PLAYER_ONLY, new CmdAccount(), "切换账户", "<账户ID>", Permissions.BASIC));
         }
         // Player data is always stored in the local SQLite backend, so the
         // maintenance command must not depend on the legacy remote-SQL flag.
-        root.addSubCommand(new ConfigurableCommand(api, "backup", SenderType.ANYONE, new CmdBackup(), "Backs up SQL data", "", Permissions.BACKUP));
+        root.addSubCommand(new ChineseConfigurableCommand(api, "backup", SenderType.ANYONE, new CmdBackup(), "备份数据", "", Permissions.BACKUP));
         if (SkillAPI.getSettings().isSkillBarEnabled()) {
-            root.addSubCommand(new ConfigurableCommand(api, "bar", SenderType.PLAYER_ONLY, new CmdBar(), "Toggles skill bar", "", Permissions.BASIC));
+            root.addSubCommand(new ChineseConfigurableCommand(api, "bar", SenderType.PLAYER_ONLY, new CmdBar(), "切换技能栏", "", Permissions.BASIC));
         }
         if (SkillAPI.getSettings().isCustomCombosAllowed()) {
-            root.addSubCommand(new ConfigurableCommand(api, "combo", SenderType.PLAYER_ONLY, new CmdCombo(), "Sets skill combo", "<skill> <combo>", Permissions.BASIC));
+            root.addSubCommand(new ChineseConfigurableCommand(api, "combo", SenderType.PLAYER_ONLY, new CmdCombo(), "设置技能连招", "<技能> <连招>", Permissions.BASIC));
         }
         if (SkillAPI.getSettings().isAttributesEnabled()) {
-            root.addSubCommand(new ConfigurableCommand(api, "ap", SenderType.ANYONE, new CmdAP(), "Gives attrib points", "[player] <amount>", Permissions.ATTRIB));
-            root.addSubCommand(new ConfigurableCommand(api, "attr", SenderType.PLAYER_ONLY, new CmdAttribute(), "Opens attribute menu", "", Permissions.BASIC));
+            root.addSubCommand(new ChineseConfigurableCommand(api, "ap", SenderType.ANYONE, new CmdAP(), "给予属性点", "[玩家] <数量>", Permissions.ATTRIB));
+            root.addSubCommand(new ChineseConfigurableCommand(api, "attr", SenderType.PLAYER_ONLY, new CmdAttribute(), "打开属性界面", "", Permissions.BASIC));
         }
         CommandManager.registerCommand(root);
     }

@@ -622,8 +622,10 @@ public abstract class Skill implements IconHolder {
      */
     protected Object getAttr(LivingEntity caster, String key, int level) {
         Object result = settings.getObj(key, level);
-        if (result instanceof Double) {
-            return format((Double) result);
+        if (result instanceof Number) {
+            // YAML and Gson use different concrete numeric classes; the
+            // formatting contract only needs their common numeric value.
+            return format(((Number) result).doubleValue());
         }
         return result;
     }
@@ -863,10 +865,10 @@ public abstract class Skill implements IconHolder {
 
         if (config.isList(DESC)) {
             description.clear();
-            description.addAll(config.getList(DESC));
+            description.addAll(com.sucy.skill.api.util.ConfigValues.strings(config.getList(DESC)));
         }
         if (config.isList(LAYOUT)) {
-            iconLore = TextFormatter.colorStringList(config.getList(LAYOUT));
+            iconLore = TextFormatter.colorStringList(com.sucy.skill.api.util.ConfigValues.strings(config.getList(LAYOUT)));
         }
 
         settings.load(config.getSection(ATTR));

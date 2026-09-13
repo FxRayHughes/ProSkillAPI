@@ -93,7 +93,7 @@ public class ValueLoreSlotMechanic extends MechanicComponent {
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         if (targets.size() == 0 || !settings.has(KEY) || !(caster instanceof Player)) { return false; }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         int slot = settings.getInt(SLOT);
         String regex = settings.getString(REGEX, "Damage: {value}");

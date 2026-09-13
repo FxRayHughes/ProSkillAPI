@@ -76,7 +76,7 @@ public class RememberTargetsMechanic extends MechanicComponent
             return false;
         }
 
-        String key = settings.getString(KEY);
+        String key = settings.getString(KEY, "");
         DynamicSkill.getCastData(caster).put(key, targets);
         return true;
     }

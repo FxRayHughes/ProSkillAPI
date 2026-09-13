@@ -452,7 +452,11 @@ public class AttributeManager {
          */
         public boolean passes(EffectComponent component) {
             for (String key : conditions.keySet()) {
-                if (!component.getSettings().getString(key).equalsIgnoreCase(conditions.get(key))) {
+                String actual = component.getSettings().getString(key);
+                String expected = conditions.get(key);
+                // Missing optional component settings must fail this condition
+                // cleanly instead of dereferencing a null string.
+                if (actual == null || expected == null || !actual.equalsIgnoreCase(expected)) {
                     return false;
                 }
             }

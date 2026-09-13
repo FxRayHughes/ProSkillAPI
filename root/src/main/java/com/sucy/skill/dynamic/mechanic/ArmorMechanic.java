@@ -128,7 +128,8 @@ public class ArmorMechanic extends MechanicComponent {
             slot = EquipmentSlot.valueOf(settings.getString(SLOT, "HAND").toUpperCase().replace(" ", "_"));
         } catch (IllegalArgumentException exception) { return false; }
         Material material;
-        try { material = Material.valueOf(mat); } catch (Exception ex) { return false; }
+        material = com.sucy.skill.api.util.MaterialCompat.resolve(mat, 0, true);
+        if (material == null) return false;
         int amount = settings.getInt(AMOUNT, 1);
         int durability = settings.getInt(DURABILITY, 0);
         int data = settings.getInt(DATA, 0);
@@ -146,7 +147,7 @@ public class ArmorMechanic extends MechanicComponent {
         }
 
         if (SkillAPI.getSettings().useSkillModelData()) {
-            meta.setCustomModelData(data);
+            com.sucy.skill.api.util.MaterialCompat.setCustomModelData(meta, data);
         } else {
             item.setData(new MaterialData(material, (byte) data));
         }

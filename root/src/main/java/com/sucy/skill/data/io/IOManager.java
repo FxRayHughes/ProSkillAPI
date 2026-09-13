@@ -186,7 +186,15 @@ public abstract class IOManager
         for (String accountKey : accounts.keys())
         {
             DataSection account = accounts.getSection(accountKey);
-            PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")), player, true);
+            if (account == null || !accountKey.startsWith(ACCOUNT_PREFIX)) continue;
+            final int accountId;
+            try {
+                accountId = Integer.parseInt(accountKey.substring(ACCOUNT_PREFIX.length()));
+            } catch (NumberFormatException ignored) {
+                // Corrupt JSON/YAML account keys must not abort all player data.
+                continue;
+            }
+            PlayerData acc = data.getData(accountId, player, true);
 
             // Load classes
             DataSection classes = account.getSection(CLASSES);
@@ -244,11 +252,19 @@ public abstract class IOManager
                                 if (!bar.isWeaponSlot(i) && !locked[i])
                                     bar.getData().remove(i + 1);
 
-                            final List<String> slots = skillBar.getList(SLOTS);
-                            for (final String slot : slots) {
-                                int i = Integer.parseInt(slot);
-                                if (!locked[i - 1])
-                                    bar.getData().put(i, UNASSIGNED);
+                            final List<?> slots = skillBar.getList(SLOTS);
+                            // JSON numbers deserialize as Integer while YAML
+                            // stores the same values as strings; normalize both
+                            // representations before parsing skill-bar slots.
+                            for (final Object slot : slots) {
+                                try {
+                                    int i = Integer.parseInt(String.valueOf(slot));
+                                    if (i >= 1 && i <= locked.length && !locked[i - 1])
+                                        bar.getData().put(i, UNASSIGNED);
+                                } catch (NumberFormatException ignored) {
+                                    // A malformed slot must not abort the whole
+                                    // player-data load or disable the plugin.
+                                }
                             }
                         }
                         else if (SkillAPI.getSkill(key) != null)
@@ -272,8 +288,9 @@ public abstract class IOManager
                         Skill skill = SkillAPI.getSkill(key);
                         if (acc.hasSkill(key) && skill != null && skill.canCast())
                         {
-                            int combo = cm.parseCombo(combos.getString(key));
-                            if (combo == -1) Logger.invalid("Invalid skill combo: " + combos.getString(key));
+                            String comboText = String.valueOf(combos.get(key));
+                            int combo = cm.parseCombo(comboText);
+                            if (combo == -1) Logger.invalid("Invalid skill combo: " + comboText);
                             else comboData.setSkill(skill, combo);
                         }
                     }
@@ -317,7 +334,11 @@ public abstract class IOManager
             {
                 for (String bindKey : binds.keys())
                 {
-                    acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
+                    Object boundSkill = binds.get(bindKey);
+                    Material material = com.sucy.skill.api.util.MaterialCompat.resolve(bindKey, 0, true);
+                    if (material != null) {
+                        acc.bind(material, acc.getSkill(String.valueOf(boundSkill)));
+                    }
                 }
             }
         }

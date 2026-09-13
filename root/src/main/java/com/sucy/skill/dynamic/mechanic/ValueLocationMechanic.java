@@ -77,7 +77,7 @@ public class ValueLocationMechanic extends MechanicComponent
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         data.put(key, targets.get(0).getLocation());
         return true;

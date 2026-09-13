@@ -127,7 +127,7 @@ public class SwapHandItemsTrigger implements Trigger<PlayerSwapHandItemsEvent> {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 return false;
             }
-            String name = settings.getString(MAIN_NAME);
+            String name = settings.getString(MAIN_NAME, "");
             if (!name.equals("all")) {
                 ItemMeta meta = itemStack.getItemMeta();
                 if (meta == null || !meta.hasDisplayName()) {
@@ -138,7 +138,7 @@ public class SwapHandItemsTrigger implements Trigger<PlayerSwapHandItemsEvent> {
                     return false;
                 }
             }
-            String lore = settings.getString(MAIN_LORE);
+            String lore = settings.getString(MAIN_LORE, "");
             if (!lore.equals("all")) {
                 ItemMeta meta = itemStack.getItemMeta();
                 if (meta == null) {
@@ -158,7 +158,7 @@ public class SwapHandItemsTrigger implements Trigger<PlayerSwapHandItemsEvent> {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 return false;
             }
-            String name = settings.getString(OFF_NAME);
+            String name = settings.getString(OFF_NAME, "");
             if (!name.equals("all")) {
                 ItemMeta meta = itemStack.getItemMeta();
                 if (meta == null || !meta.hasDisplayName()) {
@@ -169,7 +169,7 @@ public class SwapHandItemsTrigger implements Trigger<PlayerSwapHandItemsEvent> {
                     return false;
                 }
             }
-            String lore = settings.getString(OFF_LORE);
+            String lore = settings.getString(OFF_LORE, "");
             if (!lore.equals("all")) {
                 ItemMeta meta = itemStack.getItemMeta();
                 if (meta == null) {

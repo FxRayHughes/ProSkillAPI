@@ -45,7 +45,9 @@ public class FoodCondition extends ConditionComponent {
             return false;
         }
 
-        final String type = settings.getString(TYPE).toLowerCase();
+        // Older editor exports omit type for the default Food comparison;
+        // default here so those valid YAML files remain loadable.
+        final String type = settings.getString(TYPE, "Food").toLowerCase();
         final double min = parseValues(caster, MIN, level, 0);
         final double max = parseValues(caster, MAX, level, 999);
 

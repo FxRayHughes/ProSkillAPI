@@ -47,11 +47,32 @@ public class SpigotParticles {
      * configs still store names like "block crack" and "red dust".
      */
     public static Particle findParticle(String particle) {
-        Particle effect = resolve(particle.toUpperCase().replace(' ', '_'));
+        String normalized = particle.toUpperCase().replace(' ', '_');
+        // Legacy Bukkit names describe the effect, while modern APIs renamed
+        // or split several of them. Prefer the semantic modern target before
+        // resolving the raw name (for example SPELL would otherwise select a
+        // modern payload-bearing particle and fail without Particle.Spell).
+        String legacyTarget = legacyTarget(normalized);
+        Particle effect = resolve(legacyTarget == null ? normalized : legacyTarget);
         if (effect != null) {
             return effect;
         }
         return CONVERSION.get(particle.toLowerCase().replace('_', ' '));
+    }
+
+    private static String legacyTarget(String name) {
+        switch (name) {
+            case "SPELL": return "EFFECT";
+            case "SPELL_INSTANT": return "INSTANT_EFFECT";
+            case "SPELL_MOB":
+            case "SPELL_MOB_AMBIENT": return "ENTITY_EFFECT";
+            case "SPELL_WITCH": return "WITCH";
+            case "REDSTONE": return "DUST";
+            case "ITEM_CRACK": return "ITEM";
+            case "BLOCK_CRACK":
+            case "BLOCK_DUST": return "BLOCK";
+            default: return null;
+        }
     }
 
     public static Map<String, Particle> getter() {
@@ -132,9 +153,15 @@ public class SpigotParticles {
     private static Particle resolve(String... names) {
         for (String name : names) {
             try {
+                // Prefer the current Bukkit enum when the target name is an
+                // exact modern constant. XSeries aliases EFFECT to SPELL on
+                // some versions, which would reintroduce the typed-payload
+                // error for legacy SPELL configurations.
                 return Particle.valueOf(name);
             } catch (IllegalArgumentException ignored) {
-                // Try the next known alias for this particle.
+                Particle resolved = com.cryptomorin.xseries.particles.XParticle.of(name)
+                        .map(com.cryptomorin.xseries.particles.XParticle::get).orElse(null);
+                if (resolved != null) return resolved;
             }
         }
         return null;

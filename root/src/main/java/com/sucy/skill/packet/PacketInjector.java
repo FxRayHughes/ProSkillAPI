@@ -24,9 +24,18 @@ public class PacketInjector implements PlayerPacketInjector {
     public PacketInjector(final SkillAPI skillAPI) {
         this.delegate = NmsProvider.bridge().createPacketInjector(
                 skillAPI,
-                (player, keyName) -> SkillAPI.schedule(
-                        () -> Bukkit.getPluginManager().callEvent(new KeyPressEvent(player, KeyPressEvent.Key.valueOf(keyName))),
-                        0));
+                (player, keyName) -> SkillAPI.schedule(() -> {
+                    if (keyName == null) return;
+                    try {
+                        // Packet/NMS adapters provide raw names; validate them
+                        // before dispatching so a protocol mismatch cannot
+                        // throw from the scheduler thread.
+                        KeyPressEvent.Key key = KeyPressEvent.Key.valueOf(keyName.toUpperCase());
+                        Bukkit.getPluginManager().callEvent(new KeyPressEvent(player, key));
+                    } catch (IllegalArgumentException ignored) {
+                        // Unknown key names are ignored for this server version.
+                    }
+                }, 0));
     }
 
     @Override

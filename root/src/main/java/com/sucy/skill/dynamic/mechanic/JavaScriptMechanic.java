@@ -64,7 +64,7 @@ public class JavaScriptMechanic extends MechanicComponent {
         if (targets.size() == 0 || !settings.has(KEY)) {
             return false;
         }
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         try(FileReader reader = new FileReader(SkillAPI.singleton.getDataFolder() + "/javascripts/" + key + ".js")) {
             ScriptEngine engine = SkillAPI.scriptEngineManager.getEngineByName("JavaScript");
             engine.put("api",SkillAPI.singleton);

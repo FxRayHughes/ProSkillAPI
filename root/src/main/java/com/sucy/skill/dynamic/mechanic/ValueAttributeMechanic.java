@@ -85,8 +85,8 @@ public class ValueAttributeMechanic extends MechanicComponent
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
-        String attr = settings.getString(ATTR);
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
+        String attr = settings.getString(ATTR, "");
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (targets.isEmpty()) {
             data.put(key, 0.0);

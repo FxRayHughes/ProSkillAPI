@@ -83,8 +83,8 @@ public class CommandMechanic extends MechanicComponent {
             return false;
         }
 
-        String command = settings.getString(COMMAND);
-        String type = settings.getString(TYPE).toLowerCase();
+        String command = settings.getString(COMMAND, "");
+        String type = settings.getString(TYPE, "OP").toLowerCase();
         boolean worked = false;
 
         switch (type) {

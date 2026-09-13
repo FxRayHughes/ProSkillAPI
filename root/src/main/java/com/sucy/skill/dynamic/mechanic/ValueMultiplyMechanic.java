@@ -82,10 +82,15 @@ public class ValueMultiplyMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        if (data.containsKey(key)) { data.put(key, multiplier * (Double) data.get(key)); }
+        if (data.containsKey(key)) {
+            Object current = data.get(key);
+            if (current instanceof Number) {
+                data.put(key, multiplier * ((Number) current).doubleValue());
+            }
+        }
         return true;
     }
 }

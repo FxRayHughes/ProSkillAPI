@@ -79,8 +79,8 @@ public class ValueScriptMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
-        String script = settings.getString(SCRIPT);
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
+        String script = settings.getString(SCRIPT, "");
         ScriptEngine engine = SkillAPI.scriptEngineManager.getEngineByName("JavaScript");
         if (caster instanceof Player) {
             Player player = (Player) caster;

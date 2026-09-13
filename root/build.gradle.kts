@@ -5,6 +5,9 @@
 plugins {
     java
     `maven-publish`
+    // Shadow 9.x supports Gradle 9; 8.1.1 still accesses the removed
+    // CopyDetails.mode property and fails while writing META-INF.
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 repositories {
@@ -87,6 +90,10 @@ repositories {
             ignoreGradleMetadataRedirection()
         }
     }
+    maven {
+        name = "CodeMC"
+        url = uri("https://repo.codemc.io/repository/maven-public/")
+    }
 }
 
 // Compile-only Paper API. See gradle.properties for why this is the newest
@@ -94,6 +101,9 @@ repositories {
 val paperApi = "io.papermc.paper:paper-api:${property("paperApiVersion")}"
 
 dependencies {
+    // Cross-version material and item NBT support used by non-player items.
+    implementation("com.github.cryptomorin:XSeries:13.7.1")
+    implementation("de.tr7zw:item-nbt-api:2.15.5")
     compileOnly(paperApi)
     implementation(project(":root:compat:bukkit-api"))
     implementation(project(":root:serialization:serialization-api"))
@@ -125,7 +135,7 @@ dependencies {
 }
 
 group = "com.sucy.skill"
-version = "R-1.2.15"
+version = "R-1.2.16"
 // 子项目名为 root，若不固定 archivesName 产物会变成 root-R-1.2.15.jar。
 base.archivesName.set("ProSkillAPI")
 description = "ProSkillAPI"
@@ -145,6 +155,11 @@ tasks.withType<JavaCompile>() {
     // Java 8-compatible for older Minecraft server runtimes.
     options.release.set(8)
     options.encoding = "UTF-8"
+    // JDK 25 warns about the Java-8 target and Bukkit's legacy APIs that are
+    // intentionally required for the 1.12.2 compatibility contract. These
+    // flags silence compatibility noise while leaving ordinary compiler errors
+    // and unchecked warnings visible.
+    options.compilerArgs.addAll(listOf("-Xlint:-options", "-Xlint:-removal"))
 }
 
 subprojects {
@@ -206,6 +221,7 @@ subprojects {
         // Keep NMS modules on the same Java 8 bytecode contract as the plugin jar.
         options.release.set(8)
         options.encoding = "UTF-8"
+        options.compilerArgs.addAll(listOf("-Xlint:-options", "-Xlint:-removal"))
     }
 }
 
@@ -289,6 +305,17 @@ tasks.jar {
             .map { zipTree(it) })
     exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+    configurations = listOf(project.configurations.runtimeClasspath.get())
+    relocate("com.cryptomorin.xseries", "com.sucy.skill.libs.xseries")
+    relocate("de.tr7zw.changeme.nbtapi", "com.sucy.skill.libs.nbtapi")
+}
+
+tasks.assemble {
+    dependsOn(tasks.shadowJar)
 }
 
 /**

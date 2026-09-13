@@ -78,13 +78,15 @@ public class ValueCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        final String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
+        final String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         final double min = parseValues(caster, MIN, level, 1);
         final double max = parseValues(caster, MAX, level, 999);
         final Object data = DynamicSkill.getCastData(caster).get(key);
 
-        if (data != null) {
-            double value = (Double) data;
+        if (data instanceof Number) {
+            // Persisted/cast data can be Integer, Long or Double depending on
+            // whether it originated in YAML, JSON, or a mechanic calculation.
+            double value = ((Number) data).doubleValue();
             return value >= min && value <= max;
         }
 

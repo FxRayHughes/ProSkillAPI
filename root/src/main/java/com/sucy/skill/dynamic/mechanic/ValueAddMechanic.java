@@ -82,13 +82,15 @@ public class ValueAddMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         double amount = parseValues(caster, AMOUNT, level, 1) * targets.size();
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (!data.containsKey(key)) {
             data.put(key, amount);
         } else {
-            data.put(key, amount + (Double) data.get(key));
+            Object current = data.get(key);
+            if (!(current instanceof Number)) return false;
+            data.put(key, amount + ((Number) current).doubleValue());
         }
         return true;
     }

@@ -69,7 +69,7 @@ public class HealthCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        final String type = settings.getString(TYPE).toLowerCase();
+        final String type = settings.getString(TYPE, "Health").toLowerCase();
         final double min = parseValues(caster, MIN, level, 0);
         final double max = parseValues(caster, MAX, level, 999);
 

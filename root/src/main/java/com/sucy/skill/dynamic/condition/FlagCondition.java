@@ -65,7 +65,7 @@ public class FlagCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        final String flag = FlagKeys.resolve(settings.getString(KEY), caster);
+        final String flag = FlagKeys.resolve(settings.getString(KEY, ""), caster);
         final boolean set = !settings.getString(TYPE, "set").toLowerCase().equals("not set");
         return FlagManager.hasFlag(target, flag) == set;
     }

@@ -122,16 +122,13 @@ public class RegistrationManager {
                     if (configPath.endsWith(".yml") || configPath.endsWith(".json")) {
                         configPath = configPath.substring(0, configPath.lastIndexOf('.'));
                     }
-                    GsonConfig sConfig = new GsonConfig(api, configPath);
+                    GsonConfig sConfig = new GsonConfig(api, configPath, file.getName().endsWith(".yml"));
                     DynamicSkill skill = new DynamicSkill(name);
                     skill.load(sConfig.getConfig().getSection(name));
                     if (!SkillAPI.isSkillRegistered(skill.getName())) {
                         api.addDynamicSkill(skill);
                         skill.registerEvents(api);
-                        sConfig.clear();
-                        skill.save(sConfig.getConfig().createSection(name));
                         skill.save(skillConfig.getConfig().createSection(name));
-                        sConfig.save();
                         Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + name);
                     } else if (SkillAPI.getSkill(name) instanceof DynamicSkill) {
                         Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");
@@ -213,11 +210,10 @@ public class RegistrationManager {
                     if (!SkillAPI.isSkillRegistered(skill.getName())) {
                         api.addDynamicSkill(skill);
                         skill.registerEvents(api);
-                        GsonConfig sConfig = new GsonConfig(api, SKILL_DIR + key);
-                        sConfig.clear();
-                        skill.save(sConfig.getConfig().createSection(key));
+                        // Individual files are user-owned source configs. Load
+                        // them without rewriting YAML as JSON; only the
+                        // aggregate skills.json registry is persisted below.
                         skill.save(skillConfig.getConfig().createSection(key));
-                        sConfig.save();
                         Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + key);
                     } else {
                         Logger.invalid("Duplicate skill detected: " + key);
@@ -265,11 +261,11 @@ public class RegistrationManager {
                     tree.load(classConfig.getConfig().getSection(key));
                     if (!SkillAPI.isClassRegistered(tree.getName())) {
                         api.addDynamicClass(tree);
-                        GsonConfig cConfig = new GsonConfig(api, CLASS_DIR + key);
-                        cConfig.clear();
-                        tree.save(cConfig.getConfig().createSection(key));
+                        // Individual files are user-owned source configs. The
+                        // aggregate classes.json registry is the only generated
+                        // output for this path, so never create or rewrite a
+                        // sibling class JSON file here.
                         tree.save(classConfig.getConfig().createSection(key));
-                        cConfig.save();
                         Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic class: " + key);
                     } else {
                         Logger.invalid("Duplicate class detected: " + key);
@@ -295,15 +291,12 @@ public class RegistrationManager {
                     }
                     try {
                         String name = file.getName().replaceFirst("\\.(yml|json)$", "");
-                        GsonConfig cConfig = new GsonConfig(api, CLASS_DIR + name);
+                        GsonConfig cConfig = new GsonConfig(api, CLASS_DIR + name, file.getName().endsWith(".yml"));
                         DynamicClass tree = new DynamicClass(api, name);
                         tree.load(cConfig.getConfig().getSection(name));
                         if (!SkillAPI.isClassRegistered(tree.getName())) {
                             api.addDynamicClass(tree);
-                            cConfig.clear();
-                            tree.save(cConfig.getConfig().createSection(name));
                             tree.save(classConfig.getConfig().createSection(name));
-                            cConfig.save();
                             Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic class: " + name);
                         } else if (SkillAPI.getClass(name) instanceof DynamicClass) {
                             Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");

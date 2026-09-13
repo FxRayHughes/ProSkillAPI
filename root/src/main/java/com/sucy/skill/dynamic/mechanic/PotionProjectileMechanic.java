@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.cryptomorin.xseries.XPotion;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.TempEntity;
@@ -113,23 +114,21 @@ public class PotionProjectileMechanic extends MechanicComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         // Get common values
-        String potion = settings.getString(POTION, "slowness").toUpperCase().replace(" ", "_");
+        String potion = settings.getString(POTION, "slowness");
         boolean linger = settings.getString(LINGER, "false").toLowerCase().equals("true") && VersionManager.isVersionAtLeast(VersionManager.V1_9_0);
-        PotionType type;
-        try
-        {
-            type = PotionType.valueOf(potion);
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
+        // XSeries handles legacy aliases and modern names without linking a
+        // version-specific Bukkit PotionType constant at configuration load time.
+        PotionType type = XPotion.of(potion).map(XPotion::getPotionType).orElse(null);
+        if (type == null) return false;
 
         Potion p = new Potion(type, 1);
         ItemStack item;
         try
         {
-            item = new ItemStack(Material.valueOf(linger ? "LINGERING_POTION" : "SPLASH_POTION"));
+            Material potionMaterial = com.sucy.skill.api.util.MaterialCompat.resolve(
+                    linger ? "LINGERING_POTION" : "SPLASH_POTION", 0, true);
+            if (potionMaterial == null) return false;
+            item = new ItemStack(potionMaterial);
             Field meta = ItemStack.class.getDeclaredField("meta");
             meta.setAccessible(true);
             PotionMeta potionMeta = (PotionMeta) item.getItemMeta();

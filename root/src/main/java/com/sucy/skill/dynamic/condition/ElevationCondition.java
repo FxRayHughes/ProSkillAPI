@@ -86,7 +86,7 @@ public class ElevationCondition extends ConditionComponent {
      */
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
-        String type = settings.getString(TYPE).toLowerCase();
+        String type = settings.getString(TYPE, "Normal").toLowerCase();
         double min = parseValues(caster, MIN, level, 0);
         double max = parseValues(caster, MAX, level, 255);
 
@@ -107,7 +107,7 @@ public class ElevationCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        final String type = settings.getString(TYPE);
+        final String type = settings.getString(TYPE, "Normal");
         final double min = parseValues(caster, MIN, level, 0);
         final double max = parseValues(caster, MAX, level, 255);
 

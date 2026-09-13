@@ -60,7 +60,7 @@ public class ValueCopyMechanic extends MechanicComponent {
             return false;
         }
 
-        final String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
+        final String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         final String destination = settings.getString(TARGET, key);
         final boolean toTarget = settings.getString(TO_TARGET, "true").equalsIgnoreCase("true");
 

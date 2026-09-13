@@ -90,7 +90,9 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
     public void handleClick(InventoryClickEvent event)
     {
         event.setCancelled(true);
-        boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
+        // InventoryClickEvent#getInventory is the top inventory on supported
+        // Bukkit versions and avoids linking InventoryView's changed ABI.
+        boolean top = event.getRawSlot() < event.getInventory().getSize();
         T result = get(event.getSlot());
         if (top && result != null && result.isAllowed((Player) event.getWhoClicked()))
         {

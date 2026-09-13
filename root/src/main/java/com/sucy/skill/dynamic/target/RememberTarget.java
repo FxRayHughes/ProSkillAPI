@@ -69,7 +69,7 @@ public class RememberTarget extends TargetComponent {
     @Override
     List<LivingEntity> getTargets(
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
-        return remember(caster, settings.getString(KEY));
+        return remember(caster, settings.getString(KEY, ""));
     }
 
     public static List<LivingEntity> remember(final LivingEntity caster, final String key) {

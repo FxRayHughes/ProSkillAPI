@@ -101,7 +101,14 @@ public class BuffMechanic extends MechanicComponent {
             return true;
         }
 
-        BuffType buffType = BuffType.valueOf(settings.getString(TYPE, "DAMAGE"));
+        final BuffType buffType;
+        try {
+            buffType = BuffType.valueOf(settings.getString(TYPE, "DAMAGE").toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            // A malformed config entry should fail this mechanic only, rather
+            // than aborting the entire dynamic skill registration.
+            return false;
+        }
         double seconds = parseValues(caster, SECONDS, level, 3.0);
         String category = settings.getString(CATEGORY, null);
         int ticks = (int) (seconds * 20);

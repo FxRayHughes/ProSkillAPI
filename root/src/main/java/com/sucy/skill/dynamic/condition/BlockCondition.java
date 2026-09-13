@@ -79,7 +79,7 @@ public class BlockCondition extends ConditionComponent {
     @Override
     public void load(DynamicSkill skill, DataSection config) {
         super.load(skill, config);
-        final String type = settings.getString(STANDING).toLowerCase();
+        final String type = settings.getString(STANDING, "On Block").toLowerCase();
         negated = type.startsWith("not");
         in = type.endsWith("in block");
         types = settings.getStringList(MATERIAL).stream()

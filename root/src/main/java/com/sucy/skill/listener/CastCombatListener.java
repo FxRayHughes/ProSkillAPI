@@ -355,7 +355,7 @@ public class CastCombatListener extends SkillAPIListener
 
         // Prevent moving skill icons
         int slot = event.getSlot();
-        if (event.getSlot() < 9 && event.getRawSlot() > event.getView().getTopInventory().getSize())
+        if (event.getSlot() < 9 && event.getRawSlot() > event.getInventory().getSize())
         {
             if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
                 event.setCancelled(!skillBar.isWeaponSlot(slot));

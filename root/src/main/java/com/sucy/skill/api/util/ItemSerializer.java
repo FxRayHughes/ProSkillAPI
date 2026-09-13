@@ -142,15 +142,18 @@ public class ItemSerializer {
 
     private static ItemStack[] basicDeserialize(String invString)
     {
-        String[] serializedBlocks = invString.split(";");
-        if (serializedBlocks.length == 0)
-            return null;
-        String invInfo = serializedBlocks[0];
-        ItemStack[] deserializedInventory = new ItemStack[Integer.valueOf(invInfo)];
+        if (invString == null || invString.trim().isEmpty()) return null;
+        try {
+            String[] serializedBlocks = invString.split(";");
+            if (serializedBlocks.length == 0)
+                return null;
+            String invInfo = serializedBlocks[0];
+            ItemStack[] deserializedInventory = new ItemStack[Integer.valueOf(invInfo)];
 
         for (int i = 1; i <= deserializedInventory.length && i < serializedBlocks.length; i++)
         {
             String[] serializedBlock = serializedBlocks[i].split("#");
+            if (serializedBlock.length < 2) continue;
             int stackPosition = Integer.valueOf(serializedBlock[0]);
 
             if (stackPosition >= deserializedInventory.length)
@@ -214,7 +217,13 @@ public class ItemSerializer {
             deserializedInventory[stackPosition] = is;
         }
 
-        return deserializedInventory;
+            return deserializedInventory;
+        } catch (RuntimeException ex) {
+            // Legacy inventory strings are user/database input. A corrupt
+            // token must not abort player-data initialization or the server
+            // reload; callers can treat a null result as an empty inventory.
+            return null;
+        }
     }
 
     private static final BiMap<String, Integer> ENCHANT_IDS = ImmutableBiMap.<String, Integer>builder()

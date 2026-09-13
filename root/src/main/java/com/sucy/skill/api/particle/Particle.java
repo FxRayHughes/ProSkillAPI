@@ -38,6 +38,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 /**
@@ -240,7 +241,7 @@ public class Particle {
             ItemStack item = new ItemStack(material);
             if (SkillAPI.getSettings().useSkillModelData()) {
                 ItemMeta meta = item.getItemMeta();
-                meta.setCustomModelData(data);
+                com.sucy.skill.api.util.MaterialCompat.setCustomModelData(meta, data);
                 item.setItemMeta(meta);
             } else {
                 item.setData(new MaterialData(material, (byte) data));
@@ -248,9 +249,18 @@ public class Particle {
             object = item;
         } else if (isBlockParticle(name)) {
             object = material.createBlockData();
+        } else if (isSpellParticle(name)) {
+            // SPELL and ENTITY_EFFECT require Bukkit's typed color payload on
+            // flattened servers. Resolve it reflectively so 1.12 can still
+            // load this class, where Particle.Spell does not exist.
+            object = createSpellData(name, dx, dy, dz, speed);
         }
         for (Player player : players) {
-            if (object == null) {
+            if (isSpellParticle(name) && object == null) {
+                // A server API without the required payload type cannot play
+                // this particle safely; skip it instead of emitting a warning.
+                continue;
+            } else if (object == null) {
                 player.spawnParticle(particle, x, y, z, count, dx, dy, dz, speed);
             } else {
                 player.spawnParticle(particle, x, y, z, count, dx, dy, dz, speed, object);
@@ -271,6 +281,30 @@ public class Particle {
                 || "BLOCK_CRACK".equals(name)
                 || "BLOCK_DUST".equals(name)
                 || "FALLING_DUST".equals(name);
+    }
+
+    private static boolean isSpellParticle(String name) {
+        return "SPELL".equals(name) || "ENTITY_EFFECT".equals(name) || "EFFECT".equals(name);
+    }
+
+    private static Object createSpellData(String name, double dx, double dy, double dz, double speed) {
+        try {
+            Color color = Color.fromRGB(
+                    clampColor(dx), clampColor(dy), clampColor(dz));
+            if ("SPELL".equals(name)) {
+                Class<?> type = Class.forName("org.bukkit.Particle$Spell");
+                Constructor<?> constructor = type.getConstructor(Color.class, float.class);
+                return constructor.newInstance(color, (float) speed);
+            }
+            // EFFECT and ENTITY_EFFECT use Color directly on modern Bukkit.
+            return color;
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            return null;
+        }
+    }
+
+    private static int clampColor(double value) {
+        return Math.max(0, Math.min(255, (int) (value * 255.0)));
     }
 
     /**

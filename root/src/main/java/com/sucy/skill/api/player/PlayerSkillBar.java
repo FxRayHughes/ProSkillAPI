@@ -276,10 +276,13 @@ public class PlayerSkillBar {
         for (ItemStack itemStack : player.getInventory()) {
             ItemStack un = SkillAPI.getSettings().getUnassigned();
 
-            if (un == null || itemStack == null) {
+            if (un == null) {
                 clear(player);
                 break;
             }
+            // Empty inventory slots are normal. They must not abort setup;
+            // only an unavailable placeholder item makes initialization fail.
+            if (itemStack == null) continue;
             if (itemStack.isSimilar(un)) {
                 itemStack.setAmount(0);
             }

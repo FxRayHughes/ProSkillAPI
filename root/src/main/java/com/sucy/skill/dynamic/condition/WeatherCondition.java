@@ -21,7 +21,7 @@ public class WeatherCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        final String type = settings.getString(TYPE).toLowerCase();
+        final String type = settings.getString(TYPE, "Clear").toLowerCase();
         final World world = target.getWorld();
         final Location loc = target.getLocation();
         final double temperature = loc.getBlock().getTemperature();

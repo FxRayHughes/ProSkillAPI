@@ -66,9 +66,16 @@ public class ParticleAccess {
         if (packet == null) {
             return null;
         }
-        Object enumType = particleTypes.get(name);
+        String legacyName = legacyName(name);
+        Object enumType = particleTypes.get(legacyName);
         if (enumType == null) {
             return null;
+        }
+        // Legacy clients do not have modern color payloads; use white.
+        if ("DUST".equals(name) || "EFFECT".equals(name) || "ENTITY_EFFECT".equals(name)) {
+            dx = 1.0f;
+            dy = 1.0f;
+            dz = 1.0f;
         }
         return packet.newInstance(
                 enumType,
@@ -78,6 +85,23 @@ public class ParticleAccess {
                 speed,
                 amount,
                 material == null ? new int[0] : new int[]{material.ordinal(), data});
+    }
+
+    private String legacyName(String name) {
+        if (name == null) return null;
+        if ("DUST".equals(name)) return "REDSTONE";
+        if ("EFFECT".equals(name) || "ENTITY_EFFECT".equals(name)) return "SPELL_MOB";
+        if ("INSTANT_EFFECT".equals(name)) return "SPELL_INSTANT";
+        if ("BLOCK".equals(name)) return "BLOCK_CRACK";
+        if ("ITEM".equals(name)) return "ITEM_CRACK";
+        if ("POOF".equals(name)) return "CLOUD";
+        if ("EXPLOSION".equals(name)) return "EXPLOSION_NORMAL";
+        if ("FIREWORK".equals(name)) return "FIREWORKS_SPARK";
+        if ("SMOKE".equals(name)) return "SMOKE_NORMAL";
+        if ("SPLASH".equals(name)) return "WATER_SPLASH";
+        if ("RAIN".equals(name)) return "WATER_DROP";
+        if ("FISHING".equals(name)) return "WATER_WAKE";
+        return name;
     }
 
     /**

@@ -32,7 +32,7 @@ public class ExperienceListener extends SkillAPIListener {
         track = SkillAPI.getSettings().trackBreaks();
         if (track) {
             CommentedConfig data = SkillAPI.getConfig("data/placed");
-            unnatural = new HashSet<String>(data.getConfig().getList(CONFIG_KEY));
+        unnatural = new HashSet<String>(com.sucy.skill.api.util.ConfigValues.strings(data.getConfig().getList(CONFIG_KEY)));
         }
     }
 

@@ -57,8 +57,19 @@ public class SlotCondition extends ConditionComponent
         if (!(target instanceof Player)) return false;
 
         final PlayerInventory inventory = ((Player) target).getInventory();
-        return settings.getStringList(SLOT).stream().anyMatch(
-                slot -> ItemChecker.check(inventory.getItem(Integer.parseInt(slot)), level, settings));
+        for (String slot : settings.getStringList(SLOT)) {
+            try {
+                int index = Integer.parseInt(slot);
+                if (index >= 0 && index < inventory.getSize()
+                        && ItemChecker.check(inventory.getItem(index), level, settings)) {
+                    return true;
+                }
+            } catch (NumberFormatException ignored) {
+                // Ignore malformed user configuration entries and continue
+                // checking the remaining valid slots.
+            }
+        }
+        return false;
     }
 
     @Override

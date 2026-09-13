@@ -89,7 +89,7 @@ public class DataSetMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
 
         double tick = parseValues(caster, TICK, level, 1);
         for (LivingEntity target : targets) {

@@ -329,7 +329,7 @@ public class Settings {
         maxAccounts = config.getInt(ACCOUNT_MAX);
 
         // Permission account amounts
-        List<String> list = config.getList(ACCOUNT_PERM);
+        List<String> list = com.sucy.skill.api.util.ConfigValues.strings(config.getList(ACCOUNT_PERM));
         for (String item : list) {
             if (!item.contains(":")) {
                 continue;
@@ -463,21 +463,21 @@ public class Settings {
 
     private void loadTargetingSettings() {
         if (config.isList(TARGET_MONSTER)) {
-            monsterWorlds.addAll(config.getList(TARGET_MONSTER));
+            monsterWorlds.addAll(com.sucy.skill.api.util.ConfigValues.strings(config.getList(TARGET_MONSTER)));
             monsterEnemy = false;
         } else {
             monsterEnemy = config.getBoolean(TARGET_MONSTER);
         }
 
         if (config.isList(TARGET_PASSIVE)) {
-            passiveWorlds.addAll(config.getList(TARGET_PASSIVE));
+            passiveWorlds.addAll(com.sucy.skill.api.util.ConfigValues.strings(config.getList(TARGET_PASSIVE)));
             passiveAlly = false;
         } else {
             passiveAlly = config.getBoolean(TARGET_PASSIVE);
         }
 
         if (config.isList(TARGET_PLAYER)) {
-            playerWorlds.addAll(config.getList(TARGET_PLAYER));
+            playerWorlds.addAll(com.sucy.skill.api.util.ConfigValues.strings(config.getList(TARGET_PLAYER)));
             playerAlly = false;
         } else {
             playerAlly = config.getBoolean(TARGET_PLAYER);
@@ -998,7 +998,7 @@ public class Settings {
         }
 
         filteredBlocks = new ArrayList<>();
-        List<String> list = config.getList(SKILL_BLOCKS);
+        List<String> list = com.sucy.skill.api.util.ConfigValues.strings(config.getList(SKILL_BLOCKS));
         for (String item : list) {
             item = item.toUpperCase().replace(' ', '_');
             if (item.endsWith("*")) {
@@ -1010,7 +1010,8 @@ public class Settings {
                 }
             } else {
                 try {
-                    Material mat = Material.valueOf(item);
+                    Material mat = com.sucy.skill.api.util.MaterialCompat.resolve(item, 0, false);
+                    if (mat == null) continue;
                     filteredBlocks.add(mat);
                 } catch (Exception ex) {
                     Logger.invalid("Invalid block type \"" + item + "\"");
@@ -1143,26 +1144,26 @@ public class Settings {
         dropWeapon = config.getBoolean(ITEM_DROP);
         checkSkills = config.getBoolean(ITEM_SKILLS);
         checkAttribs = config.getBoolean(ITEM_ATTRIBS);
-        loreClassText = config.getString(ITEM_CLASS).toLowerCase();
-        loreLevelText = config.getString(ITEM_LEVEL).toLowerCase();
-        loreExcludeText = config.getString(ITEM_EXCLUDE).toLowerCase();
+        loreClassText = config.getString(ITEM_CLASS, "class").toLowerCase();
+        loreLevelText = config.getString(ITEM_LEVEL, "level").toLowerCase();
+        loreExcludeText = config.getString(ITEM_EXCLUDE, "").toLowerCase();
 
-        String temp = config.getString(ITEM_SKILL).toLowerCase();
+        String temp = config.getString(ITEM_SKILL, "skill").toLowerCase();
         int index = temp.indexOf('{');
         skillPre = temp.substring(0, index);
         skillPost = temp.substring(index + 7);
 
-        temp = config.getString(ITEM_ATTR).toLowerCase();
+        temp = config.getString(ITEM_ATTR, "attribute").toLowerCase();
         index = temp.indexOf('{');
         attrReqPre = temp.substring(0, index);
         attrReqPost = temp.substring(index + 6);
 
-        temp = config.getString(ITEM_STATS).toLowerCase();
+        temp = config.getString(ITEM_STATS, "stats").toLowerCase();
         index = temp.indexOf('{');
         attrPre = temp.substring(0, index);
         attrPost = temp.substring(index + 6);
 
-        List<String> slotList = config.getList(ITEM_SLOTS);
+        List<String> slotList = com.sucy.skill.api.util.ConfigValues.strings(config.getList(ITEM_SLOTS));
         if (!VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
             slotList.remove("40");
         }
@@ -1373,7 +1374,7 @@ public class Settings {
         titleDuration = (int) (20 * config.getFloat(GUI_DUR));
         titleFadeIn = (int) (20 * config.getFloat(GUI_FADEI));
         titleFadeOut = (int) (20 * config.getFloat(GUI_FADEO));
-        titleMessages = config.getList(GUI_LIST);
+        titleMessages = com.sucy.skill.api.util.ConfigValues.strings(config.getList(GUI_LIST));
         guiModelData = config.getBoolean(GUI_CUSTOMMODELDATA, false);
         if (guiModelData) {
             try {
@@ -1699,7 +1700,7 @@ public class Settings {
         this.showExpMessages = config.getBoolean(EXP_BASE + "exp-message-enabled");
         this.showLevelMessages = config.getBoolean(EXP_BASE + "level-message-enabled");
         this.showLossMessages = config.getBoolean(EXP_BASE + "lose-exp-message");
-        this.expLostBlacklist = new HashSet<>(config.getList(EXP_BASE + "lose-exp-blacklist"));
+        this.expLostBlacklist = new HashSet<>(com.sucy.skill.api.util.ConfigValues.strings(config.getList(EXP_BASE + "lose-exp-blacklist")));
 
         DataSection formula = config.getSection(EXP_BASE + "formula");
         int x = formula.getInt("x");
@@ -1782,7 +1783,14 @@ public class Settings {
             return;
         }
         DataSection icon = bar.getSection("empty-icon");
-        Material mat = Material.matchMaterial(icon.getString("material", "PUMPKIN_SEEDS"));
+        if (icon == null) {
+            // A missing GUI icon section must not prevent the skill bar from
+            // initializing; use the same cross-version default as Data.parseIcon.
+            unassigned = new ItemStack(Material.PUMPKIN_SEEDS);
+            return;
+        }
+        Material mat = com.sucy.skill.api.util.MaterialCompat.resolve(
+                icon.getString("material", "PUMPKIN_SEEDS"), icon.getInt("data", 0), true);
         if (mat == null) {
             mat = Material.PUMPKIN_SEEDS;
         }
@@ -1793,14 +1801,16 @@ public class Settings {
         final int data = icon.getInt("data", 0);
         if (guiModelData) {
             if (data != 0) {
-                meta.setCustomModelData(data);
+                com.sucy.skill.api.util.MaterialCompat.setCustomModelData(meta, data);
             }
-        } else {
+        } else if (!com.sucy.skill.api.util.MaterialCompat.isFlattened()) {
+            // Legacy servers store stained-glass colors in the data byte;
+            // flattened servers already received the concrete XMaterial variant.
             unassigned.setData(new MaterialData(mat, (byte) data));
         }
 
         if (icon.isList("text")) {
-            List<String> format = TextFormatter.colorStringList(icon.getList("text"));
+            List<String> format = TextFormatter.colorStringList(com.sucy.skill.api.util.ConfigValues.strings(icon.getList("text")));
             meta.setDisplayName(format.remove(0));
             meta.setLore(format);
         } else {
@@ -1887,7 +1897,7 @@ public class Settings {
     private void loadWorldSettings() {
         worldEnabled = config.getBoolean(WORLD_ENABLE);
         worldEnableList = config.getBoolean(WORLD_TYPE);
-        worlds = config.getList(WORLD_LIST);
+        worlds = com.sucy.skill.api.util.ConfigValues.strings(config.getList(WORLD_LIST));
     }
 
     ///////////////////////////////////////////////////////
@@ -1917,8 +1927,10 @@ public class Settings {
         config.save();
         final DataSection data = config.getConfig();
 
-        skillDisabledRegions = ImmutableSet.copyOf(data.getList(WG_SKILLS));
-        expDisabledRegions = ImmutableSet.copyOf(data.getList(WG_EXP));
+        // JSON/YAML loaders may materialize list entries as non-String primitives;
+        // normalize at the boundary so region checks never fail with a cast error.
+        skillDisabledRegions = ImmutableSet.copyOf(com.sucy.skill.api.util.ConfigValues.strings(data.getList(WG_SKILLS)));
+        expDisabledRegions = ImmutableSet.copyOf(com.sucy.skill.api.util.ConfigValues.strings(data.getList(WG_EXP)));
     }
 
     public boolean isAttributeMobEnabled() {

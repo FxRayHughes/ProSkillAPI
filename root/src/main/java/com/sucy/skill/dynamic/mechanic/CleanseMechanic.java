@@ -93,7 +93,7 @@ public class CleanseMechanic extends MechanicComponent {
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         boolean worked = false;
         String status = settings.getString(STATUS, "None").toLowerCase();
-        String potion = settings.getString(POTION).toUpperCase().replace(' ', '_');
+        String potion = settings.getString(POTION, "all").toUpperCase().replace(' ', '_');
         PotionEffectType type = null;
         try {
             type = PotionEffectType.getByName(potion);

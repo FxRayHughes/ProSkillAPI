@@ -34,6 +34,8 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.DamageLoreRemover;
+import com.sucy.skill.api.util.ConfigValues;
+import com.sucy.skill.api.util.MaterialCompat;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
@@ -145,17 +147,18 @@ public class GUITool implements ToolMenu
 
     public static ItemStack parseItem(DataSection data)
     {
-        Material material = Material.valueOf(data.getString("type").toUpperCase().replace(" ", "_"));
+        Material material = MaterialCompat.resolve(data.getString("type", "JACK_O_LANTERN"), data.getInt("data", 0), true);
+        if (material == null) material = Material.JACK_O_LANTERN;
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (SkillAPI.getSettings().useGUIModelData()) {
-            meta.setCustomModelData(data.getInt("data"));
+            MaterialCompat.setCustomModelData(meta, data.getInt("data"));
         } else {
             item.setData(new MaterialData(material, data.getByte("data")));
         }
 
-        meta.setDisplayName(TextFormatter.colorString(data.getString("name")));
-        meta.setLore(TextFormatter.colorStringList(data.getList("lore")));
+        meta.setDisplayName(TextFormatter.colorString(data.getString("name", "")));
+        meta.setLore(TextFormatter.colorStringList(ConfigValues.strings(data.getList("lore"))));
 
         if (SkillAPI.getSettings().useOldDurability()) {
             item.setItemMeta(meta);
@@ -501,7 +504,7 @@ public class GUITool implements ToolMenu
         if (event.getAction() == InventoryAction.HOTBAR_SWAP
             || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
             event.setCancelled(true);
-        else if (event.getRawSlot() < event.getView().getTopInventory().getSize())
+        else if (event.getRawSlot() < event.getInventory().getSize())
         {
             if (guiData.getPages() == 1)
                 return;

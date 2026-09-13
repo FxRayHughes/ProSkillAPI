@@ -60,7 +60,7 @@ public class KetherMechanic extends MechanicComponent {
         if (targets.size() == 0 || !settings.has(KEY)) {
             return false;
         }
-        String key = settings.getString(KEY);
+        String key = settings.getString(KEY, "");
         if (targets instanceof Player) {
             KetherAPI.INSTANCE.eval(((Player) targets), key);
         }

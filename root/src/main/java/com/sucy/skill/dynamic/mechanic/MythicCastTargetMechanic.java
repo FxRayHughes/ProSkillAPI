@@ -78,7 +78,7 @@ public class MythicCastTargetMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(SKILLNAME).replace("{uuid}", caster.getUniqueId().toString());
+        String key = settings.getString(SKILLNAME, "").replace("{uuid}", caster.getUniqueId().toString());
         float power = (float) parseValues(caster, POWER, level, 1);
         Collection<Entity> etarget = new ArrayList<>(targets);
         MythicMobsHook.castSkill(caster, key, etarget, power);

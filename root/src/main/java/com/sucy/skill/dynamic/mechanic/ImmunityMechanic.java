@@ -92,7 +92,7 @@ public class ImmunityMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(TYPE);
+        String key = settings.getString(TYPE, "all");
         double seconds = parseValues(caster, SECONDS, level, 3.0);
         double multiplier = parseValues(caster, MULTIPLIER, level, 0);
         int ticks = (int) (seconds * 20);

@@ -84,7 +84,7 @@ public class ValueManaMechanic extends MechanicComponent
         if (!(targets.get(0) instanceof Player)) return false;
 
         final PlayerData player = SkillAPI.getPlayerData((Player)targets.get(0));
-        final String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
+        final String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         final String type = settings.getString(TYPE, "current").toLowerCase();
         final HashMap<String, Object> data = DynamicSkill.getCastData(caster);
 

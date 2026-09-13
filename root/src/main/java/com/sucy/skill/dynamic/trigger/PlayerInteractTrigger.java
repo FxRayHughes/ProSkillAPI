@@ -69,7 +69,7 @@ public class PlayerInteractTrigger implements Trigger<PlayerInteractEvent> {
         if (!list.contains(event.getAction().name())) {
             return false;
         }
-        String name = settings.getString(NAME);
+        String name = settings.getString(NAME, "");
         if (!name.equals("all")) {
             ItemMeta meta = itemStack.getItemMeta();
             if (meta == null || !meta.hasDisplayName()) {
@@ -80,7 +80,7 @@ public class PlayerInteractTrigger implements Trigger<PlayerInteractEvent> {
                 return false;
             }
         }
-        String lore = settings.getString(LORE);
+        String lore = settings.getString(LORE, "");
         if (!lore.equals("all")) {
             ItemMeta meta = itemStack.getItemMeta();
             if (meta == null) {

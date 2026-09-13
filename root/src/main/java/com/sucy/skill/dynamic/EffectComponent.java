@@ -394,7 +394,13 @@ public abstract class EffectComponent {
         if (children != null) {
             for (String key : children.keys()) {
                 final String typeName = children.getSection(key).getString(TYPE, "missing").toUpperCase();
-                final ComponentType type = ComponentType.valueOf(typeName);
+                final ComponentType type;
+                try {
+                    type = ComponentType.valueOf(typeName);
+                } catch (IllegalArgumentException ex) {
+                    Logger.invalid("Invalid component type: " + typeName);
+                    continue;
+                }
                 final String mkey = key.replaceAll("-.+", "");
                 try {
                     final EffectComponent child = ComponentRegistry.getComponent(type, mkey);

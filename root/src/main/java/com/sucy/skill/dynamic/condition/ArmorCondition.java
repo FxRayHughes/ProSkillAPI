@@ -73,7 +73,7 @@ public class ArmorCondition extends ConditionComponent {
     }
 
     private List<Function<EntityEquipment, ItemStack>> determineGetters() {
-        final String type = settings.getString(ARMOR).toLowerCase();
+        final String type = settings.getString(ARMOR, "Any").toLowerCase();
         switch (type) {
             case "helmet":
                 return ImmutableList.of(EntityEquipment::getHelmet);

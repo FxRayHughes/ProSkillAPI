@@ -35,6 +35,7 @@ import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
+import com.sucy.skill.api.util.ConfigValues;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.gui.tool.IconHolder;
@@ -715,9 +716,12 @@ public abstract class RPGClass implements IconHolder
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
-        for (final String type : config.getList(BLACKLIST)) {
+        for (final String type : ConfigValues.strings(config.getList(BLACKLIST))) {
             if (type.isEmpty()) continue;
-            final Material mat = Material.matchMaterial(type.toUpperCase().replace(' ', '_'));
+            // Class blacklist entries are configuration material names, so use
+            // the shared cross-version resolver rather than Bukkit's flattened
+            // enum lookup.
+            final Material mat = com.sucy.skill.api.util.MaterialCompat.resolve(type, 0, false);
             if (mat != null) {
                 blacklist.add(mat);
             } else {
@@ -730,7 +734,7 @@ public abstract class RPGClass implements IconHolder
         if (config.isList(SKILLS))
         {
             skills.clear();
-            for (String name : config.getList(SKILLS))
+            for (String name : ConfigValues.strings(config.getList(SKILLS)))
             {
                 Skill skill = SkillAPI.getSkill(name);
                 if (skill != null)

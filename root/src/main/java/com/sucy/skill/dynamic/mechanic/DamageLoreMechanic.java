@@ -115,7 +115,7 @@ public class DamageLoreMechanic extends MechanicComponent {
         double m = parseValues(caster, MULTIPLIER, level, 1.0);
         boolean worked = false;
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
-                && settings.getString(HAND).equalsIgnoreCase("offhand");
+                && settings.getString(HAND, "mainhand").equalsIgnoreCase("offhand");
         boolean trueDmg = settings.getBool(TRUE, false);
         String classification = settings.getString(CLASSIFIER, "default");
 

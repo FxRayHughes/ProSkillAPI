@@ -124,20 +124,21 @@ public class ParticleSettings {
      * @param config config data to load from
      */
     public ParticleSettings(DataSection config) {
-        String type = config.getString(PARTICLE_KEY);
+        String type = config == null ? null : config.getString(PARTICLE_KEY, "");
         this.type = ParticleLookup.find(type);
-        this.dx = config.getFloat(DX_KEY, 0);
-        this.dy = config.getFloat(DY_KEY, 0);
-        this.dz = config.getFloat(DZ_KEY, 0);
-        this.speed = config.getFloat(SPEED_KEY, 1);
-        this.amount = config.getInt(AMOUNT_KEY, 1);
+        this.dx = config == null ? 0 : config.getFloat(DX_KEY, 0);
+        this.dy = config == null ? 0 : config.getFloat(DY_KEY, 0);
+        this.dz = config == null ? 0 : config.getFloat(DZ_KEY, 0);
+        this.speed = config == null ? 1 : config.getFloat(SPEED_KEY, 1);
+        this.amount = config == null ? 1 : config.getInt(AMOUNT_KEY, 1);
 
-        if (Particle.usesData(this.type)) {
+        if (this.type != null && Particle.usesData(this.type)) {
             Material mat = null;
             int data = 0;
             try {
-                mat = Material.valueOf(config.getString(MATERIAL_KEY).toUpperCase().replace(" ", "_"));
-                data = config.getInt(DATA_KEY);
+                mat = com.sucy.skill.api.util.MaterialCompat.resolve(
+                        config.getString(MATERIAL_KEY, "DIRT"), 0, false);
+                data = config.getInt(DATA_KEY, 0);
             } catch (Exception ex) { /* */ }
             this.material = mat;
             this.data = data;

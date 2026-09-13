@@ -75,9 +75,9 @@ public class ValuePlaceholderMechanic extends MechanicComponent
 
         if (targets.get(0) instanceof Player)
         {
-            final String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
-            final String placeholder = settings.getString(PLACEHOLDER);
-            final String type = settings.getString(TYPE).toUpperCase();
+            final String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
+            final String placeholder = settings.getString(PLACEHOLDER, "");
+            final String type = settings.getString(TYPE, "STRING").toUpperCase();
 
             final String value = PlaceholderAPIHook.format(placeholder, (Player)targets.get(0));
 

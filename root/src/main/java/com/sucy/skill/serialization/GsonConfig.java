@@ -14,25 +14,32 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 
 /**
- * JSON-backed replacement for the former CommentedConfig usage in dynamic
- * skill and class data. A matching YAML file is read once as migration input,
- * but save always writes the JSON file through GsonUtils.
+ * Configuration bridge for dynamic skill and class data. Aggregate registries
+ * use JSON, while individual user-owned YAML files are read without being
+ * rewritten; callers decide explicitly which representation is generated.
  */
 public final class GsonConfig {
     private final File jsonFile;
     private final File legacyYamlFile;
     private final DataSection config;
+    private final boolean preferYaml;
 
     /**
      * @param plugin plugin owning the data folder
      * @param path relative path without an extension
      */
     public GsonConfig(JavaPlugin plugin, String path) {
+        this(plugin, path, false);
+    }
+
+    /** Creates a config reader; user-owned dynamic files may prefer YAML. */
+    public GsonConfig(JavaPlugin plugin, String path, boolean preferYaml) {
         String normalized = path.replace('\\', File.separatorChar)
                 .replace('/', File.separatorChar);
         File base = new File(plugin.getDataFolder(), normalized);
         jsonFile = new File(base.getPath() + ".json");
         legacyYamlFile = new File(base.getPath() + ".yml");
+        this.preferYaml = preferYaml;
         config = load();
     }
 
@@ -71,6 +78,10 @@ public final class GsonConfig {
 
     private DataSection load() {
         try {
+            if (preferYaml && legacyYamlFile.exists()) {
+                DataSection section = YAMLParser.parseFile(legacyYamlFile);
+                return section == null ? new DataSection() : section;
+            }
             if (jsonFile.exists()) {
                 DataSection section = GsonUtils.toDataSection(GsonUtils.readJson(jsonFile));
                 return section == null ? new DataSection() : section;

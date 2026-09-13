@@ -7,7 +7,6 @@
 package com.sucy.skill.compat.bukkit;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,7 +40,7 @@ public final class EnumCompat {
      * @param <T>      常量类型
      * @return 对应常量；此服务端没有该名字时返回 null
      */
-    public static <T> T valueOf(Class<T> type, String name, Registry<?> registry) {
+    public static <T> T valueOf(Class<T> type, String name, Object registry) {
         if (type == null || name == null || name.isEmpty()) {
             return null;
         }
@@ -61,12 +60,13 @@ public final class EnumCompat {
      *
      * <p>注册表要等服务器初始化后才可用，所以只在 valueOf 缺失时才走这条路。</p>
      */
-    private static <T> T fromRegistry(Class<T> type, String name, Registry<?> registry) {
+    private static <T> T fromRegistry(Class<T> type, String name, Object registry) {
         if (registry == null) {
             return null;
         }
         try {
-            Object value = registry.get(NamespacedKey.minecraft(name.toLowerCase(Locale.ROOT)));
+            Method get = registry.getClass().getMethod("get", NamespacedKey.class);
+            Object value = get.invoke(registry, NamespacedKey.minecraft(name.toLowerCase(Locale.ROOT)));
             return type.isInstance(value) ? type.cast(value) : null;
         } catch (Throwable ignored) {
             return null;

@@ -49,7 +49,7 @@ public class ValueDistanceMechanic extends MechanicComponent {
             return false;
         }
 
-        final String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
+        final String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
         ;
         final HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (targets.get(0).getLocation().getWorld() != caster.getLocation().getWorld()) {

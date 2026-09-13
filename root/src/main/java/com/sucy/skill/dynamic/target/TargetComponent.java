@@ -62,7 +62,13 @@ public abstract class TargetComponent extends EffectComponent {
         everyone = group.equals("both");
         allies = group.equals("ally");
         throughWall = settings.getString(WALL, "false").equalsIgnoreCase("true");
-        self = IncludeCaster.valueOf(settings.getString(CASTER, "false").toUpperCase().replace(' ', '_'));
+        try {
+            self = IncludeCaster.valueOf(settings.getString(CASTER, "false").toUpperCase().replace(' ', '_'));
+        } catch (IllegalArgumentException ex) {
+            // Invalid optional values must not prevent the skill from loading;
+            // the documented default excludes the caster from the target list.
+            self = IncludeCaster.FALSE;
+        }
     }
 
     abstract List<LivingEntity> getTargets(

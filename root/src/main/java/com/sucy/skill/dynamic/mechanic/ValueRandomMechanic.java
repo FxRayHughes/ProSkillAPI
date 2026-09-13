@@ -98,8 +98,8 @@ public class ValueRandomMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());;
-        boolean triangular = settings.getString(TYPE).toUpperCase().equals("triangular");
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
+        boolean triangular = settings.getString(TYPE, "uniform").toUpperCase().equals("TRIANGULAR");
         double min = parseValues(caster, MIN, level, 1);
         double max = parseValues(caster, MAX, level, 1);
 

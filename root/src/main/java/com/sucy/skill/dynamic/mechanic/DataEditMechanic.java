@@ -89,8 +89,8 @@ public class DataEditMechanic extends MechanicComponent {
             return false;
         }
 
-        String key = settings.getString(KEY).replace("{uuid}", caster.getUniqueId().toString());
-        String action = settings.getString(ACTION);
+        String key = settings.getString(KEY, "").replace("{uuid}", caster.getUniqueId().toString());
+        String action = settings.getString(ACTION, "set");
         double value = parseValues(caster, VALUE, level, 1);
         for (LivingEntity target : targets) {
             DataSkill.getDataData(target.getUniqueId(), true).putDataTagData(key, value, -1, action);
