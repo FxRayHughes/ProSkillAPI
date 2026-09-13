@@ -7,6 +7,7 @@ import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Settings;
+import com.sucy.skill.api.util.ItemDataReader;
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -60,12 +61,17 @@ public class ArmorBindListener extends SkillAPIListener {
 
    /** 合并同一玩家短时间内的多个事件，只保留最后一次刷新任务。 */
    private static void scheduleRefresh(Player player, int delay) {
+      scheduleRefresh(player, delay, true);
+   }
+
+   /** 指纹模式可避免普通快捷栏切换重建技能栏，保留冷却显示。 */
+   private static void scheduleRefresh(Player player, int delay, boolean force) {
       if (player == null) return;
       BukkitTask old = pendingRefreshes.remove(player.getUniqueId());
       if (old != null) old.cancel();
       pendingRefreshes.put(player.getUniqueId(), SkillAPI.schedule(() -> {
          pendingRefreshes.remove(player.getUniqueId());
-         updateArmorBind(player, true);
+         updateArmorBind(player, force);
       }, delay));
    }
 
@@ -137,7 +143,7 @@ public class ArmorBindListener extends SkillAPIListener {
       if (!SkillAPI.getSettings().isSkillBarEnabled()) return;
       // 防具损坏后重新检测（force 确保跳过指纹缓存）
       if (isArmor(event.getBrokenItem())) {
-         SkillAPI.schedule(() -> updateArmorBind(event.getPlayer(), true), 1);
+         scheduleRefresh(event.getPlayer(), 1);
       }
    }
 
@@ -147,7 +153,7 @@ public class ArmorBindListener extends SkillAPIListener {
       if (!SkillAPI.getSettings().isSkillBarEnabled()) return;
       if (!hasBindableSkillText(event.getMainHandItem()) && !hasBindableSkillText(event.getOffHandItem())) return;
       // 主副手交换后强制刷新（force=true 确保跳过指纹缓存）
-      SkillAPI.schedule(() -> updateArmorBind(event.getPlayer(), true), 2);
+      scheduleRefresh(event.getPlayer(), 2);
    }
 
    /**
@@ -163,7 +169,7 @@ public class ArmorBindListener extends SkillAPIListener {
       ItemStack previous = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
       ItemStack current = event.getPlayer().getInventory().getItem(event.getNewSlot());
       if (!hasBindableSkillText(previous) && !hasBindableSkillText(current)) return;
-      SkillAPI.schedule(() -> updateArmorBind(event.getPlayer(), true), 1);
+      scheduleRefresh(event.getPlayer(), 1, false);
    }
 
    /**
@@ -173,7 +179,7 @@ public class ArmorBindListener extends SkillAPIListener {
    public void onDropItem(PlayerDropItemEvent event) {
       if (!SkillAPI.getSettings().isArmorAutoBindEnabled()) return;
       if (!SkillAPI.getSettings().isSkillBarEnabled()) return;
-      SkillAPI.schedule(() -> updateArmorBind(event.getPlayer(), true), 1);
+      scheduleRefresh(event.getPlayer(), 1);
    }
 
    /**
@@ -203,7 +209,7 @@ public class ArmorBindListener extends SkillAPIListener {
       if (!SkillAPI.getSettings().isSkillBarEnabled()) return;
       // 延迟到下一 tick，确保 CustomDurability 的碎裂/掉落逻辑完成
       // force=true 强制刷新，忽略指纹缓存
-      SkillAPI.schedule(() -> updateArmorBind(event.getEntity(), true), 1);
+      scheduleRefresh(event.getEntity(), 1);
    }
 
    /**
@@ -216,7 +222,7 @@ public class ArmorBindListener extends SkillAPIListener {
       if (!SkillAPI.getSettings().isSkillBarEnabled()) return;
       // 延迟 2 tick，确保 Bukkit 已完成重生流程和 inventory 初始化
       // force=true 强制刷新
-      SkillAPI.schedule(() -> updateArmorBind(event.getPlayer(), true), 2);
+      scheduleRefresh(event.getPlayer(), 2);
    }
 
    /**
@@ -830,6 +836,21 @@ public class ArmorBindListener extends SkillAPIListener {
     */
    private static List<String> extractAllSkillsFromItem(ItemStack item, String pre, String post) {
       List<String> result = new java.util.ArrayList<>();
+      // NBT 技能列表与 Lore 并行读取；每项格式为“技能名”或“技能名@等级”。
+      for (String encoded : ItemDataReader.getStringList(item, "SkillAPI", "skills")) {
+         if (encoded == null) continue;
+         String name = encoded.trim();
+         int marker = name.lastIndexOf('@');
+         int level = 1;
+         if (marker > 0) {
+            try { level = Math.max(1, Integer.parseInt(name.substring(marker + 1).trim())); name = name.substring(0, marker).trim(); }
+            catch (NumberFormatException ignored) { }
+         }
+         if (!name.isEmpty() && SkillAPI.getSkill(name) != null) {
+            loreSkillLevels.put(name.toLowerCase(), level);
+            result.add(name);
+         }
+      }
       if (item == null || !item.hasItemMeta()) return result;
       ItemMeta meta = item.getItemMeta();
       if (meta == null || !meta.hasLore()) return result;
