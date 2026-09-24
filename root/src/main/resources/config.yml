@@ -374,6 +374,68 @@ GUI:
   # 设为 "partial" 可同时支持两种
   map-tree-enabled: false
 #
+# 施法设置
+Casting:
+  # 是否启用技能施法系统
+  enabled: true
+  # 是否使用技能栏施法
+  bars: false
+  # 是否启用战斗模式施法
+  combat: false
+  # 施法物品所在槽位（1-9）
+  slot: 9
+  # 施法冷却时间（秒）
+  cooldown: 0.0
+  # 施法指示器粒子设置
+  cast-indicator:
+    enabled: true
+    density: 1.0
+    frequency: 10.0
+    animation: 1.0
+    particle:
+      particle: crit
+      dx: 0.0
+      dy: 0.0
+      dz: 0.0
+      speed: 0.0
+      amount: 1
+  # 技能栏未使用时显示的施法物品
+  item:
+    type: BOOK
+    data: 0
+    durability: 0
+    name: '&dSkills'
+    lore:
+      - ''
+      - '&6Left Click&2 - First skill set'
+      - '&6Right Click&2 - Second skill set'
+      - '&6Q&2 - Organize skills'
+  # 悬停技能栏提示物品
+  hover-item:
+    type: BOOKSHELF
+    data: 0
+    durability: 0
+    name: '&6Hover Bar'
+    lore:
+      - ''
+      - 'Skills in this row will'
+      - 'be usable via left clicking'
+      - 'the cast item and will let you see where they will hit'
+      - 'before casting them.'
+  # 瞬发技能栏提示物品
+  instant-item:
+    type: BOOKSHELF
+    data: 0
+    durability: 0
+    name: '&6Instant Bar'
+    lore:
+      - ''
+      - 'Skills in this row will'
+      - 'be usable via right clicking'
+      - 'the cast item and will be'
+      - 'cast immediately when switching'
+      - 'to their slot.'
+#
 # 连击系统设置
 Click Combos:
   #
