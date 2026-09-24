@@ -64,6 +64,7 @@ public class RegistrationManager {
     }
 
     private static final String SKILL_FOLDER = "dynamic" + File.separator + "skill";
+    private static final String LEGACY_SKILL_FOLDER = "dynamic" + File.separator + "skills";
     private static final String CLASS_FOLDER = "dynamic" + File.separator + "class";
     private static final String SKILL_DIR = SKILL_FOLDER + File.separator;
     private static final String CLASS_DIR = CLASS_FOLDER + File.separator;
@@ -106,9 +107,19 @@ public class RegistrationManager {
     }
 
     public void loadSkills() {
-
+        // Keep the list scoped to this load pass; otherwise a reload attempts to
+        // process files from previous passes a second time and hides the real
+        // reason a skill was skipped behind a duplicate-registration message.
+        filesC.clear();
         File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
         getFiles(skillRoot);
+        // Older releases/documentation used the plural directory. Reading it as
+        // a compatibility source prevents otherwise valid user files from being
+        // silently ignored after upgrading to the singular directory layout.
+        File legacySkillRoot = new File(api.getDataFolder().getPath() + File.separator + LEGACY_SKILL_FOLDER);
+        if (!legacySkillRoot.equals(skillRoot)) {
+            getFiles(legacySkillRoot);
+        }
         for (File file : filesC) {
             if (file.exists()) {
                 if (!file.getName().endsWith(".yml") && !file.getName().endsWith(".json")) {
@@ -124,7 +135,11 @@ public class RegistrationManager {
                     }
                     GsonConfig sConfig = new GsonConfig(api, configPath, file.getName().endsWith(".yml"));
                     DynamicSkill skill = new DynamicSkill(name);
-                    skill.load(sConfig.getConfig().getSection(name));
+                    DataSection source = findSkillSection(sConfig.getConfig(), name);
+                    if (source == null) {
+                        throw new IllegalArgumentException("missing top-level skill section '" + name + "'");
+                    }
+                    skill.load(source);
                     if (!SkillAPI.isSkillRegistered(skill.getName())) {
                         api.addDynamicSkill(skill);
                         skill.registerEvents(api);
@@ -142,6 +157,31 @@ public class RegistrationManager {
             }
         }
 
+    }
+
+    /**
+     * Resolves a skill section by filename while tolerating legacy files whose
+     * root node differs only by case or whose parser returned the skill body as
+     * the root section. This keeps malformed input visible without dropping a
+     * valid skill solely because of a historical wrapper difference.
+     */
+    private DataSection findSkillSection(DataSection root, String fileName) {
+        DataSection section = root.getSection(fileName);
+        if (section != null) {
+            return section;
+        }
+        for (String key : root.keys()) {
+            if (key.equalsIgnoreCase(fileName)) {
+                section = root.getSection(key);
+                if (section != null) {
+                    return section;
+                }
+            }
+        }
+        if (root.getString("name", null) != null || root.getSection("components") != null) {
+            return root;
+        }
+        return null;
     }
 
     /**

@@ -147,6 +147,11 @@ public class GUITool implements ToolMenu
 
     public static ItemStack parseItem(DataSection data)
     {
+        // Partially-created configs can omit an item section on first startup;
+        // use the same safe fallback as an invalid material instead of aborting.
+        if (data == null) {
+            data = new DataSection();
+        }
         Material material = MaterialCompat.resolve(data.getString("type", "JACK_O_LANTERN"), data.getInt("data", 0), true);
         if (material == null) material = Material.JACK_O_LANTERN;
         ItemStack item = new ItemStack(material);

@@ -290,6 +290,7 @@ public class Settings {
       var2.checkDefaults();// 88
       // 补全新增的配置字段（保留用户已有配置）
       ensureDefaults(var2.getConfig());
+      ensureCastingItemDefaults(var2.getConfig());
       var2.save();// 89
       this.config = var2.getConfig();// 90
       this.reload();// 91
@@ -320,6 +321,31 @@ public class Settings {
 
       // 越级作战曲线：只在首次（section 完全缺失）时 seed；用户已配置则一概不动
       ensureLevelGapDefaults(cfg);
+   }
+
+   /**
+    * Seeds the three casting item sections when an older or partially-written
+    * config file does not contain them. GUITool requires a section for every
+    * item, so keeping these defaults here makes first startup idempotent.
+    */
+   private static void ensureCastingItemDefaults(com.rit.sucy.config.parse.DataSection cfg) {
+      setIfAbsent(cfg, "Casting.item.type", "BOOK");
+      setIfAbsent(cfg, "Casting.item.data", "0");
+      setIfAbsent(cfg, "Casting.item.durability", "0");
+      setIfAbsent(cfg, "Casting.item.name", "&dSkills");
+      setIfAbsent(cfg, "Casting.item.lore", java.util.Arrays.asList("", "&6Left Click&2 - First skill set", "&6Right Click&2 - Second skill set", "&6Q&2 - Organize skills"));
+
+      setIfAbsent(cfg, "Casting.hover-item.type", "BOOKSHELF");
+      setIfAbsent(cfg, "Casting.hover-item.data", "0");
+      setIfAbsent(cfg, "Casting.hover-item.durability", "0");
+      setIfAbsent(cfg, "Casting.hover-item.name", "&6Hover Bar");
+      setIfAbsent(cfg, "Casting.hover-item.lore", java.util.Arrays.asList("", "Skills in this row will", "be usable via left clicking", "the cast item and will let you see where they will hit", "before casting them."));
+
+      setIfAbsent(cfg, "Casting.instant-item.type", "BOOKSHELF");
+      setIfAbsent(cfg, "Casting.instant-item.data", "0");
+      setIfAbsent(cfg, "Casting.instant-item.durability", "0");
+      setIfAbsent(cfg, "Casting.instant-item.name", "&6Instant Bar");
+      setIfAbsent(cfg, "Casting.instant-item.lore", java.util.Arrays.asList("", "Skills in this row will", "be usable via right clicking", "the cast item and will be", "cast immediately when switching", "to their slot."));
    }
 
    /**

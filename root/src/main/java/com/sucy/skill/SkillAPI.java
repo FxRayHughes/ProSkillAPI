@@ -313,8 +313,12 @@ public class SkillAPI extends JavaPlugin {
             MainListener.unload(player);
         }
 
-        io.saveAll();
-        io.close();
+        // Startup can fail before storage is constructed; shutdown must not mask
+        // the original enable exception with a second null-storage exception.
+        if (io != null) {
+            io.saveAll();
+            io.close();
+        }
 
         skills.clear();
         classes.clear();

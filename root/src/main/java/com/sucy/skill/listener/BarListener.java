@@ -53,6 +53,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -124,6 +125,29 @@ public class BarListener extends SkillAPIListener
     public void onQuit(PlayerQuitEvent event)
     {
         cleanup(event.getPlayer());
+    }
+
+    /**
+     * Prevents the synthetic item used by a skill slot from being dropped with
+     * the Q key. Inventory click protection cannot see this event, so without
+     * this guard a player could remove a skill icon while the bar remained active.
+     * Items in weapon slots intentionally remain droppable.
+     *
+     * @param event item-drop event raised by the player
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onDrop(PlayerDropItemEvent event)
+    {
+        Player player = event.getPlayer();
+        PlayerData data = SkillAPI.getPlayerData(player);
+        PlayerSkillBar bar = data.getSkillBar();
+        if (bar.isSetup() && !bar.isWeaponSlot(player.getInventory().getHeldItemSlot()))
+        {
+            event.setCancelled(true);
+            // Restore the indicator if the server had already removed it before
+            // the event reached this listener.
+            bar.update(player);
+        }
     }
 
     /**
