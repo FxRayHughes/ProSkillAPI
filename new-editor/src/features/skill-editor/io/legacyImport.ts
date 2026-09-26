@@ -1,6 +1,7 @@
 import { createNode } from '../model/graph';
 import { normalizeValues } from '../model/fieldValues';
 import { nodeRegistry } from '../model/registry';
+import { isParticleAst, isParticleField, makeParticleAst } from '../model/particleCatalog';
 import { layoutPath } from './legacyLayout';
 import type { XYPosition } from '@xyflow/react';
 import type { FieldValue, NodeDefinition, SkillNode, SkillEdge } from '../model/types';
@@ -25,14 +26,23 @@ export function findDefinition(key: string, type: unknown): NodeDefinition | und
 function assertFieldValues(key: string, values: unknown): Record<string, FieldValue> {
   if (!values || typeof values !== 'object' || Array.isArray(values))
     throw new Error(`节点参数必须为映射：${key}`);
+  const normalized: Record<string, FieldValue> = {};
   for (const [name, value] of Object.entries(values)) {
+    if (isParticleField(name)) {
+      // Old scalar configs become portable ASTs at import; an existing AST stays intact.
+      if (typeof value === 'string') normalized[name] = makeParticleAst(value);
+      else if (isParticleAst(value)) normalized[name] = value;
+      else throw new Error(`粒子 AST 无效：${key}.${name}`);
+      continue;
+    }
     const scalar = ['string', 'number', 'boolean'].includes(typeof value);
     const list =
       Array.isArray(value) &&
       value.every((entry) => typeof entry === 'string' || typeof entry === 'number');
     if (!scalar && !list) throw new Error(`节点参数类型不支持：${key}.${name}`);
+    normalized[name] = value as FieldValue;
   }
-  return values as Record<string, FieldValue>;
+  return normalized;
 }
 
 /** Old files encode the English component name in the map key and category in type. */
@@ -58,6 +68,7 @@ export function importLegacyComponents(
         positions.get(path) ?? { x: 80 + depth * 300, y: 80 + nodes.length * 150 },
       );
       node.data.legacyKey = key;
+      // Keep source tokens in the AST; only the server selects a Bukkit enum at runtime.
       node.data.values = normalizeValues(definition, assertFieldValues(key, item.data ?? {}));
       nodes.push(node);
       if (parent)

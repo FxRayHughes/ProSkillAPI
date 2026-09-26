@@ -91,7 +91,7 @@ registerEntryNode({
 同一命令还会生成内置扩展 `proskillapi-extra` 的 5 个节点（本仓库服务端新增的粒子轮廓机制，以及现有配置中出现的第三方组件），共 158 个可用节点。
 `legacy.generated.json` 与 `extra-nodes.generated.json` 是生成文件，不手工编辑；测试会对比当前旧源码，防止遗漏共享参数或条件显示规则。
 要让扩展节点参与原生 YAML 的导入导出，节点定义必须提供 `legacy: { name, category, container }`，详见 `PLUGIN_DEVELOPMENT.md`。
-字段标题显示中文，选项的英文值与配置键保持原样；未识别的导入选项保留，避免升级后丢失配置。
+字段标题显示中文，配置键保持英文；未识别的导入值保留在技能 AST 中，避免升级时丢失配置。
 条件节点可用 `nodeRegistry.register` 注册，`kind` 为 `condition`。
 注册必须在挂载前完成，重复 ID、重复端口、入口输入端口会立即报错。
 扩展注册的是前端定义，不会自动向 Minecraft 服务端注册执行处理器。
@@ -101,7 +101,7 @@ registerEntryNode({
 插件目录**只在一处选择**（主页或顶栏的文件夹按钮），技能、职业、配置三个页面共用同一个目录，
 选择结果存在 IndexedDB 里，下次打开自动恢复。
 
-编辑器直接读写这个目录，**保存即生效**，不存在中间工程格式：
+编辑器直接读写这个目录，**保存即生效**；内存中的技能 AST 不作为文件单独持久化：
 
 | 页面     | 读写位置                                | 对应服务端加载逻辑                     |
 | -------- | --------------------------------------- | -------------------------------------- |
@@ -109,12 +109,30 @@ registerEntryNode({
 | 职业管理 | `<插件目录>/dynamic/class/<职业名>.yml` | `RegistrationManager` 的单文件职业加载 |
 | 配置管理 | `<插件目录>/*.yml`（根目录下的配置）    | 各自的 `CommentedConfig` 加载          |
 
-- 保存写出的是原生 `name/type/attributes/components` 结构，服务端不需要任何改动即可加载。
+- 保存写出的是原生 `name/type/attributes/components` 结构；其中粒子 AST 需要包含 `ParticleAstResolver` 的新版服务端，旧版插件仅认识标量粒子。
 - 未被编辑器建模的键（包括第三方 addon 写入的字段、`attributes` 里的 `incompatible` 等列表设置）原样保留，不会在保存时丢失。
 - 节点坐标写在技能段的 `editor-layout` 里。`Skill.load` 与 `DynamicSkill.load` 只读取自己认识的键，因此该段既不影响服务端，也不会被插件抹掉。
 - 未识别的组件会让该技能显示为「格式异常」并说明原因，编辑器不会自动改写这类文件。
 - 原生 `components` 是有序嵌套树：不支持共享子树、条件节点的否定分支，根节点必须是触发器。违反时保存会明确报错而不是静默丢弃，详见 `PLUGIN_DEVELOPMENT.md`。
 - 同级节点的执行顺序按画布纵坐标从上到下排列。
+
+### 技能 AST 与目标版本
+
+- `SkillAst` 是与服务器版本无关的编辑模型：技能元数据、节点、连线和未建模字段。导入旧标量粒子时自动包装成粒子 AST；再次导出仍写 AST，手动导入不会覆盖先前打开的目录文件。
+- 粒子字段在 YAML 中保存 `kind: particle`、原始 `value` 和 `versions` 映射，例如 `v1_20: BLOCK`。版本键不用小数点，避免配置解析器将其当作嵌套路径。
+
+  ```yaml
+  particle:
+    kind: particle
+    value: Block Crack
+    versions:
+      v1_8: Block Crack
+      v1_20: BLOCK
+  ```
+
+- 目标版本只在主页设置一次并保存为全局偏好，用于前端粒子选项与回退预览，不决定文件内容。映射范围取自各目标 Spigot API 的 `org.bukkit.Particle`；1.8 使用 SkillAPI 粒子键。
+- 服务端加载 YAML 后按**实际运行版本**取对应映射；不存在或无效时使用跨版本均可用的白色 `CLOUD`。服务端保存技能时保留原始 AST，不把它固化为当前服务器的枚举名。
+- 无法解析的其他版本文件保留原件，可尝试在编辑器导入、检查后重新导出；若导入仍失败，按具体错误修复。
 
 `skills.yml` / `classes.yml` 是服务端首次迁移用的聚合文件（带 `loaded: true` 后会被跳过），编辑器不读写它们。
 

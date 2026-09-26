@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableList;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.api.util.ConfigValues;
+import com.sucy.skill.api.particle.ParticleAstResolver;
 import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
@@ -45,13 +46,17 @@ public class Settings {
     private static final String SCALE = "-scale";
 
     private final HashMap<String, Object> settings;
+    // Preserve the original YAML AST separately because mechanics still consume resolved strings.
+    private final HashMap<String, Object> particleAsts;
 
     public Settings() {
         this.settings = new LinkedHashMap<>();
+        this.particleAsts = new LinkedHashMap<>();
     }
 
     public Settings(final Settings settings) {
         this.settings = new HashMap<>(settings.settings);
+        this.particleAsts = new HashMap<>(settings.particleAsts);
     }
 
     /**
@@ -64,6 +69,8 @@ public class Settings {
      */
     public void set(String key, Object value) {
         settings.put(key, value);
+        // An explicit runtime update supersedes the YAML AST kept for a later save.
+        particleAsts.remove(key);
     }
 
     /**
@@ -364,6 +371,7 @@ public class Settings {
      */
     public void remove(String key) {
         settings.remove(key);
+        particleAsts.remove(key);
         settings.remove(key + BASE);
         settings.remove(key + SCALE);
     }
@@ -395,7 +403,10 @@ public class Settings {
             return;
         }
         for (String key : settings.keySet()) {
-            config.set(key, settings.get(key));
+            // Runtime reads the resolved name, but a server-side save must keep the original
+            // portable AST or a subsequent move to another Minecraft version would break it.
+            Object value = particleAsts.containsKey(key) ? particleAsts.get(key) : settings.get(key);
+            config.set(key, value);
         }
     }
 
@@ -416,7 +427,14 @@ public class Settings {
         }
 
         for (String key : config.keys()) {
-            settings.put(key, config.get(key));
+            Object value = config.get(key);
+            // The YAML keeps a portable particle AST; runtime Settings hold the one name
+            // selected for this server, so existing mechanics can keep reading strings.
+            if (ParticleAstResolver.isParticleKey(key)) {
+                if (!(value instanceof String)) particleAsts.put(key, value);
+                else particleAsts.remove(key);
+                settings.put(key, ParticleAstResolver.resolve(value));
+            } else settings.put(key, value);
         }
     }
 

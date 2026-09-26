@@ -1,4 +1,5 @@
 import { fieldLabel, optionLabel } from './fieldLabels';
+import { isParticleField, makeParticleAst, particleOptions } from './particleCatalog';
 import type { FieldDefinition } from './types';
 
 /** Snapshot of the old input instances, including helper-generated fields and visibility rules. */
@@ -30,9 +31,11 @@ export function convertLegacyFields(fields: readonly LegacyField[]): FieldDefini
       tooltip: field.tooltipZh ?? `用于配置“${fieldLabel(field.label)}”。`,
       requirements: field.requirements,
     };
-    const options =
-      field.optionsZh ??
-      (field.options ?? []).map((value) => ({ value, label: optionLabel(value) }));
+    // All particle controls share one versioned catalog, including built-in and legacy nodes.
+    const options = isParticleField(field.key)
+      ? particleOptions
+      : (field.optionsZh ??
+        (field.options ?? []).map((value) => ({ value, label: optionLabel(value) })));
     switch (field.kind) {
       case 'StringValue':
         return [{ ...common, type: 'text', default: String(field.value ?? '') }];
@@ -47,7 +50,17 @@ export function convertLegacyFields(fields: readonly LegacyField[]): FieldDefini
           },
         ];
       case 'ListValue':
-        return [{ ...common, type: 'select', default: String(field.value ?? ''), options }];
+        return [
+          {
+            ...common,
+            type: 'select',
+            // Flame exists in every supported version; Barrier no longer exists after 1.17.
+            default: isParticleField(field.key)
+              ? makeParticleAst('Flame')
+              : String(field.value ?? ''),
+            options,
+          },
+        ];
       case 'IndexListValue':
         return [
           {

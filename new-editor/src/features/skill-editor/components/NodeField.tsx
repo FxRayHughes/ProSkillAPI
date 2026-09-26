@@ -10,6 +10,13 @@ import {
   Text,
 } from '@mantine/core';
 import { useState } from 'react';
+import { isOptionAvailable } from '../model/versionOptions';
+import {
+  isParticleAst,
+  isParticleField,
+  makeParticleAst,
+  particlePreview,
+} from '../model/particleCatalog';
 import type { FieldDefinition, FieldValue } from '../model/types';
 
 /** Numeric drafts allow clearing and negative/decimal edits without forcing an immediate reset. */
@@ -75,40 +82,48 @@ export function NodeField({
       />
     );
   if (field.type === 'select') {
-    const current = String(value);
-    const version = Number.parseFloat(serverVersion);
-    const data = field.options.filter(
-      (option) =>
-        (!option.since || version >= Number.parseFloat(option.since)) &&
-        (!option.until || version <= Number.parseFloat(option.until)),
-    );
-    if (!data.some((option) => option.value === current))
-      data.unshift({ value: current, label: current ? '当前导入值' : '无' });
+    const particle = isParticleField(field.key) && isParticleAst(value) ? value : undefined;
+    const current = particle?.value ?? String(value);
+    // The selector previews the stored AST variant; it never decides the runtime server version.
+    const rendered = particle ? (particlePreview(particle, serverVersion) ?? current) : current;
+    const data = field.options.filter((option) => isOptionAvailable(option, serverVersion));
+    if (!data.some((option) => option.value === rendered))
+      data.unshift({
+        value: rendered,
+        // Unknown imports stay selectable so editing another field never erases the payload.
+        label: current ? `当前值（${serverVersion} 将使用白色 CLOUD）：${current}` : '无',
+      });
     return (
       <Select
         label={label}
-        description="此项会以英文键写入技能文件"
+        description={
+          particle && rendered !== current
+            ? `AST 原值：${current}；${serverVersion} 服务端使用 ${rendered}`
+            : '此项会以英文键写入技能文件'
+        }
         searchable
         allowDeselect={false}
         data={data}
-        value={current}
+        value={rendered}
         onChange={(next) => {
-          if (next !== null) onChange(field.numeric ? Number(next) : next);
+          if (next !== null)
+            onChange(
+              isParticleField(field.key)
+                ? makeParticleAst(next)
+                : field.numeric
+                  ? Number(next)
+                  : next,
+            );
         }}
       />
     );
   }
   if (field.type === 'multiselect') {
     const selected = Array.isArray(value) ? value : [];
-    const version = Number.parseFloat(serverVersion);
-    const data = (field.options ?? []).filter(
-      (option) =>
-        (!option.since || version >= Number.parseFloat(option.since)) &&
-        (!option.until || version <= Number.parseFloat(option.until)),
-    );
+    const data = (field.options ?? []).filter((option) => isOptionAvailable(option, serverVersion));
     for (const item of selected)
       if (!data.some((option) => option.value === item))
-        data.push({ value: item, label: `当前导入值 ${data.length + 1}` });
+        data.push({ value: item, label: `当前值（${serverVersion} 不支持）：${item}` });
     return (
       <MultiSelect
         label={label}

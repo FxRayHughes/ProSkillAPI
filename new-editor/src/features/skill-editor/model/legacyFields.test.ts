@@ -1,4 +1,4 @@
-import { registerLegacyCatalog } from './legacyCatalog';
+import { registerGeneratedCatalog, registerLegacyCatalog } from './legacyCatalog';
 import { registerBuiltinPlugin } from '../../plugins/builtin';
 import { describe, expect, it } from 'vitest';
 import { load } from 'js-yaml';
@@ -9,10 +9,17 @@ import { createNode, createProject } from './graph';
 import { serializeLegacySkill, parseLegacySkill } from '../io/legacySkill';
 import { fieldLabel } from './fieldLabels';
 
+// Mirror production bootstrap order so truncated annotation fields cannot pass tests unnoticed.
+registerGeneratedCatalog();
 registerLegacyCatalog();
 registerBuiltinPlugin();
 
 describe('complete old-node parameter forms', () => {
+  it('keeps annotation prerequisites and complete inherited particle fields', () => {
+    expect(nodeRegistry.get('MechanicParticle')!.fields.length).toBeGreaterThan(15);
+    expect(nodeRegistry.get('MechanicParticleRing')!.fields.length).toBeGreaterThan(15);
+    expect(nodeRegistry.get('MechanicJavaScript')!.help?.requires?.capabilities).toBeDefined();
+  });
   it('stores complete Chinese presentation data without changing protocol values', () => {
     for (const entry of catalog) {
       expect(entry.displayNameZh).toMatch(/[\u3400-\u9fff]/);

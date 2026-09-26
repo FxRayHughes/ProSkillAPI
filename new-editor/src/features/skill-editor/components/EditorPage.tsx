@@ -1,11 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
-import { AppShell, Drawer, Group, ScrollArea, Stack, Tabs, Text, Title } from '@mantine/core';
+import {
+  Alert,
+  AppShell,
+  Drawer,
+  Group,
+  ScrollArea,
+  Stack,
+  Tabs,
+  Text,
+  Title,
+} from '@mantine/core';
 import { ArrowLeft, Download, PanelLeft, PanelRight, Save } from 'lucide-react';
 import { notifications } from '@mantine/notifications';
 import { useReactFlow } from '@xyflow/react';
 import { ToolButton } from '../../../shared/ui/ToolButton';
 import { downloadText } from '../../../shared/lib/download';
 import { parseLegacySkill, serializeLegacySkill } from '../io/legacySkill';
+import { particleFallbackIssues } from '../io/particleDiagnostics';
 import { useSkillEditor } from '../model/useSkillEditor';
 import { BlueprintCanvas } from './BlueprintCanvas';
 import { NodeInspector } from './NodeInspector';
@@ -21,26 +32,29 @@ function describe(error: unknown, fallback: string): string {
 export function EditorPage({
   initialFile,
   themeControl,
-  versionControl,
   serverVersion,
   onBack,
 }: {
   initialFile?: import('../../workspace/model/types').WorkspaceFile;
   /** Supplied by the app so theme state remains shared across pages. */
   themeControl?: React.ReactNode;
-  /** 目标服务端版本选择器，由 app 持有以便跨页面共享。 */
-  versionControl?: React.ReactNode;
-  /** 全局目标服务端版本，用于过滤枚举选项；不写入技能文件。 */
-  serverVersion?: string;
+  /** 主页设置的预览版本；服务端运行时独立选择 AST 映射。 */
+  serverVersion: string;
   onBack?: () => void;
 }) {
   const editor = useSkillEditor();
   const { setProject } = editor;
+  const standaloneImport = useRef(false);
   useEffect(() => {
-    if (initialFile?.project) setProject(initialFile.project);
+    if (initialFile?.project) {
+      setProject(initialFile.project);
+      standaloneImport.current = false;
+    }
   }, [initialFile, setProject]);
+  const previewIssues = particleFallbackIssues(editor.project, serverVersion);
   const saveToFolder = async () => {
-    if (!initialFile?.handle) return false;
+    // A manually imported file must be exported, never written over the previously opened file.
+    if (!initialFile?.handle || standaloneImport.current) return false;
     // Serialization validates the graph, so a rejected structure never truncates the file.
     const content = serializeLegacySkill(editor.project);
     const writable = await initialFile.handle.createWritable();
@@ -80,13 +94,25 @@ export function EditorPage({
     const file = event.target.files?.[0];
     if (!file) return;
     try {
-      editor.setProject(parseLegacySkill(await file.text(), serverVersion));
+      const project = parseLegacySkill(await file.text());
+      editor.setProject(project);
+      standaloneImport.current = true;
+      const issues = particleFallbackIssues(project, serverVersion);
+      notifications.show({
+        color: issues.length ? 'yellow' : 'teal',
+        closeButtonProps: { 'aria-label': '关闭提示' },
+        title: issues.length ? '导入成功，部分粒子将回退' : '导入成功',
+        message: issues.length
+          ? `已转换为粒子 AST；${issues.length} 个粒子在 ${serverVersion} 会使用白色 CLOUD，可在节点属性中调整。`
+          : '已转换为粒子 AST；导出的文件由服务端按实际版本解析，不会覆盖原文件。',
+        autoClose: issues.length ? false : undefined,
+      });
     } catch (error) {
       notifications.show({
         color: 'red',
         closeButtonProps: { 'aria-label': '关闭提示' },
         title: '导入失败',
-        message: describe(error, '无法读取技能文件'),
+        message: `${describe(error, '无法读取技能文件')}。本编辑器需要 SkillAPI 原生技能 YAML；请按报错修复或转换文件，再重新导入并导出。原文件未修改。`,
         autoClose: false,
       });
     }
@@ -116,6 +142,12 @@ export function EditorPage({
   );
   const inspector = (
     <Stack p="md">
+      {previewIssues.length > 0 && (
+        <Alert color="yellow" title={`${previewIssues.length} 个粒子在 ${serverVersion} 将回退`}>
+          {previewIssues.slice(0, 3).join('；')}
+          {previewIssues.length > 3 ? '；请继续检查其他节点' : ''}
+        </Alert>
+      )}
       <NodeInspector
         node={editor.selected}
         onChange={editor.updateNode}
@@ -137,8 +169,6 @@ export function EditorPage({
             <ToolButton label="返回技能管理" onClick={() => onBack?.()}>
               <ArrowLeft size={18} />
             </ToolButton>
-            {/* 版本是全局设置，放在左上角而不是逐技能的属性面板里 */}
-            {versionControl}
           </Group>
           <div className={classes.grow}>
             <Title order={1} size="h4">
@@ -166,7 +196,8 @@ export function EditorPage({
                       color: 'yellow',
                       closeButtonProps: { 'aria-label': '关闭提示' },
                       title: '未关联文件',
-                      message: '当前技能没有关联文件，请先从技能管理中打开插件目录里的技能。',
+                      message:
+                        '当前内容由文件导入或未关联插件目录，请使用“导出技能 YAML”；不会覆盖原文件。',
                     });
                   }
                 } catch (error) {

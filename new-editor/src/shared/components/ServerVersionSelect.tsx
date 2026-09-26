@@ -7,16 +7,19 @@ interface ServerVersionSelectProps {
 }
 
 /**
- * 全局的目标服务端版本选择器。
+ * 主页上的全局目标服务端版本选择器。
  *
- * 该版本只决定枚举选项（粒子、材质、音效）如何按可用区间过滤，不写入技能文件，
- * 所以它是整个编辑器的一个设置，而不是逐技能保存的属性。
+ * 该版本只决定枚举预览，不写入技能文件；粒子 AST 在服务端按实际版本解析。
  */
 export function ServerVersionSelect({ value, onChange }: ServerVersionSelectProps) {
   return (
-    <Tooltip label="决定粒子、材质等枚举按哪个版本过滤；不写入技能文件" position="bottom" withArrow>
+    <Tooltip
+      label="预览粒子等枚举在指定版本的可用情况；不影响导出的 AST"
+      position="bottom"
+      withArrow
+    >
       <Select
-        aria-label="目标服务端版本"
+        aria-label="预览服务端版本"
         size="xs"
         w={112}
         allowDeselect={false}

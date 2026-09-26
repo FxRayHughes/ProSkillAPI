@@ -85,16 +85,30 @@ export function createLegacyNode(entry: LegacyCatalogEntry): NodeDefinition {
 
 /** Registers objects while preserving English IDs as the persistence protocol. */
 export function registerLegacyCatalog(): void {
-  for (const entry of catalog as LegacyCatalogEntry[])
-    if (!nodeRegistry.get(entry.id)) nodeRegistry.register(createLegacyNode(entry));
+  for (const entry of catalog as LegacyCatalogEntry[]) {
+    const generatedDefinition = nodeRegistry.get(entry.id);
+    const definition = createLegacyNode(entry);
+    if (generatedDefinition) {
+      // Annotation exports omit inherited inputs; retain the complete editor contract and
+      // keep the generated runtime requirements that legacy extraction cannot express.
+      nodeRegistry.override({
+        ...definition,
+        help: definition.help && {
+          ...definition.help,
+          ...(generatedDefinition.help?.requires
+            ? { requires: generatedDefinition.help.requires }
+            : {}),
+        },
+      });
+    } else nodeRegistry.register(definition);
+  }
 }
 
 /**
  * 注册由插件源码注解生成的节点目录。
  *
- * 这份目录来自构建期的 exportNodes 任务，是节点契约的权威来源——插件新增节点会自动出现，
- * 且带有生效前提信息。必须在 registerLegacyCatalog 之前调用：后者遇到已注册的 id 会跳过，
- * 从而让抽取式的旧目录只补齐这里没有的条目。
+ * 这份目录来自构建期的 exportNodes 任务，提供新节点与生效前提。
+ * 必须先于旧目录注册；旧目录随后补齐注解未导出的继承字段，保留生效前提。
  */
 export function registerGeneratedCatalog(): void {
   for (const entry of generated as LegacyCatalogEntry[])

@@ -20,7 +20,7 @@ export type FieldDefinition = FieldBase &
     | { type: 'boolean'; default: boolean }
     | {
         type: 'select';
-        default: string | number;
+        default: string | number | ParticleAstValue;
         options: readonly { value: string; label: string; since?: string; until?: string }[];
         numeric?: boolean;
       }
@@ -31,7 +31,17 @@ export type FieldDefinition = FieldBase &
       }
   );
 
-export type FieldValue = string | number | boolean | string[];
+/**
+ * Persisted particle AST. `versions` contains resolved wire names for supported servers;
+ * a missing version means the runtime must use the white CLOUD fallback.
+ */
+export interface ParticleAstValue {
+  kind: 'particle';
+  value: string;
+  versions: Record<string, string>;
+}
+
+export type FieldValue = string | number | boolean | string[] | ParticleAstValue;
 
 /** Definitions describe editor UI only; server execution requires a corresponding handler. */
 export interface NodeDefinition {
@@ -96,18 +106,19 @@ export interface SkillMeta {
    * so they are carried here rather than dropped.
    */
   attributes: Record<string, string | string[]>;
-  /** Editor-only preference used to filter version specific enum options. */
-  serverVersion: string;
 }
 
 /**
  * The editor document is the native SkillAPI skill section plus node coordinates.
  * `source` carries every key the editor does not model so saving never drops addon data.
  */
-export interface SkillProject {
+export interface SkillAst {
   schemaVersion: 1;
   source: Record<string, unknown>;
   meta: SkillMeta;
   nodes: SkillNode[];
   edges: SkillEdge[];
 }
+
+/** The editable project is a version-neutral semantic AST, not target-version YAML. */
+export type SkillProject = SkillAst;

@@ -81,7 +81,6 @@ export function createProject(name = '新技能'): SkillProject {
         'points-spent-req-base': '0',
         'points-spent-req-scale': '0',
       },
-      serverVersion: '1.16',
     },
     nodes: [createNode(nodeRegistry.get('TriggerCast')!, { x: 100, y: 160 })],
     edges: [],

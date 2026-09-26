@@ -22,6 +22,18 @@ export const builtinPlugin: EditorPlugin = {
 /** Registered before stored plugins so a user-imported plugin of the same ID wins. */
 export function registerBuiltinPlugin(): void {
   for (const node of builtinPlugin.nodes) {
-    if (!nodeRegistry.get(node.id)) nodeRegistry.register(node);
+    const generated = nodeRegistry.get(node.id);
+    if (!generated) nodeRegistry.register(node);
+    else if (node.fields.length > generated.fields.length) {
+      // Annotation export lacks the shared particle controls; the built-in catalog carries
+      // their full field contract while the generated entry retains runtime prerequisites.
+      nodeRegistry.override({
+        ...node,
+        help: node.help && {
+          ...node.help,
+          ...(generated.help?.requires ? { requires: generated.help.requires } : {}),
+        },
+      });
+    }
   }
 }

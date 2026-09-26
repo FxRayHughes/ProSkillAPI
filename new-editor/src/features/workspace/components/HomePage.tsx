@@ -2,6 +2,7 @@ import { Alert, Button, Card, Code, Group, SimpleGrid, Stack, Text, Title } from
 import { BriefcaseBusiness, FolderOpen, Sliders, Swords } from 'lucide-react';
 import { useWorkspace } from '../model/workspaceContext';
 import type { WorkspacePage } from './WorkspaceShell';
+import { ServerVersionSelect } from '../../../shared/components/ServerVersionSelect';
 
 const CARDS: { id: WorkspacePage; label: string; hint: string; icon: React.ReactNode }[] = [
   {
@@ -25,7 +26,15 @@ const CARDS: { id: WorkspacePage; label: string; hint: string; icon: React.React
 ];
 
 /** The single place a plugin folder is chosen; every page then reads the same directory. */
-export function HomePage({ onOpen }: { onOpen: (page: WorkspacePage) => void }) {
+export function HomePage({
+  onOpen,
+  serverVersion,
+  onVersionChange,
+}: {
+  onOpen: (page: WorkspacePage) => void;
+  serverVersion: string;
+  onVersionChange: (version: string) => void;
+}) {
   const { root, error, openFolder, clearError } = useWorkspace();
   return (
     <Stack p="xl" maw={900} mx="auto">
@@ -62,6 +71,19 @@ export function HomePage({ onOpen }: { onOpen: (page: WorkspacePage) => void }) 
           >
             {root ? '切换目录' : '选择插件目录'}
           </Button>
+        </Group>
+      </Card>
+
+      <Card withBorder padding="lg">
+        <Group justify="space-between" wrap="wrap" gap="md">
+          <div>
+            <Text fw={600}>预览服务端版本</Text>
+            <Text size="sm" c="dimmed">
+              在这里设置一次，用于预览粒子列表；导入与导出均保存 AST，服务端以实际运行版本解析。
+            </Text>
+          </div>
+          {/* The saved global preference controls previews only; exported ASTs have no target version. */}
+          <ServerVersionSelect value={serverVersion} onChange={onVersionChange} />
         </Group>
       </Card>
 

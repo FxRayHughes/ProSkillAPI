@@ -24,8 +24,6 @@ const MODELLED_KEYS = new Set([
   LAYOUT_KEY,
 ]);
 
-const DEFAULT_SERVER_VERSION = '1.16';
-
 function text(value: unknown, fallback = ''): string {
   return value === undefined || value === null ? fallback : String(value);
 }
@@ -80,10 +78,7 @@ export function readSkillSection(source: string): {
 }
 
 /** Parses the native skill section into the editor document without losing unknown keys. */
-export function parseLegacySkill(
-  source: string,
-  serverVersion = DEFAULT_SERVER_VERSION,
-): SkillProject {
+export function parseLegacySkill(source: string): SkillProject {
   const { name, section } = readSkillSection(source);
   const positions = readLayout(section[LAYOUT_KEY]);
   const components = section.components;
@@ -108,14 +103,13 @@ export function parseLegacySkill(
       iconLore: lines(section['icon-lore']),
       description: lines(section.desc),
       attributes: attributes(section.attributes),
-      serverVersion,
     },
     nodes,
     edges,
   };
 }
 
-/** Writes the native structure the plugin loads, plus an editor-only layout section. */
+/** Writes native YAML containing the portable particle AST; the server selects its own version. */
 export function serializeLegacySkill(project: SkillProject): string {
   const { components, positions } = exportLegacyComponents(project);
   const meta: SkillMeta = project.meta;

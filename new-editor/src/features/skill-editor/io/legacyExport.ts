@@ -1,6 +1,7 @@
 import { nodeRegistry } from '../model/registry';
 import { componentName } from './legacyImport';
 import { layoutPath } from './legacyLayout';
+import { isParticleField, makeParticleAst } from '../model/particleCatalog';
 import type { XYPosition } from '@xyflow/react';
 import type { SkillProject, SkillNode } from '../model/types';
 
@@ -84,7 +85,13 @@ export function exportLegacyComponents(project: SkillProject): ExportResult {
       type: definition.legacy?.category ?? 'mechanic',
       // Kept because the legacy editor writes it and addons may read it.
       indicator: '3D',
-      data: { ...node.data.values },
+      // Even programmatic scalar updates are wrapped, so exports always persist the AST.
+      data: Object.fromEntries(
+        Object.entries(node.data.values).map(([field, value]) => [
+          field,
+          isParticleField(field) && typeof value === 'string' ? makeParticleAst(value) : value,
+        ]),
+      ),
       children,
     };
   }

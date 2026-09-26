@@ -7,6 +7,8 @@ import { nodeRegistry } from '../model/registry';
 import { findDefinition } from './legacyImport';
 import { parseLegacySkill, serializeLegacySkill } from './legacySkill';
 import { LAYOUT_KEY } from './legacyLayout';
+import { particleFallbackIssues } from './particleDiagnostics';
+import { isParticleAst } from '../model/particleCatalog';
 
 registerLegacyCatalog();
 registerBuiltinPlugin();
@@ -27,8 +29,12 @@ interface Component {
   children?: Record<string, Component>;
 }
 
-/** The server lowercases enum payloads, so canonical casing is an equivalent value. */
+/** Old scalar particles become AST nodes; the semantic source value must survive. */
 function sameValue(before: unknown, after: unknown): boolean {
+  if (isParticleAst(after))
+    return isParticleAst(before)
+      ? JSON.stringify(before) === JSON.stringify(after)
+      : String(before).toLowerCase() === after.value.toLowerCase();
   return String(before).toLowerCase() === String(after).toLowerCase();
 }
 
@@ -60,6 +66,81 @@ function expectSameTree(before: Record<string, Component>, after: Record<string,
 }
 
 describe('native skill round-trip', () => {
+  it('imports old particle scalars into a portable AST and exports that AST unchanged', () => {
+    const source = `Particles:
+  components:
+    Cast-a:
+      type: trigger
+      data: {}
+      children:
+        Particle-b:
+          type: mechanic
+          data:
+            particle: Block Crack
+`;
+    const ast = parseLegacySkill(source);
+    const particle = ast.nodes[1].data.values.particle;
+    expect(isParticleAst(particle)).toBe(true);
+    if (!isParticleAst(particle)) throw new Error('particle AST missing');
+    expect(particle.value).toBe('Block Crack');
+    expect(particle.versions.v1_12).toBe('BLOCK_CRACK');
+    expect(particle.versions.v1_20).toBe('BLOCK');
+    const written = section(serializeLegacySkill(ast)).components as unknown as Record<
+      string,
+      Component
+    >;
+    expect(written['Cast-a'].children!['Particle-b'].data!.particle).toEqual(particle);
+    expect(parseLegacySkill(serializeLegacySkill(ast)).nodes[1].data.values.particle).toEqual(
+      particle,
+    );
+  });
+
+  it('exports unknown particles as ASTs with no variants so runtime can use white CLOUD', () => {
+    const ast = parseLegacySkill(`Particles:
+  components:
+    Cast-a:
+      type: trigger
+      data: {}
+      children:
+        Particle-a:
+          type: mechanic
+          data:
+            particle: UNKNOWN_PARTICLE
+`);
+    expect(particleFallbackIssues(ast, '26.2')).toContain(
+      'Particle-a.particle：UNKNOWN_PARTICLE 在 26.2 将使用白色 CLOUD',
+    );
+    const particle = ast.nodes[1].data.values.particle;
+    expect(particle).toEqual({ kind: 'particle', value: 'UNKNOWN_PARTICLE', versions: {} });
+    expect(serializeLegacySkill(ast)).toContain('UNKNOWN_PARTICLE');
+  });
+
+  it('preserves imported AST variants supplied by another editor', () => {
+    const source = `Particles:
+  components:
+    Cast-a:
+      type: trigger
+      data: {}
+      children:
+        Particle-b:
+          type: mechanic
+          data:
+            particle:
+              kind: particle
+              value: Custom
+              versions:
+                v1_20: FLAME
+`;
+    const ast = parseLegacySkill(source);
+    expect(ast.nodes[1].data.values.particle).toEqual({
+      kind: 'particle',
+      value: 'Custom',
+      versions: { v1_20: 'FLAME' },
+    });
+    expect(parseLegacySkill(serializeLegacySkill(ast)).nodes[1].data.values.particle).toEqual(
+      ast.nodes[1].data.values.particle,
+    );
+  });
   for (const name of FIXTURES) {
     it(`${name} keeps its component tree, order and values`, () => {
       const source = fixture(name);

@@ -21,7 +21,6 @@ import {
   writeServerVersion,
   writeTheme,
 } from '../shared/lib/preferences';
-import { ServerVersionSelect } from '../shared/components/ServerVersionSelect';
 
 /** Providers belong to the composition root so features remain independently mountable. */
 export function App() {
@@ -29,7 +28,7 @@ export function App() {
   useEffect(() => {
     writeTheme(light ? 'light' : 'dark');
   }, [light]);
-  // 目标服务端版本是全局设置：它只影响枚举过滤，不属于任何单个技能。
+  // 版本只在主页设置一次用于预览；服务端会按自身版本解析粒子 AST。
   const [serverVersion, setServerVersion] = useState(readServerVersion);
   useEffect(() => {
     writeServerVersion(serverVersion);
@@ -47,14 +46,12 @@ export function App() {
       </ActionIcon>
     </Tooltip>
   );
-  const versionControl = (
-    <ServerVersionSelect value={serverVersion} onChange={setServerVersion} />
-  );
   const content =
     page === 'home' ? (
-      <HomePage onOpen={setPage} />
+      <HomePage onOpen={setPage} serverVersion={serverVersion} onVersionChange={setServerVersion} />
     ) : page === 'skills' ? (
       <SkillManagerPage
+        serverVersion={serverVersion}
         onOpen={(file) => {
           setOpened(file);
           setPage('editor');
@@ -70,7 +67,6 @@ export function App() {
       <EditorPage
         initialFile={opened}
         themeControl={themeControl}
-        versionControl={versionControl}
         serverVersion={serverVersion}
         onBack={() => setPage('skills')}
       />
@@ -84,16 +80,7 @@ export function App() {
           {page === 'editor' ? (
             content
           ) : (
-            <WorkspaceShell
-              page={page}
-              onNavigate={setPage}
-              headerActions={
-                <>
-                  {versionControl}
-                  {themeControl}
-                </>
-              }
-            >
+            <WorkspaceShell page={page} onNavigate={setPage} headerActions={<>{themeControl}</>}>
               {content}
             </WorkspaceShell>
           )}

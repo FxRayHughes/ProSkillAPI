@@ -1,0 +1,717 @@
+[
+  {
+    "value": "ANGRY_VILLAGER",
+    "since": "1.20"
+  },
+  {
+    "value": "ASH",
+    "since": "1.16"
+  },
+  {
+    "value": "BARRIER",
+    "since": "1.9",
+    "until": "1.17"
+  },
+  {
+    "value": "BLOCK",
+    "since": "1.20"
+  },
+  {
+    "value": "BLOCK_CRACK",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "BLOCK_CRUMBLE",
+    "since": "1.21"
+  },
+  {
+    "value": "BLOCK_DUST",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "BLOCK_MARKER",
+    "since": "1.18"
+  },
+  {
+    "value": "BUBBLE",
+    "since": "1.20"
+  },
+  {
+    "value": "BUBBLE_COLUMN_UP",
+    "since": "1.13"
+  },
+  {
+    "value": "BUBBLE_POP",
+    "since": "1.13"
+  },
+  {
+    "value": "CAMPFIRE_COSY_SMOKE",
+    "since": "1.14"
+  },
+  {
+    "value": "CAMPFIRE_SIGNAL_SMOKE",
+    "since": "1.14"
+  },
+  {
+    "value": "CHERRY_LEAVES",
+    "since": "1.20"
+  },
+  {
+    "value": "CLOUD",
+    "since": "1.9"
+  },
+  {
+    "value": "COMPOSTER",
+    "since": "1.14"
+  },
+  {
+    "value": "COPPER_FIRE_FLAME",
+    "since": "1.21"
+  },
+  {
+    "value": "CRIMSON_SPORE",
+    "since": "1.16"
+  },
+  {
+    "value": "CRIT",
+    "since": "1.9"
+  },
+  {
+    "value": "CRIT_MAGIC",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "CURRENT_DOWN",
+    "since": "1.13"
+  },
+  {
+    "value": "DAMAGE_INDICATOR",
+    "since": "1.9"
+  },
+  {
+    "value": "DOLPHIN",
+    "since": "1.13"
+  },
+  {
+    "value": "DRAGON_BREATH",
+    "since": "1.9"
+  },
+  {
+    "value": "DRIPPING_CHERRY_LEAVES",
+    "since": "1.19",
+    "until": "1.19"
+  },
+  {
+    "value": "DRIPPING_DRIPSTONE_LAVA",
+    "since": "1.17"
+  },
+  {
+    "value": "DRIPPING_DRIPSTONE_WATER",
+    "since": "1.17"
+  },
+  {
+    "value": "DRIPPING_HONEY",
+    "since": "1.15"
+  },
+  {
+    "value": "DRIPPING_LAVA",
+    "since": "1.20"
+  },
+  {
+    "value": "DRIPPING_OBSIDIAN_TEAR",
+    "since": "1.16"
+  },
+  {
+    "value": "DRIPPING_WATER",
+    "since": "1.20"
+  },
+  {
+    "value": "DRIP_LAVA",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "DRIP_WATER",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "DUST",
+    "since": "1.20"
+  },
+  {
+    "value": "DUST_COLOR_TRANSITION",
+    "since": "1.17"
+  },
+  {
+    "value": "DUST_PILLAR",
+    "since": "1.20"
+  },
+  {
+    "value": "DUST_PLUME",
+    "since": "1.20"
+  },
+  {
+    "value": "EFFECT",
+    "since": "1.20"
+  },
+  {
+    "value": "EGG_CRACK",
+    "since": "1.20"
+  },
+  {
+    "value": "ELDER_GUARDIAN",
+    "since": "1.20"
+  },
+  {
+    "value": "ELECTRIC_SPARK",
+    "since": "1.17"
+  },
+  {
+    "value": "ENCHANT",
+    "since": "1.20"
+  },
+  {
+    "value": "ENCHANTED_HIT",
+    "since": "1.20"
+  },
+  {
+    "value": "ENCHANTMENT_TABLE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "END_ROD",
+    "since": "1.9"
+  },
+  {
+    "value": "ENTITY_EFFECT",
+    "since": "1.20"
+  },
+  {
+    "value": "EXPLOSION",
+    "since": "1.20"
+  },
+  {
+    "value": "EXPLOSION_EMITTER",
+    "since": "1.20"
+  },
+  {
+    "value": "EXPLOSION_HUGE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "EXPLOSION_LARGE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "EXPLOSION_NORMAL",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "FALLING_CHERRY_LEAVES",
+    "since": "1.19",
+    "until": "1.19"
+  },
+  {
+    "value": "FALLING_DRIPSTONE_LAVA",
+    "since": "1.17"
+  },
+  {
+    "value": "FALLING_DRIPSTONE_WATER",
+    "since": "1.17"
+  },
+  {
+    "value": "FALLING_DUST",
+    "since": "1.10"
+  },
+  {
+    "value": "FALLING_HONEY",
+    "since": "1.15"
+  },
+  {
+    "value": "FALLING_LAVA",
+    "since": "1.14"
+  },
+  {
+    "value": "FALLING_NECTAR",
+    "since": "1.15"
+  },
+  {
+    "value": "FALLING_OBSIDIAN_TEAR",
+    "since": "1.16"
+  },
+  {
+    "value": "FALLING_SPORE_BLOSSOM",
+    "since": "1.17"
+  },
+  {
+    "value": "FALLING_WATER",
+    "since": "1.14"
+  },
+  {
+    "value": "FIREFLY",
+    "since": "1.21"
+  },
+  {
+    "value": "FIREWORK",
+    "since": "1.20"
+  },
+  {
+    "value": "FIREWORKS_SPARK",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "FISHING",
+    "since": "1.20"
+  },
+  {
+    "value": "FLAME",
+    "since": "1.9"
+  },
+  {
+    "value": "FLASH",
+    "since": "1.14"
+  },
+  {
+    "value": "FOOTSTEP",
+    "since": "1.9",
+    "until": "1.12"
+  },
+  {
+    "value": "GEYSER",
+    "since": "26.2"
+  },
+  {
+    "value": "GEYSER_BASE",
+    "since": "26.2"
+  },
+  {
+    "value": "GEYSER_PLUME",
+    "since": "26.2"
+  },
+  {
+    "value": "GEYSER_POOF",
+    "since": "26.2"
+  },
+  {
+    "value": "GLOW",
+    "since": "1.17"
+  },
+  {
+    "value": "GLOW_SQUID_INK",
+    "since": "1.17"
+  },
+  {
+    "value": "GUST",
+    "since": "1.20"
+  },
+  {
+    "value": "GUST_EMITTER_LARGE",
+    "since": "1.20"
+  },
+  {
+    "value": "GUST_EMITTER_SMALL",
+    "since": "1.20"
+  },
+  {
+    "value": "HAPPY_VILLAGER",
+    "since": "1.20"
+  },
+  {
+    "value": "HEART",
+    "since": "1.9"
+  },
+  {
+    "value": "INFESTED",
+    "since": "1.20"
+  },
+  {
+    "value": "INSTANT_EFFECT",
+    "since": "1.20"
+  },
+  {
+    "value": "ITEM",
+    "since": "1.20"
+  },
+  {
+    "value": "ITEM_COBWEB",
+    "since": "1.20"
+  },
+  {
+    "value": "ITEM_CRACK",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "ITEM_SLIME",
+    "since": "1.20"
+  },
+  {
+    "value": "ITEM_SNOWBALL",
+    "since": "1.20"
+  },
+  {
+    "value": "ITEM_TAKE",
+    "since": "1.9",
+    "until": "1.12"
+  },
+  {
+    "value": "LANDING_CHERRY_LEAVES",
+    "since": "1.19",
+    "until": "1.19"
+  },
+  {
+    "value": "LANDING_HONEY",
+    "since": "1.15"
+  },
+  {
+    "value": "LANDING_LAVA",
+    "since": "1.14"
+  },
+  {
+    "value": "LANDING_OBSIDIAN_TEAR",
+    "since": "1.16"
+  },
+  {
+    "value": "LARGE_SMOKE",
+    "since": "1.20"
+  },
+  {
+    "value": "LAVA",
+    "since": "1.9"
+  },
+  {
+    "value": "LEGACY_BLOCK_CRACK",
+    "since": "1.13",
+    "until": "1.19"
+  },
+  {
+    "value": "LEGACY_BLOCK_DUST",
+    "since": "1.13",
+    "until": "1.19"
+  },
+  {
+    "value": "LEGACY_FALLING_DUST",
+    "since": "1.13",
+    "until": "1.19"
+  },
+  {
+    "value": "LIGHT",
+    "since": "1.17",
+    "until": "1.17"
+  },
+  {
+    "value": "MOB_APPEARANCE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "MYCELIUM",
+    "since": "1.20"
+  },
+  {
+    "value": "NAUTILUS",
+    "since": "1.13"
+  },
+  {
+    "value": "NOTE",
+    "since": "1.9"
+  },
+  {
+    "value": "NOXIOUS_GAS",
+    "since": "26.2"
+  },
+  {
+    "value": "NOXIOUS_GAS_CLOUD",
+    "since": "26.2"
+  },
+  {
+    "value": "OMINOUS_SPAWNING",
+    "since": "1.20"
+  },
+  {
+    "value": "PALE_OAK_LEAVES",
+    "since": "1.21"
+  },
+  {
+    "value": "PAUSE_MOB_GROWTH",
+    "since": "26.1"
+  },
+  {
+    "value": "POOF",
+    "since": "1.20"
+  },
+  {
+    "value": "PORTAL",
+    "since": "1.9"
+  },
+  {
+    "value": "RAID_OMEN",
+    "since": "1.20"
+  },
+  {
+    "value": "RAIN",
+    "since": "1.20"
+  },
+  {
+    "value": "REDSTONE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "RESET_MOB_GROWTH",
+    "since": "26.1"
+  },
+  {
+    "value": "REVERSE_PORTAL",
+    "since": "1.16"
+  },
+  {
+    "value": "SCRAPE",
+    "since": "1.17"
+  },
+  {
+    "value": "SCULK_CHARGE",
+    "since": "1.19"
+  },
+  {
+    "value": "SCULK_CHARGE_POP",
+    "since": "1.19"
+  },
+  {
+    "value": "SCULK_SOUL",
+    "since": "1.19"
+  },
+  {
+    "value": "SHRIEK",
+    "since": "1.19"
+  },
+  {
+    "value": "SLIME",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SMALL_FLAME",
+    "since": "1.17"
+  },
+  {
+    "value": "SMALL_GUST",
+    "since": "1.20"
+  },
+  {
+    "value": "SMOKE",
+    "since": "1.20"
+  },
+  {
+    "value": "SMOKE_LARGE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SMOKE_NORMAL",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SNEEZE",
+    "since": "1.14"
+  },
+  {
+    "value": "SNOWBALL",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SNOWFLAKE",
+    "since": "1.17"
+  },
+  {
+    "value": "SNOW_SHOVEL",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SONIC_BOOM",
+    "since": "1.19"
+  },
+  {
+    "value": "SOUL",
+    "since": "1.16"
+  },
+  {
+    "value": "SOUL_FIRE_FLAME",
+    "since": "1.16"
+  },
+  {
+    "value": "SPELL",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SPELL_INSTANT",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SPELL_MOB",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SPELL_MOB_AMBIENT",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SPELL_WITCH",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SPIT",
+    "since": "1.11"
+  },
+  {
+    "value": "SPLASH",
+    "since": "1.20"
+  },
+  {
+    "value": "SPORE_BLOSSOM_AIR",
+    "since": "1.17"
+  },
+  {
+    "value": "SQUID_INK",
+    "since": "1.13"
+  },
+  {
+    "value": "SULFUR_BUBBLES",
+    "since": "26.2"
+  },
+  {
+    "value": "SULFUR_CUBE_GOO",
+    "since": "26.2"
+  },
+  {
+    "value": "SUSPENDED",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SUSPENDED_DEPTH",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "SWEEP_ATTACK",
+    "since": "1.9"
+  },
+  {
+    "value": "TINTED_LEAVES",
+    "since": "1.21"
+  },
+  {
+    "value": "TOTEM",
+    "since": "1.11",
+    "until": "1.19"
+  },
+  {
+    "value": "TOTEM_OF_UNDYING",
+    "since": "1.20"
+  },
+  {
+    "value": "TOWN_AURA",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "TRAIL",
+    "since": "1.21"
+  },
+  {
+    "value": "TRIAL_OMEN",
+    "since": "1.20"
+  },
+  {
+    "value": "TRIAL_SPAWNER_DETECTION",
+    "since": "1.20"
+  },
+  {
+    "value": "TRIAL_SPAWNER_DETECTION_OMINOUS",
+    "since": "1.20"
+  },
+  {
+    "value": "UNDERWATER",
+    "since": "1.20"
+  },
+  {
+    "value": "VAULT_CONNECTION",
+    "since": "1.20"
+  },
+  {
+    "value": "VIBRATION",
+    "since": "1.17"
+  },
+  {
+    "value": "VILLAGER_ANGRY",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "VILLAGER_HAPPY",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "WARPED_SPORE",
+    "since": "1.16"
+  },
+  {
+    "value": "WATER_BUBBLE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "WATER_DROP",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "WATER_SPLASH",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "WATER_WAKE",
+    "since": "1.9",
+    "until": "1.19"
+  },
+  {
+    "value": "WAX_OFF",
+    "since": "1.17"
+  },
+  {
+    "value": "WAX_ON",
+    "since": "1.17"
+  },
+  {
+    "value": "WHITE_ASH",
+    "since": "1.16"
+  },
+  {
+    "value": "WHITE_SMOKE",
+    "since": "1.20"
+  },
+  {
+    "value": "WITCH",
+    "since": "1.20"
+  }
+]

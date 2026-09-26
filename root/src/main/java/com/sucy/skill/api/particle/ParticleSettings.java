@@ -124,7 +124,9 @@ public class ParticleSettings {
      * @param config config data to load from
      */
     public ParticleSettings(DataSection config) {
-        String type = config == null ? null : config.getString(PARTICLE_KEY, "");
+        // Some effects construct ParticleSettings directly from a section instead of Settings;
+        // resolve the same AST protocol here so both paths share the white fallback.
+        String type = ParticleAstResolver.resolve(config == null ? null : config.get(PARTICLE_KEY));
         this.type = ParticleLookup.find(type);
         this.dx = config == null ? 0 : config.getFloat(DX_KEY, 0);
         this.dy = config == null ? 0 : config.getFloat(DY_KEY, 0);

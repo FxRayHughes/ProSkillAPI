@@ -1,8 +1,11 @@
 import type { FieldDefinition, FieldValue, NodeDefinition } from './types';
+import { isParticleAst, isParticleField, makeParticleAst } from './particleCatalog';
 
 /** Legacy option names are case-insensitive on import, but saved spelling stays canonical. */
 export const normalizeOption = (value: unknown): string =>
-  String(value).toLowerCase().replaceAll('_', ' ');
+  String(isParticleAst(value) ? value.value : value)
+    .toLowerCase()
+    .replaceAll('_', ' ');
 
 /** Multiple requirements are ANDed: optional particle fields need both switches enabled. */
 export function isFieldVisible(
@@ -27,6 +30,13 @@ export function normalizeValues(
     if (!isFieldVisible(field, values)) continue;
     if (values[field.key] === undefined) values[field.key] = structuredClone(field.default);
     if (field.type === 'select') {
+      // Particle tokens belong to the portable AST; only the runtime lowers them to a
+      // Bukkit enum. Old scalar values are wrapped, while imported AST variants stay intact.
+      if (isParticleField(field.key)) {
+        if (typeof values[field.key] === 'string')
+          values[field.key] = makeParticleAst(values[field.key] as string);
+        continue;
+      }
       const match = field.options.find(
         (option) => normalizeOption(option.value) === normalizeOption(values[field.key]),
       );

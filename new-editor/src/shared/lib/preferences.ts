@@ -10,8 +10,7 @@ export function writeTheme(mode: ThemeMode): void {
 const SERVER_VERSION_KEY = 'proskillapi.serverVersion';
 
 /**
- * 目标服务端版本只用于过滤枚举选项（粒子、材质、音效等），不写入技能文件，
- * 因此它属于编辑器的全局偏好，而不是某个技能的属性。
+ * 目标版本只用于编辑器枚举预览，不写入粒子 AST；仅在主页修改并全局复用。
  */
 export const SERVER_VERSIONS = [
   '1.8',

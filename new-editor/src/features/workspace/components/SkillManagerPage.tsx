@@ -14,10 +14,11 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core';
-import { AlertTriangle, FilePlus2, LayoutGrid, List, RefreshCcw } from 'lucide-react';
+import { AlertTriangle, FilePlus2, LayoutGrid, List, RefreshCcw, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { parseLegacySkill, serializeLegacySkill } from '../../skill-editor/io/legacySkill';
 import { createProject } from '../../skill-editor/model/graph';
+import { particleFallbackIssues } from '../../skill-editor/io/particleDiagnostics';
 import type { WorkspaceFile } from '../model/types';
 import { useWorkspace } from '../model/workspaceContext';
 import { SelectPluginFolder } from './SelectPluginFolder';
@@ -39,7 +40,13 @@ function toWorkspaceFile(entry: DirectoryEntry): WorkspaceFile {
 }
 
 /** Reads dynamic/skill from the plugin folder so what the editor shows is what the server loads. */
-export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => void }) {
+export function SkillManagerPage({
+  onOpen,
+  serverVersion,
+}: {
+  onOpen: (file?: WorkspaceFile) => void;
+  serverVersion: string;
+}) {
   const { root, restored } = useWorkspace();
   const [files, setFiles] = useState<WorkspaceFile[]>([]);
   const [error, setError] = useState('');
@@ -96,6 +103,9 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
   };
 
   const broken = files.filter((file) => file.error).length;
+  const fallbackCount = files.filter(
+    (file) => file.project && particleFallbackIssues(file.project, serverVersion).length > 0,
+  ).length;
 
   if (!root)
     return (
@@ -117,6 +127,9 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
             </Text>
           </div>
           <Group gap="xs" wrap="wrap">
+            <Button variant="light" leftSection={<Upload size={16} />} onClick={() => onOpen()}>
+              在编辑器中导入
+            </Button>
             <Button
               variant="default"
               leftSection={<RefreshCcw size={16} />}
@@ -136,7 +149,7 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
           </Alert>
         )}
         <Text size="sm" c="dimmed">
-          技能直接从 dynamic/skill 读取，保存时按 SkillAPI 原生格式写回同一个文件。
+          技能直接从 dynamic/skill 读取；导入和导出都使用粒子 AST，服务端按实际版本转换。
         </Text>
         {broken > 0 && (
           <Alert
@@ -144,7 +157,18 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
             title={`${broken} 个文件无法打开`}
             icon={<AlertTriangle size={18} />}
           >
-            这些文件不是服务器能加载的原生格式，或使用了编辑器未注册的组件。编辑器不会自动修改它们。
+            可能是其他编辑器版本的格式，也可能包含未注册组件。请进入编辑器后用顶部“导入技能
+            YAML”选择原文件，检查后重新导出；若仍失败，请根据具体报错修复文件。不会自动覆盖原文件。
+          </Alert>
+        )}
+        {fallbackCount > 0 && (
+          <Alert
+            color="yellow"
+            title={`${fallbackCount} 个文件可能使用白色回退粒子`}
+            icon={<AlertTriangle size={18} />}
+          >
+            主页版本仅用于预览。运行在 {serverVersion} 时缺少的粒子会播放白色
+            CLOUD；可在编辑器调整。“保存并写回”会覆盖目录文件。
           </Alert>
         )}
 
@@ -170,7 +194,7 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
                     <Text fw={600} lineClamp={1} title={file.name}>
                       {file.name}
                     </Text>
-                    <SkillStatus file={file} />
+                    <SkillStatus file={file} serverVersion={serverVersion} />
                   </Group>
                   <Text size="xs" c="dimmed" lineClamp={1}>
                     {file.project
@@ -181,10 +205,9 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
                     size="xs"
                     variant="light"
                     fullWidth
-                    disabled={Boolean(file.error)}
-                    onClick={() => open(file)}
+                    onClick={() => (file.error ? onOpen() : open(file))}
                   >
-                    打开编辑
+                    {file.error ? '在编辑器中导入' : '打开编辑'}
                   </Button>
                 </Stack>
               </Card>
@@ -199,15 +222,14 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
                     <Text fw={600} lineClamp={1}>
                       {file.name}
                     </Text>
-                    <SkillStatus file={file} />
+                    <SkillStatus file={file} serverVersion={serverVersion} />
                   </Group>
                   <Button
                     size="xs"
                     variant="light"
-                    disabled={Boolean(file.error)}
-                    onClick={() => open(file)}
+                    onClick={() => (file.error ? onOpen() : open(file))}
                   >
-                    打开编辑
+                    {file.error ? '在编辑器中导入' : '打开编辑'}
                   </Button>
                 </Group>
               </Card>
@@ -240,12 +262,18 @@ export function SkillManagerPage({ onOpen }: { onOpen: (file: WorkspaceFile) => 
   );
 }
 
-function SkillStatus({ file }: { file: WorkspaceFile }) {
-  if (!file.error) return null;
+function SkillStatus({ file, serverVersion }: { file: WorkspaceFile; serverVersion: string }) {
+  const issues = file.project ? particleFallbackIssues(file.project, serverVersion) : [];
+  if (!file.error && !issues.length) return null;
   return (
-    <Tooltip label={file.error} multiline w={280} withArrow>
-      <Badge color="red" variant="light" size="sm" style={{ flexShrink: 0 }}>
-        格式异常
+    <Tooltip label={file.error ?? issues.join('；')} multiline w={280} withArrow>
+      <Badge
+        color={file.error ? 'red' : 'yellow'}
+        variant="light"
+        size="sm"
+        style={{ flexShrink: 0 }}
+      >
+        {file.error ? '格式异常' : '白色回退'}
       </Badge>
     </Tooltip>
   );
