@@ -5,6 +5,7 @@ plugins {
 dependencies {
     // Exposed as api because every later modern generation extends this bridge.
     api(project(":root:nms:nms-api"))
-    // 绑定本世代的服务端，使 NMS 访问获得编译期检查。
+    // BuildTools supplies this full server artifact through mavenLocal; pinning
+    // the generation prevents an unprepared local build from passing silently.
     compileOnly("org.spigotmc:spigot:1.13.2-R0.1-SNAPSHOT")
 }

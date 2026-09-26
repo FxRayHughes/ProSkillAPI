@@ -1,6 +1,7 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: R-1.2.23
+# Match the Gradle artifact version and GitHub release tag for this build.
+version: R-1.2.24
 authors: [Eniripsa96, Sentropic, 枫溪]
 depend: [MCCore]
 softdepend: [Vault, ProtocolLib, Parties, RPGInventory, LibsDisguises, PlaceholderAPI, NoCheatPlus, MythicMobs, WorldGuard, WorldEdit, DragonCore]

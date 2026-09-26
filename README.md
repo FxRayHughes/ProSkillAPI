@@ -8,6 +8,8 @@
 
 Github: https://github.com/FxRayHughes/ProSkillAPI
 
+本地构建说明：[docs/build.md](docs/build.md)
+
 ProSkillAPI[原版]: https://github.com/promcteam/proskillapi
 
 SkillAPI[原始版]: https://github.com/Eniripsa96/SkillAPI
