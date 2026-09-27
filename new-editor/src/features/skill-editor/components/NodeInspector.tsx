@@ -24,6 +24,13 @@ export function NodeInspector({
   const definition = nodeRegistry.get(node.data.definitionId);
   if (!definition) return <Text c="red">节点类型尚未注册</Text>;
   const values = normalizeValues(definition, node.data.values);
+  const visibleFields = definition.fields.filter((field) => isFieldVisible(field, values));
+  // Long projectile forms buried the main particle selector below geometry settings;
+  // keep the visual type at the top without moving conditional effect options.
+  const orderedFields = [
+    ...visibleFields.filter((field) => field.key === 'particle'),
+    ...visibleFields.filter((field) => field.key !== 'particle'),
+  ];
   return (
     <Stack gap="lg">
       <Paper className="inspectorHeader" p="sm" withBorder>
@@ -51,19 +58,17 @@ export function NodeInspector({
         />
       </Stack>
       <Divider label="节点参数" labelPosition="center" />
-      {definition.fields
-        .filter((field) => isFieldVisible(field, values))
-        .map((field) => (
-          <NodeField
-            key={`${node.id}:${field.id ?? field.key}`}
-            field={field}
-            serverVersion={serverVersion}
-            value={values[field.key] ?? field.default}
-            onChange={(value) =>
-              onChange(node.id, { values: changeField(definition, values, field.key, value) })
-            }
-          />
-        ))}
+      {orderedFields.map((field) => (
+        <NodeField
+          key={`${node.id}:${field.id ?? field.key}`}
+          field={field}
+          serverVersion={serverVersion}
+          value={values[field.key] ?? field.default}
+          onChange={(value) =>
+            onChange(node.id, { values: changeField(definition, values, field.key, value) })
+          }
+        />
+      ))}
     </Stack>
   );
 }

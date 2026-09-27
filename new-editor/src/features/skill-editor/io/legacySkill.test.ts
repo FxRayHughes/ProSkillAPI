@@ -95,6 +95,21 @@ describe('native skill round-trip', () => {
     );
   });
 
+  it('round-trips both projectile particle selectors as ASTs', () => {
+    const source = `ProjectileSkill:\n  components:\n    Cast-a:\n      type: trigger\n      data: {}\n      children:\n        Particle Projectile-b:\n          type: mechanic\n          data:\n            particle: Flame\n            -particle-type: Cloud\n`;
+    const project = parseLegacySkill(source);
+    const values = project.nodes[1].data.values;
+    expect(isParticleAst(values.particle)).toBe(true);
+    expect(isParticleAst(values['-particle-type'])).toBe(true);
+    const written = section(serializeLegacySkill(project)).components as unknown as Record<
+      string,
+      Component
+    >;
+    const data = written['Cast-a'].children!['Particle Projectile-b'].data!;
+    expect(data.particle).toEqual(values.particle);
+    expect(data['-particle-type']).toEqual(values['-particle-type']);
+  });
+
   it('exports unknown particles as ASTs with no variants so runtime can use white CLOUD', () => {
     const ast = parseLegacySkill(`Particles:
   components:

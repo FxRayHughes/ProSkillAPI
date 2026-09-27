@@ -38,6 +38,10 @@ export function convertLegacyFields(fields: readonly LegacyField[]): FieldDefini
         (field.options ?? []).map((value) => ({ value, label: optionLabel(value) })));
     switch (field.kind) {
       case 'StringValue':
+        // Annotation exports may describe a particle as free text; the wire key still
+        // requires the same versioned AST selector as legacy ListValue controls.
+        if (isParticleField(field.key))
+          return [{ ...common, type: 'select', default: makeParticleAst('Flame'), options }];
         return [{ ...common, type: 'text', default: String(field.value ?? '') }];
       case 'IntValue':
       case 'DoubleValue':

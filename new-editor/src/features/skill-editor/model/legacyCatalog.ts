@@ -5,6 +5,27 @@ import { convertLegacyFields } from './legacyFields';
 import type { LegacyField } from './legacyFields';
 import type { FieldDefinition, NodeDefinition, PortDefinition } from './types';
 
+/**
+ * These generated mechanics call ParticleHelper with the shared `particle` key but their
+ * annotations describe only geometry. Supply the selector until the source catalog exports
+ * inherited particle settings; existing legacy and built-in definitions already have it.
+ */
+const SHARED_PARTICLE_MECHANICS = new Set([
+  'MechanicParticleLine',
+  'MechanicParticleChain',
+  'MechanicParticleSineWave',
+  'MechanicParticleSphere',
+]);
+
+const sharedParticleField: LegacyField = {
+  kind: 'ListValue',
+  key: 'particle',
+  label: 'Particle',
+  labelZh: '粒子类型',
+  tooltipZh: '选择粒子类型；保存为跨服务端版本的粒子 AST。',
+  value: 'Flame',
+};
+
 /** Shape shared by the extracted legacy catalog and the built-in extension catalog. */
 export interface LegacyCatalogEntry {
   id: string;
@@ -40,7 +61,12 @@ export function createLegacyNode(entry: LegacyCatalogEntry): NodeDefinition {
     : entry.id.startsWith('Condition')
       ? 'condition'
       : 'action';
-  const fields: FieldDefinition[] = convertLegacyFields(entry.fields);
+  const sourceFields =
+    SHARED_PARTICLE_MECHANICS.has(entry.id) &&
+    !entry.fields.some((field) => field.key === 'particle')
+      ? [...entry.fields, sharedParticleField]
+      : entry.fields;
+  const fields: FieldDefinition[] = convertLegacyFields(sourceFields);
   const inputs: PortDefinition[] = kind === 'entry' ? [] : [{ id: 'flow', label: '执行' }];
   const outputs: PortDefinition[] =
     kind === 'condition'

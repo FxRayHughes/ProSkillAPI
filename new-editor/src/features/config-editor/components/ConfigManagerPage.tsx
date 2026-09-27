@@ -18,7 +18,12 @@ import { listYamlFiles, writeFile } from '../../workspace/model/pluginDirectory'
 import type { DirectoryEntry } from '../../workspace/model/pluginDirectory';
 import { SelectPluginFolder } from '../../workspace/components/SelectPluginFolder';
 import { parseConfig, readSections, serializeConfig, setValue } from '../model/configDocument';
-import type { ConfigDocument, ConfigField, ConfigSection } from '../model/configDocument';
+import type {
+  ConfigDocument,
+  ConfigField,
+  ConfigSection,
+  ConfigValue,
+} from '../model/configDocument';
 import {
   addAttribute,
   readAttributes,
@@ -63,7 +68,7 @@ function toConfigFile(entry: DirectoryEntry): ConfigFile {
  * Config files are hand-maintained and heavily commented, so the form is generated from the
  * file itself and every edit is applied to the YAML AST. Comments survive a save.
  */
-export function ConfigManagerPage() {
+export function ConfigManagerPage({ serverVersion }: { serverVersion: string }) {
   const { root, restored } = useWorkspace();
   const [files, setFiles] = useState<ConfigFile[]>([]);
   const [active, setActive] = useState<string>();
@@ -125,7 +130,7 @@ export function ConfigManagerPage() {
     else setTree(readSections(file.document!));
   };
 
-  const editField = (field: ConfigField, value: boolean | number | string | string[]) => {
+  const editField = (field: ConfigField, value: ConfigValue) => {
     if (!current?.document) return;
     setValue(current.document, field, value);
     refresh(current);
@@ -249,7 +254,11 @@ export function ConfigManagerPage() {
             )}
             {tree && (
               <Card withBorder>
-                <ConfigSectionForm section={tree} onChange={editField} />
+                <ConfigSectionForm
+                  section={tree}
+                  onChange={editField}
+                  serverVersion={serverVersion}
+                />
               </Card>
             )}
           </Stack>

@@ -55,12 +55,15 @@ export function NodeField({
   value,
   onChange,
   serverVersion = '1.16',
+  particleDescription,
 }: {
   field: FieldDefinition;
   value: FieldValue;
   onChange: (value: FieldValue) => void;
   /** Filters versioned Minecraft enums while keeping their English wire values. */
   serverVersion?: string;
+  /** Config files reuse this selector but use a different persistence description. */
+  particleDescription?: string;
 }) {
   const label = (
     <Tooltip label={field.tooltip || field.label} multiline w={260} withArrow>
@@ -99,7 +102,7 @@ export function NodeField({
         description={
           particle && rendered !== current
             ? `AST 原值：${current}；${serverVersion} 服务端使用 ${rendered}`
-            : '此项会以英文键写入技能文件'
+            : (particleDescription ?? '此项会以英文键写入技能文件')
         }
         searchable
         allowDeselect={false}

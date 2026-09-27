@@ -8,6 +8,7 @@ import {
   setValue,
 } from './configDocument';
 import type { ConfigSection } from './configDocument';
+import { isParticleAst, makeParticleAst } from '../../skill-editor/model/particleCatalog';
 
 const FILES = [
   'config.yml',
@@ -86,6 +87,43 @@ describe('config document', () => {
   it('surfaces the YAML comment as the field description', () => {
     const tree = readSections(parseConfig(fixture('config.yml')));
     expect(find(tree, 'minutes')?.description).toContain('自动保存间隔');
+  });
+
+  it('edits the casting indicator particle through the same portable AST', () => {
+    const source = `Casting:\n  cast-indicator:\n    particle:\n      # visible help\n      particle: crit\n      amount: 1\n`;
+    const document = parseConfig(source);
+    const field = find(readSections(document), 'particle')!;
+    expect(field.kind).toBe('particle');
+    expect(isParticleAst(field.value)).toBe(true);
+    const selected = makeParticleAst('FLAME');
+    setValue(document, field, selected);
+    const written = serializeConfig(document);
+    expect(written).toContain('# visible help');
+    const saved = parseConfig(written).toJS() as {
+      Casting: { 'cast-indicator': { particle: { particle: unknown } } };
+    };
+    expect(saved.Casting['cast-indicator'].particle.particle).toEqual(selected);
+    expect(find(readSections(parseConfig(written)), 'particle')?.value).toEqual(selected);
+  });
+
+  it('preserves hand-edited casting indicator AST variants on read', () => {
+    const source = `Casting:\n  cast-indicator:\n    particle:\n      particle:\n        kind: particle\n        value: Custom\n        versions:\n          v1_20: FLAME\n`;
+    const field = find(readSections(parseConfig(source)), 'particle');
+    expect(field?.kind).toBe('particle');
+    expect(field?.value).toEqual({
+      kind: 'particle',
+      value: 'Custom',
+      versions: { v1_20: 'FLAME' },
+    });
+  });
+
+  it('migrates an untouched indicator scalar whenever config is saved', () => {
+    const source = `Casting:\n  cast-indicator:\n    particle:\n      # legacy particle\n      particle: crit\n`;
+    const written = serializeConfig(parseConfig(source));
+    const field = find(readSections(parseConfig(written)), 'particle');
+    expect(written).toContain('# legacy particle');
+    expect(field?.kind).toBe('particle');
+    expect(field?.value).toEqual(makeParticleAst('crit'));
   });
 
   it('writes values back as quoted strings the way the plugin reads them', () => {

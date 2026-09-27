@@ -1,15 +1,37 @@
 import { NumberInput, Switch, Textarea, TextInput } from '@mantine/core';
+import { NodeField } from '../../skill-editor/components/NodeField';
+import { makeParticleAst, particleOptions } from '../../skill-editor/model/particleCatalog';
 import type { ConfigField as Field } from '../model/configDocument';
+import type { ConfigValue } from '../model/configDocument';
 
-/** Controls are chosen from the value's shape; the YAML comment becomes the help text. */
+/** Controls follow the value shape, except particle enums use the shared AST selector. */
 export function ConfigField({
   field,
   onChange,
+  serverVersion,
 }: {
   field: Field;
-  onChange: (value: boolean | number | string | string[]) => void;
+  onChange: (value: ConfigValue) => void;
+  serverVersion: string;
 }) {
   const description = field.description || undefined;
+  if (field.kind === 'particle')
+    return (
+      <NodeField
+        field={{
+          key: field.key,
+          label: field.key,
+          tooltip: description,
+          type: 'select',
+          default: makeParticleAst('Flame'),
+          options: particleOptions,
+        }}
+        value={field.value}
+        onChange={onChange}
+        serverVersion={serverVersion}
+        particleDescription="保存时写入跨版本粒子 AST"
+      />
+    );
   if (field.kind === 'boolean')
     return (
       <Switch

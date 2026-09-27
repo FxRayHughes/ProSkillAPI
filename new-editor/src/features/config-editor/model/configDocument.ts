@@ -1,5 +1,7 @@
 import { isMap, isPair, isScalar, isSeq, parseDocument, Scalar as ScalarNode, visit } from 'yaml';
 import type { Document, Node, Scalar, YAMLMap, YAMLSeq } from 'yaml';
+import { isParticleAst, makeParticleAst } from '../../skill-editor/model/particleCatalog';
+import type { ParticleAstValue } from '../../skill-editor/model/types';
 
 /**
  * Config files are hand-maintained and their comments are the documentation, so edits go
@@ -7,13 +9,17 @@ import type { Document, Node, Scalar, YAMLMap, YAMLSeq } from 'yaml';
  */
 export type ConfigDocument = Document.Parsed;
 
-export type ConfigValueKind = 'boolean' | 'number' | 'text' | 'string-list';
+export type ConfigValueKind = 'boolean' | 'number' | 'text' | 'string-list' | 'particle';
+export type ConfigValue = boolean | number | string | string[] | ParticleAstValue;
+
+/** The only particle enum in the generic config form is read by IndicatorSettings. */
+const INDICATOR_PARTICLE_PATH = ['Casting', 'cast-indicator', 'particle', 'particle'];
 
 export interface ConfigField {
   path: (string | number)[];
   key: string;
   kind: ConfigValueKind;
-  value: boolean | number | string | string[];
+  value: ConfigValue;
   /** The YAML comments attached to this entry, shown as the field's help text. */
   description: string;
 }
@@ -33,10 +39,27 @@ export function parseConfig(source: string): ConfigDocument {
 }
 
 /**
- * Sequence indentation and long-line folding are normalized to match how the plugin writes
- * its own files, keeping the first save from reformatting the whole document.
+ * Sequence indentation and long-line folding match the plugin's files. On save, the
+ * casting indicator's legacy particle scalar is upgraded to the shared AST protocol.
  */
 export function serializeConfig(document: ConfigDocument): string {
+  const indicator = document.getIn(INDICATOR_PARTICLE_PATH, true);
+  if (isScalar(indicator) && typeof indicator.value === 'string') {
+    // Any config save migrates this remaining legacy scalar, so files edited outside the
+    // particle control still use the same portable format as skill components.
+    const value = makeParticleAst(indicator.value);
+    setValue(
+      document,
+      {
+        path: INDICATOR_PARTICLE_PATH,
+        key: 'particle',
+        kind: 'particle',
+        value,
+        description: '',
+      },
+      value,
+    );
+  }
   return document.toString({ indentSeq: false, lineWidth: 0 });
 }
 
@@ -95,6 +118,11 @@ function isStringList(node: YAMLSeq): boolean {
   return node.items.every((item) => isScalar(item));
 }
 
+/** IndicatorSettings reads this nested particle value directly, outside skill components. */
+function isIndicatorParticle(path: (string | number)[]): boolean {
+  return path.join('/') === INDICATOR_PARTICLE_PATH.join('/');
+}
+
 /** Builds the form tree; the shape follows the file so new plugin settings appear on their own. */
 export function readSections(document: ConfigDocument): ConfigSection {
   const root: ConfigSection = { path: [], key: '', description: '', fields: [], sections: [] };
@@ -112,6 +140,21 @@ function walk(map: YAMLMap, path: (string | number)[], target: ConfigSection): v
       .filter(Boolean)
       .join('\n');
     const value = item.value;
+    if (isIndicatorParticle(next) && (isScalar(value) || isMap(value))) {
+      const raw = isScalar(value) ? value.value : value.toJSON();
+      // Keep hand-edited AST variants authoritative; a legacy scalar is previewed as an AST
+      // and is persisted in that form when the user selects a particle.
+      if (isParticleAst(raw) || typeof raw === 'string') {
+        target.fields.push({
+          path: next,
+          key,
+          kind: 'particle',
+          value: isParticleAst(raw) ? raw : makeParticleAst(raw),
+          description,
+        });
+        continue;
+      }
+    }
     if (isMap(value)) {
       const section: ConfigSection = { path: next, key, description, fields: [], sections: [] };
       walk(value, next, section);
@@ -134,15 +177,29 @@ function walk(map: YAMLMap, path: (string | number)[], target: ConfigSection): v
 }
 
 /**
- * Writes a value back in place, mutating the existing scalar so its quoting style and any
- * attached comment survive. Booleans and numbers become quoted strings because that is what
- * the plugin writes and what its `getString(...).equalsIgnoreCase` checks read.
+ * Writes a value into the YAML tree. Ordinary scalar edits keep their quoting style;
+ * the particle selector replaces its scalar with an AST map while retaining comments.
+ * Booleans and numbers become quoted strings because that is what the plugin writes and
+ * what its `getString(...).equalsIgnoreCase` checks read.
  */
-export function setValue(
-  document: ConfigDocument,
-  field: ConfigField,
-  value: boolean | number | string | string[],
-): void {
+export function setValue(document: ConfigDocument, field: ConfigField, value: ConfigValue): void {
+  if (field.kind === 'particle') {
+    const particle = isParticleAst(value)
+      ? value
+      : typeof value === 'string'
+        ? makeParticleAst(value)
+        : null;
+    if (!particle) throw new Error(`粒子 AST 无效：${field.path.join('.')}`);
+    const existing = document.getIn(field.path, true);
+    const replacement = document.createNode(particle);
+    // Replacing a scalar with a map must keep comments attached to the original YAML node.
+    if (isScalar(existing) || isMap(existing)) {
+      replacement.commentBefore = existing.commentBefore;
+      replacement.comment = existing.comment;
+    }
+    document.setIn(field.path, replacement);
+    return;
+  }
   if (Array.isArray(value)) {
     const seq = document.getIn(field.path, true);
     const quote = isSeq(seq) ? quoteStyle(seq.items[0]) : 'QUOTE_SINGLE';

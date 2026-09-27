@@ -60,7 +60,7 @@ export function App() {
     ) : page === 'classes' ? (
       <ClassManagerPage />
     ) : page === 'config' ? (
-      <ConfigManagerPage />
+      <ConfigManagerPage serverVersion={serverVersion} />
     ) : page === 'plugins' ? (
       <PluginManagerPage />
     ) : (

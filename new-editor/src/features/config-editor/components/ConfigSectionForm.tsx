@@ -1,15 +1,18 @@
 import { Accordion, Alert, Stack, Text } from '@mantine/core';
 import { ConfigField } from './ConfigField';
 import type { ConfigField as Field, ConfigSection } from '../model/configDocument';
+import type { ConfigValue } from '../model/configDocument';
 
 /** Nested sections mirror the file, so settings the plugin adds later appear on their own. */
 export function ConfigSectionForm({
   section,
   onChange,
+  serverVersion,
   depth = 0,
 }: {
   section: ConfigSection;
-  onChange: (field: Field, value: boolean | number | string | string[]) => void;
+  onChange: (field: Field, value: ConfigValue) => void;
+  serverVersion: string;
   depth?: number;
 }) {
   const empty = !section.fields.length && !section.sections.length;
@@ -26,6 +29,7 @@ export function ConfigSectionForm({
         <ConfigField
           key={field.path.join('.')}
           field={field}
+          serverVersion={serverVersion}
           onChange={(value) => onChange(field, value)}
         />
       ))}
@@ -45,7 +49,12 @@ export function ConfigSectionForm({
                 </Text>
               </Accordion.Control>
               <Accordion.Panel>
-                <ConfigSectionForm section={child} onChange={onChange} depth={depth + 1} />
+                <ConfigSectionForm
+                  section={child}
+                  onChange={onChange}
+                  serverVersion={serverVersion}
+                  depth={depth + 1}
+                />
               </Accordion.Panel>
             </Accordion.Item>
           ))}

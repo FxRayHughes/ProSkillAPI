@@ -1,4 +1,29 @@
-import type { NodeDefinition } from './types';
+import {
+  isParticleAst,
+  isParticleField,
+  makeParticleAst,
+  particleOptions,
+} from './particleCatalog';
+import type { FieldDefinition, NodeDefinition } from './types';
+
+/** Plugin definitions use the same particle wire keys as built-ins, so enforce the AST
+ * selector at registration even when an addon declares a plain text field. */
+function normalizeParticleField(field: FieldDefinition): FieldDefinition {
+  if (!isParticleField(field.key)) return field;
+  const original = field.default;
+  return {
+    key: field.key,
+    id: field.id,
+    label: field.label,
+    tooltip: field.tooltip,
+    requirements: field.requirements,
+    type: 'select',
+    default: isParticleAst(original)
+      ? original
+      : makeParticleAst(typeof original === 'string' ? original : 'Flame'),
+    options: particleOptions,
+  };
+}
 
 /** Register definitions before mounting the editor; duplicate IDs fail instead of overwriting. */
 export class NodeRegistry {
@@ -18,7 +43,10 @@ export class NodeRegistry {
       throw new Error('Entry nodes cannot have input ports');
     }
     // Own an immutable snapshot so external plugins cannot mutate existing pin contracts.
-    const copy = structuredClone(definition);
+    const copy = structuredClone({
+      ...definition,
+      fields: definition.fields.map(normalizeParticleField),
+    });
     [copy.inputs, copy.outputs, copy.fields].forEach((items) => {
       items.forEach(Object.freeze);
       Object.freeze(items);

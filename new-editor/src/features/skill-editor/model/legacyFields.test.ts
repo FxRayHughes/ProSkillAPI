@@ -3,11 +3,13 @@ import { registerBuiltinPlugin } from '../../plugins/builtin';
 import { describe, expect, it } from 'vitest';
 import { load } from 'js-yaml';
 import catalog from './legacy.generated.json';
-import { nodeRegistry } from './registry';
+import { NodeRegistry, nodeRegistry } from './registry';
 import { changeField, isFieldVisible, normalizeValues } from './fieldValues';
 import { createNode, createProject } from './graph';
 import { serializeLegacySkill, parseLegacySkill } from '../io/legacySkill';
 import { fieldLabel } from './fieldLabels';
+import { isParticleAst, makeParticleAst } from './particleCatalog';
+import { convertLegacyFields } from './legacyFields';
 
 // Mirror production bootstrap order so truncated annotation fields cannot pass tests unnoticed.
 registerGeneratedCatalog();
@@ -19,6 +21,72 @@ describe('complete old-node parameter forms', () => {
     expect(nodeRegistry.get('MechanicParticle')!.fields.length).toBeGreaterThan(15);
     expect(nodeRegistry.get('MechanicParticleRing')!.fields.length).toBeGreaterThan(15);
     expect(nodeRegistry.get('MechanicJavaScript')!.help?.requires?.capabilities).toBeDefined();
+  });
+  it('uses one AST selector for every particle-rendering node', () => {
+    // Shape mechanics call ParticleHelper through inherited settings even when their
+    // annotation catalog lists only geometry fields.
+    const direct = [
+      'MechanicParticle',
+      'MechanicParticleAnimation',
+      'MechanicParticleAnimationArmorStand',
+      'MechanicParticleProjectile',
+      'MechanicParticleLine',
+      'MechanicParticleChain',
+      'MechanicParticleSineWave',
+      'MechanicParticleSphere',
+      'MechanicParticleRing',
+      'MechanicParticlePolygon',
+      'MechanicParticlePointLine',
+    ];
+    for (const id of direct) {
+      const field = nodeRegistry.get(id)!.fields.find((entry) => entry.key === 'particle');
+      expect(field?.type, id).toBe('select');
+      expect(isParticleAst(field?.default), id).toBe(true);
+      if (field?.type === 'select') expect(field.options.length, id).toBeGreaterThan(100);
+    }
+    for (const id of [
+      'MechanicParticleProjectile',
+      'MechanicParticleEffect',
+      'MechanicItemProjectile',
+      'MechanicProjectile',
+    ]) {
+      const field = nodeRegistry.get(id)!.fields.find((entry) => entry.key === '-particle-type');
+      expect(field?.type, id).toBe('select');
+      expect(isParticleAst(field?.default), id).toBe(true);
+    }
+    const projectile = nodeRegistry.get('MechanicParticleProjectile')!;
+    const selected = changeField(
+      projectile,
+      normalizeValues(projectile),
+      'particle',
+      makeParticleAst('DUST'),
+    );
+    expect(selected.particle).toEqual(makeParticleAst('DUST'));
+  });
+
+  it('converts annotation StringValue particle fields into AST selectors', () => {
+    const [field] = convertLegacyFields([
+      { kind: 'StringValue', key: 'particle', label: 'Particle' },
+    ]);
+    expect(field.type).toBe('select');
+    expect(isParticleAst(field.default)).toBe(true);
+  });
+
+  it('normalizes addon particle text fields when registering a node', () => {
+    const registry = new NodeRegistry();
+    registry.register({
+      id: 'addon:particle',
+      label: 'Addon',
+      description: '',
+      color: '#ffffff',
+      kind: 'action',
+      inputs: [],
+      outputs: [],
+      fields: [{ key: 'particle', label: 'Particle', type: 'text', default: 'Cloud' }],
+    });
+    const field = registry.get('addon:particle')!.fields[0];
+    expect(field.type).toBe('select');
+    expect(field.default).toEqual(makeParticleAst('Cloud'));
   });
   it('stores complete Chinese presentation data without changing protocol values', () => {
     for (const entry of catalog) {
