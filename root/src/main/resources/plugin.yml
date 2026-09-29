@@ -1,14 +1,17 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
 # Match the Gradle artifact version and GitHub release tag for this build.
-version: R-1.2.25
+version: R-1.3.0
 authors: [Eniripsa96, Sentropic, 枫溪]
+# Bukkit's depend syntax accepts plugin names only; the required MCCore
+# release is 3.0.6 and is pinned by the build artifact and release notes.
 depend: [MCCore]
 softdepend: [Vault, ProtocolLib, Parties, RPGInventory, LibsDisguises, PlaceholderAPI, NoCheatPlus, MythicMobs, WorldGuard, WorldEdit, DragonCore]
 loadbefore: [Quests]
-# Keep the declared Bukkit API floor low so every intermediate Paper core can
-# load the plugin; version modules handle behavior that differs up through 26.2.
-api-version: '1.13'
+# Do not declare api-version here: Bukkit only introduced that key in 1.13,
+# while this plugin still supports 1.12.2. Cross-version modules select the
+# actual server behavior at runtime, and omitting the key lets the legacy
+# server parse the descriptor without treating a newer API as a requirement.
 
 permissions:
   skillapi.basic:

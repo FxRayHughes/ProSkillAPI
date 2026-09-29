@@ -1,10 +1,11 @@
-import { registerLegacyCatalog } from './legacyCatalog';
+import { registerGeneratedCatalog, registerLegacyCatalog } from './legacyCatalog';
 import { registerBuiltinPlugin } from '../../plugins/builtin';
 import { describe, expect, it } from 'vitest';
 import { canConnect, createNode, createProject } from './graph';
 import { NodeRegistry, nodeRegistry } from './registry';
 import { serializeLegacySkill, parseLegacySkill } from '../io/legacySkill';
 
+registerGeneratedCatalog();
 registerLegacyCatalog();
 registerBuiltinPlugin();
 
@@ -97,7 +98,7 @@ describe('structures the native format cannot express', () => {
     expect(() => serializeLegacySkill(project)).toThrow('否定分支');
   });
 
-  it('rejects a node reached from two parents', () => {
+  it('round-trips a node reached from two parents through one shared group', () => {
     const project = createProject();
     const first = createNode(nodeRegistry.get('MechanicDamage')!, { x: 300, y: 100 });
     const second = createNode(nodeRegistry.get('MechanicDamage')!, { x: 300, y: 300 });
@@ -107,7 +108,32 @@ describe('structures the native format cannot express', () => {
     wire(project, project.nodes[0].id, second.id, 'flow');
     wire(project, first.id, shared.id, 'flow');
     wire(project, second.id, shared.id, 'flow');
-    expect(() => serializeLegacySkill(project)).toThrow('共享子树');
+    const yaml = serializeLegacySkill(project);
+    expect(yaml).toContain('GROUP');
+    expect(yaml).toContain('Run Group');
+    const restored = parseLegacySkill(yaml);
+    const restoredShared = restored.nodes.find((node) => node.data.definitionId === 'MechanicParticle');
+    expect(restoredShared).toBeDefined();
+    expect(restored.edges.filter((edge) => edge.target === restoredShared!.id)).toHaveLength(2);
+  });
+
+  it('allows two roots to call one named GROUP through direct wires', () => {
+    const project = createProject();
+    const second = createNode(nodeRegistry.get('TriggerSignalReceived')!, { x: 100, y: 420 });
+    const group = createNode(nodeRegistry.get('TriggerGroupRoot')!, { x: 500, y: 220 });
+    group.data.values.group = 'shared-burst';
+    const body = createNode(nodeRegistry.get('MechanicParticle')!, { x: 800, y: 220 });
+    project.nodes.push(second, group, body);
+    wire(project, group.id, body.id, 'flow');
+    expect(canConnect({ source: project.nodes[0].id, sourceHandle: 'flow', target: group.id, targetHandle: 'invoke' }, project)).toBe(true);
+    project.edges.push({ id: 'call-a', source: project.nodes[0].id, sourceHandle: 'flow', target: group.id, targetHandle: 'invoke' });
+    project.edges.push({ id: 'call-c', source: second.id, sourceHandle: 'flow', target: group.id, targetHandle: 'invoke' });
+    const yaml = serializeLegacySkill(project);
+    expect(yaml).toContain('Run Group');
+    const restored = parseLegacySkill(yaml);
+    const loadedGroup = restored.nodes.find((node) => node.data.definitionId === 'TriggerGroupRoot');
+    expect(loadedGroup?.data.values.group).toBe('shared-burst');
+    expect(restored.edges.filter((edge) => edge.target === loadedGroup!.id)).toHaveLength(2);
   });
 
   it('rejects a non-trigger node left without a parent', () => {

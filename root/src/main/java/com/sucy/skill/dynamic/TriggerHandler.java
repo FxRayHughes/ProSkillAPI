@@ -6,6 +6,8 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.trigger.Trigger;
 import com.sucy.skill.dynamic.trigger.TriggerComponent;
+import com.sucy.skill.dynamic.signal.SignalEvent;
+import com.sucy.skill.dynamic.signal.SignalManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -14,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.sucy.skill.dynamic.ComponentRegistry.getExecutor;
@@ -95,13 +98,18 @@ public class TriggerHandler implements Listener {
             return;
         }
         final LivingEntity target = trigger.getTarget(event, component.settings);
-        trigger.setValues(event, DynamicSkill.getCastData(caster));
-        trigger(caster, target, level);
-
-        if (event instanceof Cancellable) {
-            skill.applyCancelled((Cancellable) event);
+        // A nested signal receiver may overwrite parameter names, so restore its
+        // temporary namespace in finally even when a child throws.
+        Map<String, Object> signalValues = event instanceof SignalEvent
+                ? SignalManager.push((SignalEvent) event) : null;
+        try {
+            trigger.setValues(event, DynamicSkill.getCastData(caster));
+            trigger(caster, target, level);
+            if (event instanceof Cancellable) skill.applyCancelled((Cancellable) event);
+            trigger.postProcess(event, skill);
+        } finally {
+            if (signalValues != null) SignalManager.pop((SignalEvent) event, signalValues);
         }
-        trigger.postProcess(event, skill);
     }
 
 

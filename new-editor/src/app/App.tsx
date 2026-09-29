@@ -14,13 +14,17 @@ import { ConfigManagerPage } from '../features/config-editor/components/ConfigMa
 import { WorkspaceProvider } from '../features/workspace/components/WorkspaceProvider';
 import type { WorkspaceFile } from '../features/workspace/model/types';
 import { PluginManagerPage } from '../features/plugins/components/PluginManagerPage';
+import { SettingsPage } from '../features/workspace/components/SettingsPage';
 import { Moon, Sun } from 'lucide-react';
 import {
+  readAutoSavePreferences,
   readServerVersion,
   readTheme,
+  writeAutoSavePreferences,
   writeServerVersion,
   writeTheme,
 } from '../shared/lib/preferences';
+import type { AutoSavePreferences } from '../shared/lib/preferences';
 
 /** Providers belong to the composition root so features remain independently mountable. */
 export function App() {
@@ -33,6 +37,10 @@ export function App() {
   useEffect(() => {
     writeServerVersion(serverVersion);
   }, [serverVersion]);
+  const [autoSave, setAutoSave] = useState<AutoSavePreferences>(readAutoSavePreferences);
+  useEffect(() => {
+    writeAutoSavePreferences(autoSave);
+  }, [autoSave]);
   const [page, setPage] = useState<WorkspacePage | 'editor'>('home');
   const [opened, setOpened] = useState<WorkspaceFile>();
   // Keep theme controls in each page's toolbar flow instead of overlaying file actions.
@@ -63,11 +71,20 @@ export function App() {
       <ConfigManagerPage serverVersion={serverVersion} />
     ) : page === 'plugins' ? (
       <PluginManagerPage />
+    ) : page === 'settings' ? (
+      <SettingsPage
+        serverVersion={serverVersion}
+        onVersionChange={setServerVersion}
+        autoSave={autoSave}
+        onAutoSaveChange={setAutoSave}
+      />
     ) : (
       <EditorPage
         initialFile={opened}
         themeControl={themeControl}
         serverVersion={serverVersion}
+        autoSave={autoSave}
+        onAutoSaveChange={setAutoSave}
         onBack={() => setPage('skills')}
       />
     );

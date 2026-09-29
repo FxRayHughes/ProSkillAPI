@@ -28,6 +28,7 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.attribute.AttributeAPI;
+import com.sucy.skill.api.event.SkillOutcomeEvent;
 import com.sucy.skill.api.attribute.mob.MobAttribute;
 import com.sucy.skill.api.attribute.mob.MobAttributeData;
 import com.sucy.skill.api.event.TempAttributeAddEvent;
@@ -164,6 +165,10 @@ public class AttributeMechanic extends MechanicComponent {
                         SkillAPI.schedule(task, (int) event.getTick());
                     }
                 }
+                // The requested delta becomes visible only after the target store changes.
+                Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                        SkillOutcomeEvent.Phase.ATTRIBUTE_DELTA_APPLIED, caster, target,
+                        event.getAttribute(), "temporary", event.getValue(), Double.NaN, Double.NaN));
             }
         }
         return true;

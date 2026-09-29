@@ -137,7 +137,7 @@ dependencies {
 group = "com.sucy.skill"
 // Keep the artifact version aligned with plugin.yml and the release tag so
 // server-reported metadata identifies the same source revision as the JAR.
-version = "R-1.2.25"
+version = "R-1.3.0"
 // 子项目名为 root，若不固定 archivesName 产物会变成 root-R-1.2.15.jar。
 base.archivesName.set("ProSkillAPI")
 description = "ProSkillAPI"
@@ -246,6 +246,7 @@ val bundledModules = listOf(
     ":root:nms:nms-v1_11",
     ":root:nms:nms-v1_12",
     ":root:nms:nms-v1_13",
+    ":root:nms:nms-v1_14",
     ":root:nms:nms-v1_16",
     ":root:nms:nms-v1_17",
     ":root:nms:nms-v1_20",

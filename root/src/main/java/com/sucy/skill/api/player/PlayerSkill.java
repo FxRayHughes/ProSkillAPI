@@ -32,6 +32,8 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorSettings;
 import com.sucy.skill.manager.AttributeManager;
+import com.sucy.skill.api.event.SkillOutcomeEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -51,6 +53,8 @@ public final class PlayerSkill
     private PlayerClass parent;
     private Material    bind;
     private long        cooldown;
+    /** Invalidates delayed ready callbacks whenever the deadline changes. */
+    private int         cooldownRevision;
     private int         level;
     private int         points;
 
@@ -328,6 +332,7 @@ public final class PlayerSkill
     {
         long cd = (long)player.scaleStat(AttributeManager.COOLDOWN, skill.getCooldown(level) * 1000L);
         cooldown = System.currentTimeMillis() + cd;
+        scheduleReady();
     }
 
     /**
@@ -336,7 +341,10 @@ public final class PlayerSkill
      */
     public void refreshCooldown()
     {
+        final boolean wasCooling = isOnCooldown();
         cooldown = 0;
+        cooldownRevision++;
+        if (wasCooling) ready();
     }
 
     /**
@@ -362,6 +370,28 @@ public final class PlayerSkill
             cooldown += (int) (seconds * 1000);
         else
             cooldown = System.currentTimeMillis() + (int) (seconds * 1000);
+        scheduleReady();
+    }
+
+    /** One revision owns the ready transition even when other mechanics extend it. */
+    private void scheduleReady() {
+        final int revision = ++cooldownRevision;
+        long remaining = cooldown - System.currentTimeMillis();
+        if (remaining <= 0) return;
+        long ticks = Math.max(1, (remaining + 49) / 50);
+        SkillAPI.schedule(() -> {
+            if (revision != cooldownRevision) return;
+            if (isOnCooldown()) scheduleReady();
+            else ready();
+        }, (int) Math.min(Integer.MAX_VALUE, ticks));
+    }
+
+    private void ready() {
+        Player owner = player.getPlayer();
+        if (owner == null || !owner.isOnline()) return;
+        Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                SkillOutcomeEvent.Phase.COOLDOWN_READY, owner, owner,
+                skill.getName(), "cooldown", 0, 1, 0));
     }
 
     /**

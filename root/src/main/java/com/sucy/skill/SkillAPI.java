@@ -51,6 +51,10 @@ import com.sucy.skill.hook.PlaceholderAPIHook;
 import com.sucy.skill.hook.PlaceholderAPIHookFix;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.MythicMobsHook;
+import com.sucy.skill.combat.shield.ShieldListener;
+import com.sucy.skill.combat.shield.ShieldManager;
+import com.sucy.skill.dynamic.signal.SignalManager;
+import com.sucy.skill.dynamic.trigger.StateTransitionListener;
 import com.sucy.skill.hook.SkillBridgeImpl;
 import com.sucy.skill.hook.mythic.MythicBridges;
 import com.sucy.skill.combat.threat.ThreatTask;
@@ -178,6 +182,8 @@ public class SkillAPI extends JavaPlugin {
         ModuleBootstrap.install(this);
 
         // Load classes and skills
+        // Contracts are scoped to one registration pass and must not survive reload.
+        SignalManager.clear();
         registrationManager.initialize();
 
         // Load group settings after groups are determined
@@ -188,9 +194,15 @@ public class SkillAPI extends JavaPlugin {
         // Lore 技能槽绑定只在配置启用且技能栏可用时注册，避免无关服务器事件开销。
         listen(new ArmorBindListener(), settings.isSkillBarEnabled() && settings.isArmorAutoBindEnabled());
         listen(new BuffListener(), true);
+        // Confirm toggles on the next tick before exposing completed movement phases.
+        listen(new StateTransitionListener(), true);
         listen(new MainListener(), true);
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
+        // Register after our status rules so invulnerable or absorbed hits do not
+        // consume a finite shield layer. The listener commits only surviving hits.
+        ShieldManager.start(this);
+        listen(new ShieldListener(), true);
         listen(new ToolListener(), true);
         listen(new KillListener(), true);
         listen(new AddonListener(), true);
@@ -325,6 +337,7 @@ public class SkillAPI extends JavaPlugin {
         players.clear();
 
         HandlerList.unregisterAll(this);
+        SignalManager.clear();
         cmd.clear();
 
         loaded = false;

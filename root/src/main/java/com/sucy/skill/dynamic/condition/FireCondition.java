@@ -52,11 +52,20 @@ public class FireCondition extends ConditionComponent {
             optionsZh = {"火焰", "火焰"},
             defaultValue = "On Fire")
     private static final String TYPE = "type";
+    @SkillField(kind = FieldKind.IntValue, label = "Minimum Ticks", labelZh = "最少燃烧刻数",
+            tooltipZh = "仅检查着火时使用；包含下限。", defaultValue = "1")
+    private static final String MIN_TICKS = "min-ticks";
+    @SkillField(kind = FieldKind.IntValue, label = "Maximum Ticks", labelZh = "最多燃烧刻数",
+            tooltipZh = "仅检查着火时使用；包含上限。", defaultValue = "2147483647")
+    private static final String MAX_TICKS = "max-ticks";
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
         final boolean onFire = !settings.getString(TYPE, "on fire").toLowerCase().equals("not on fire");
-        return (target.getFireTicks() > 0) == onFire;
+        if (!onFire) return target.getFireTicks() <= 0;
+        int ticks = target.getFireTicks();
+        return ticks > 0 && ticks >= settings.getInt(MIN_TICKS, 1)
+                && ticks <= settings.getInt(MAX_TICKS, Integer.MAX_VALUE);
     }
 
     @Override

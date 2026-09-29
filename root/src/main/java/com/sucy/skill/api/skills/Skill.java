@@ -36,6 +36,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
+import com.sucy.skill.combat.shield.ShieldManager;
 import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerData;
@@ -709,6 +710,15 @@ public abstract class Skill implements IconHolder {
      * @param knockback      whether the damage should apply knockback
      */
     public void damage(LivingEntity target, double damage, LivingEntity source, String classification, boolean knockback) {
+        // Nested skill hits must restore the outer classification and marker even when
+        // a handler or Bukkit listener throws during damage resolution.
+        boolean previousSkillDamage = skillDamage.get();
+        String previousClassification = damageClassification.get();
+        // Keep the marker on the calling thread so an async integration cannot
+        // label an unrelated Bukkit damage event as skill damage.
+        skillDamage.set(true);
+        damageClassification.set(classification);
+        try {
         SkillDamageHandler handler = skillDamageHandler;
         if (handler != null && handler.damage(this, target, damage, source, classification, false)) return;
         if (target instanceof TempEntity) {
@@ -718,16 +728,13 @@ public abstract class Skill implements IconHolder {
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             if (source != null) {
-                skillDamage = true;
                 target.setNoDamageTicks(0);
                 if (knockback) {
                     target.damage(event.getDamage(), source);
                 } else {
                     target.damage(event.getDamage());
                 }
-                skillDamage = false;
             } else {
-                skillDamage = true;
                 //Modified code from com.rit.sucy.version.VersionManager.damage() (MCCore)
                 {
                     // Allow damage to occur
@@ -753,8 +760,13 @@ public abstract class Skill implements IconHolder {
                     // Reset damage timer to before the damage was applied
                     target.setNoDamageTicks(ticks);
                 }
-                skillDamage = false;
             }
+        }
+        } finally {
+            if (previousSkillDamage) skillDamage.set(true);
+            else skillDamage.remove();
+            if (previousClassification == null) damageClassification.remove();
+            else damageClassification.set(previousClassification);
         }
     }
 
@@ -767,16 +779,36 @@ public abstract class Skill implements IconHolder {
      * @param source source of the damage (skill caster)
      */
     public void trueDamage(LivingEntity target, double damage, LivingEntity source) {
+        trueDamage(target, damage, source, true);
+    }
+
+    /**
+     * Deals armor-bypassing damage. Existing callers retain the historical shield
+     * bypass; only an explicit false value allows the new resource shields to absorb it.
+     */
+    public void trueDamage(LivingEntity target, double damage, LivingEntity source, boolean ignoreShield) {
         if (target instanceof TempEntity) return;
 
         SkillDamageHandler handler = skillDamageHandler;
-        if (handler != null && handler.damage(this, target, damage, source, "true", true)) return;
+        // Preserve the legacy bypass path, including the handler's original ordering.
+        if (ignoreShield && handler != null && handler.damage(this, target, damage, source, "true", true)) return;
 
-        TrueDamageEvent event = new TrueDamageEvent(this, source, target, damage);
+        TrueDamageEvent event = new TrueDamageEvent(this, source, target, damage, ignoreShield);
         Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled() && event.getDamage() != 0) {
-            target.setHealth(Math.max(Math.min(target.getHealth() - event.getDamage(), target.getMaxHealth()), 0));
+        if (event.isCancelled() || event.getDamage() <= 0) return;
+        double finalDamage = event.getDamage();
+        if (!Double.isFinite(finalDamage)) return;
+        // An external damage handler owns the full transaction when it accepts a hit;
+        // local shield capacity must not be consumed before that handler decides.
+        if (!ignoreShield && handler != null && handler.damage(this, target, finalDamage, source, "true", true)) return;
+        if (!event.isIgnoringShield()) {
+            ShieldManager.Resolution resolution = ShieldManager.preview(target, finalDamage,
+                    "true", "TRUE", "true");
+            finalDamage = resolution.getRemainingDamage();
+            ShieldManager.commit(resolution);
         }
+        if (finalDamage <= 0) return;
+        target.setHealth(Math.max(Math.min(target.getHealth() - finalDamage, target.getMaxHealth()), 0));
     }
 
     /**
@@ -801,7 +833,14 @@ public abstract class Skill implements IconHolder {
     public void updateIndicators(List<IIndicator> list, Player player, int level) {
     }
 
-    private static boolean skillDamage = false;
+    /** Per-call-thread marker; nested damage restores the outer value in finally. */
+    private static final ThreadLocal<Boolean> skillDamage = ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<String> damageClassification = new ThreadLocal<>();
+
+    /** Classification of the Bukkit hit currently emitted by a skill damage call. */
+    public static String getDamageClassification() {
+        return damageClassification.get();
+    }
 
     /**
      * Checks whether or not the current damage event is due to
@@ -811,7 +850,7 @@ public abstract class Skill implements IconHolder {
      * @return true if caused by a skill, false otherwise
      */
     public static boolean isSkillDamage() {
-        return skillDamage;
+        return skillDamage.get();
     }
 
     private static final String NAME = "name";

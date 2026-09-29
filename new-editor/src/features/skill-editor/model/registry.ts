@@ -39,7 +39,7 @@ export class NodeRegistry {
         throw new Error(`Invalid or duplicate ports/fields: ${definition.id}`);
       }
     }
-    if (definition.kind === 'entry' && definition.inputs.length) {
+    if (definition.kind === 'entry' && definition.inputs.length && definition.legacy?.name !== 'GROUP') {
       throw new Error('Entry nodes cannot have input ports');
     }
     // Own an immutable snapshot so external plugins cannot mutate existing pin contracts.

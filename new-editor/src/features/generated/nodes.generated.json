@@ -1,5 +1,44 @@
 [
   {
+    "id": "TriggerAirThresholdCrossed",
+    "key": "AIR_THRESHOLD_CROSSED",
+    "name": "Air Threshold Crossed",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "离地时长达到阈值",
+    "descriptionZh": "玩家持续离地移动达到空气时长阈值时触发一次；重新着地后计数清零。阈值按移动采样次数计算，不主动创建定时任务。",
+    "fields": [
+      {
+        "kind": "IntValue",
+        "key": "air-threshold",
+        "label": "Air Threshold",
+        "value": "10",
+        "labelZh": "空气时长阈值",
+        "tooltipZh": "按移动采样次数计数，达到阈值时只触发一次；重新着地后计数清零。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerAttributeDeltaApplied",
+    "key": "ATTRIBUTE_DELTA_APPLIED",
+    "name": "AttributeDeltaApplied",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "属性变化生效后",
+    "descriptionZh": "提供属性键与本次变化量。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
     "id": "TriggerBlockBreak",
     "key": "BLOCK_BREAK",
     "name": "Block Break",
@@ -8,6 +47,2350 @@
     "description": "Applies skill effects when a player breaks a block matching the given details",
     "displayNameZh": "方块破坏时",
     "descriptionZh": "玩家破坏方块时触发，施法者与初始目标都是这名玩家（与被破坏的方块无关，方块信息只以数值形式传下去）。已被领地/保护插件取消的破坏不会触发。触发时把方块类型写入 api-block-type、方块坐标写入 api-block-loc，后续节点可用 Location 类目标或数值条件取用。",
+    "fields": [
+      {
+        "kind": "MultiListValue",
+        "key": "material",
+        "label": "Material",
+        "options": [
+          "Any",
+          "Acacia Door",
+          "Acacia Door Item",
+          "Acacia Fence",
+          "Acacia Fence Gate",
+          "Acacia Stairs",
+          "Activator Rail",
+          "Air",
+          "Anvil",
+          "Apple",
+          "Armor Stand",
+          "Arrow",
+          "Baked Potato",
+          "Banner",
+          "Barrier",
+          "Beacon",
+          "Bed",
+          "Bed Block",
+          "Bedrock",
+          "Beetroot",
+          "Beetroot Block",
+          "Beetroot Seeds",
+          "Beetroot Soup",
+          "Birch Door",
+          "Birch Door Item",
+          "Birch Fence",
+          "Birch Fence Gate",
+          "Birch Wood Stairs",
+          "Black Glazed Terracotta",
+          "Black Shulker Box",
+          "Blaze Powder",
+          "Blaze Rod",
+          "Blue Glazed Terracotta",
+          "Blue Shulker Box",
+          "Boat",
+          "Boat Acacia",
+          "Boat Birch",
+          "Boat Dark Oak",
+          "Boat Jungle",
+          "Boat Spruce",
+          "Bone",
+          "Bone Block",
+          "Book",
+          "Book And Quill",
+          "Bookshelf",
+          "Bow",
+          "Bowl",
+          "Bread",
+          "Brewing Stand",
+          "Brewing Stand Item",
+          "Brick",
+          "Brick Stairs",
+          "Brown Glazed Terracotta",
+          "Brown Mushroom",
+          "Brown Shulker Box",
+          "Bucket",
+          "Burning Furnace",
+          "Cactus",
+          "Cake",
+          "Cake Block",
+          "Carpet",
+          "Carrot",
+          "Carrot Item",
+          "Carrot Stick",
+          "Cauldron",
+          "Cauldron Item",
+          "Chainmail Boots",
+          "Chainmail Chestplate",
+          "Chainmail Helmet",
+          "Chainmail Leggings",
+          "Chest",
+          "Chorus Flower",
+          "Chorus Fruit",
+          "Chorus Fruit Popped",
+          "Chorus Plant",
+          "Clay",
+          "Clay Ball",
+          "Clay Brick",
+          "Coal",
+          "Coal Block",
+          "Coal Ore",
+          "Cobble Wall",
+          "Cobblestone",
+          "Cobblestone Stairs",
+          "Cocoa",
+          "Command",
+          "Command Chain",
+          "Command Minecart",
+          "Command Repeating",
+          "Compass",
+          "Concrete",
+          "Concrete Powder",
+          "Cooked Beef",
+          "Cooked Chicken",
+          "Cooked Fish",
+          "Cooked Mutton",
+          "Cooked Rabbit",
+          "Cookie",
+          "Crops",
+          "Cyan Glazed Terracotta",
+          "Cyan Shulker Box",
+          "Dark Oak Door",
+          "Dark Oak Door Item",
+          "Dark Oak Fence",
+          "Dark Oak Fence Gate",
+          "Dark Oak Stairs",
+          "Daylight Detector",
+          "Daylight Detector Inverted",
+          "Dead Bush",
+          "Detector Rail",
+          "Diamond",
+          "Diamond Axe",
+          "Diamond Barding",
+          "Diamond Block",
+          "Diamond Boots",
+          "Diamond Chestplate",
+          "Diamond Helmet",
+          "Diamond Hoe",
+          "Diamond Leggings",
+          "Diamond Ore",
+          "Diamond Pickaxe",
+          "Diamond Spade",
+          "Diamond Sword",
+          "Diode",
+          "Diode Block Off",
+          "Diode Block On",
+          "Dirt",
+          "Dispenser",
+          "Double Plant",
+          "Double Step",
+          "Double Stone Slab2",
+          "Dragon Egg",
+          "Dragons Breath",
+          "Dropper",
+          "Egg",
+          "Elytra",
+          "Emerald",
+          "Emerald Block",
+          "Emerald Ore",
+          "Empty Map",
+          "Enchanted Book",
+          "Enchantment Table",
+          "End Bricks",
+          "End Crystal",
+          "End Gateway",
+          "End Rod",
+          "Ender Chest",
+          "Ender Pearl",
+          "Ender Portal",
+          "Ender Portal Frame",
+          "Ender Stone",
+          "Exp Bottle",
+          "Explosive Minecart",
+          "Eye Of Ender",
+          "Feather",
+          "Fence",
+          "Fence Gate",
+          "Fermented Spider Eye",
+          "Fire",
+          "Fireball",
+          "Firework",
+          "Firework Charge",
+          "Fishing Rod",
+          "Flint",
+          "Flint And Steel",
+          "Flower Pot",
+          "Flower Pot Item",
+          "Frosted Ice",
+          "Furnace",
+          "Ghast Tear",
+          "Glass",
+          "Glass Bottle",
+          "Glowing Redstone Ore",
+          "Glowstone",
+          "Glowstone Dust",
+          "Gold Axe",
+          "Gold Barding",
+          "Gold Block",
+          "Gold Boots",
+          "Gold Chestplate",
+          "Gold Helmet",
+          "Gold Hoe",
+          "Gold Ingot",
+          "Gold Leggings",
+          "Gold Nugget",
+          "Gold Ore",
+          "Gold Pickaxe",
+          "Gold Plate",
+          "Gold Record",
+          "Gold Spade",
+          "Gold Sword",
+          "Golden Apple",
+          "Golden Carrot",
+          "Grass",
+          "Grass Path",
+          "Gravel",
+          "Gray Glazed Terracotta",
+          "Gray Shulker Box",
+          "Green Glazed Terracotta",
+          "Green Record",
+          "Green Shulker Box",
+          "Grilled Pork",
+          "Hard Clay",
+          "Hay Block",
+          "Hopper",
+          "Hopper Minecart",
+          "Huge Mushroom 1",
+          "Huge Mushroom 2",
+          "Ice",
+          "Ink Sack",
+          "Iron Axe",
+          "Iron Barding",
+          "Iron Block",
+          "Iron Boots",
+          "Iron Chestplate",
+          "Iron Door",
+          "Iron Door Block",
+          "Iron Fence",
+          "Iron Helmet",
+          "Iron Hoe",
+          "Iron Ingot",
+          "Iron Leggings",
+          "Iron Nugget",
+          "Iron Ore",
+          "Iron Pickaxe",
+          "Iron Plate",
+          "Iron Spade",
+          "Iron Sword",
+          "Iron Trapdoor",
+          "Item Frame",
+          "Jack O Lantern",
+          "Jukebox",
+          "Jungle Door",
+          "Jungle Door Item",
+          "Jungle Fence",
+          "Jungle Fence Gate",
+          "Jungle Wood Stairs",
+          "Knowledge Book",
+          "Ladder",
+          "Lapis Block",
+          "Lapis Ore",
+          "Lava",
+          "Lava Bucket",
+          "Leash",
+          "Leather",
+          "Leather Boots",
+          "Leather Chestplate",
+          "Leather Helmet",
+          "Leather Leggings",
+          "Leaves",
+          "Leaves 2",
+          "Lever",
+          "Light Blue Glazed Terracotta",
+          "Light Blue Shulker Box",
+          "Lime Glazed Terracotta",
+          "Lime Shulker Box",
+          "Lingering Potion",
+          "Log",
+          "Log 2",
+          "Long Grass",
+          "Magenta Glazed Terracotta",
+          "Magenta Shulker Box",
+          "Magma",
+          "Magma Cream",
+          "Map",
+          "Melon",
+          "Melon Block",
+          "Melon Seeds",
+          "Melon Stem",
+          "Milk Bucket",
+          "Minecart",
+          "Mob Spawner",
+          "Monster Egg",
+          "Monster Eggs",
+          "Mossy Cobblestone",
+          "Mushroom Soup",
+          "Mutton",
+          "Mycel",
+          "Name Tag",
+          "Nether Brick",
+          "Nether Brick Item",
+          "Nether Brick Stairs",
+          "Nether Fence",
+          "Nether Stalk",
+          "Nether Star",
+          "Nether Wart Block",
+          "Nether Warts",
+          "Netherrack",
+          "Note Block",
+          "Observer",
+          "Obsidian",
+          "Orange Glazed Terracotta",
+          "Orange Shulker Box",
+          "Packed Ice",
+          "Painting",
+          "Paper",
+          "Pink Glazed Terracotta",
+          "Pink Shulker Box",
+          "Piston Base",
+          "Piston Extension",
+          "Piston Moving Piece",
+          "Piston Sticky Base",
+          "Poisonous Potato",
+          "Pork",
+          "Portal",
+          "Potato",
+          "Potato Item",
+          "Potion",
+          "Powered Minecart",
+          "Powered Rail",
+          "Prismarine",
+          "Prismarine Crystals",
+          "Prismarine Shard",
+          "Pumpkin",
+          "Pumpkin Pie",
+          "Pumpkin Seeds",
+          "Pumpkin Stem",
+          "Purple Glazed Terracotta",
+          "Purple Shulker Box",
+          "Purpur Block",
+          "Purpur Double Slab",
+          "Purpur Pillar",
+          "Purpur Slab",
+          "Purpur Stairs",
+          "Quartz",
+          "Quartz Block",
+          "Quartz Ore",
+          "Quartz Stairs",
+          "Rabbit",
+          "Rabbit Foot",
+          "Rabbit Hide",
+          "Rabbit Stew",
+          "Rails",
+          "Raw Beef",
+          "Raw Chicken",
+          "Raw Fish",
+          "Record 10",
+          "Record 11",
+          "Record 12",
+          "Record 3",
+          "Record 4",
+          "Record 5",
+          "Record 6",
+          "Record 7",
+          "Record 8",
+          "Record 9",
+          "Red Glazed Terracotta",
+          "Red Mushroom",
+          "Red Nether Brick",
+          "Red Rose",
+          "Red Sandstone",
+          "Red Sandstone Stairs",
+          "Red Shulker Box",
+          "Redstone",
+          "Redstone Block",
+          "Redstone Comparator",
+          "Redstone Comparator Off",
+          "Redstone Comparator On",
+          "Redstone Lamp Off",
+          "Redstone Lamp On",
+          "Redstone Ore",
+          "Redstone Torch Off",
+          "Redstone Torch On",
+          "Redstone Wire",
+          "Rotten Flesh",
+          "Saddle",
+          "Sand",
+          "Sandstone",
+          "Sandstone Stairs",
+          "Sapling",
+          "Sea Lantern",
+          "Seeds",
+          "Shears",
+          "Shield",
+          "Shulker Shell",
+          "Sign",
+          "Sign Post",
+          "Silver Glazed Terracotta",
+          "Silver Shulker Box",
+          "Skull",
+          "Skull Item",
+          "Slime Ball",
+          "Slime Block",
+          "Smooth Brick",
+          "Smooth Stairs",
+          "Snow",
+          "Snow Ball",
+          "Snow Block",
+          "Soil",
+          "Soul Sand",
+          "Speckled Melon",
+          "Spectral Arrow",
+          "Spider Eye",
+          "Splash Potion",
+          "Sponge",
+          "Spruce Door",
+          "Spruce Door Item",
+          "Spruce Fence",
+          "Spruce Fence Gate",
+          "Spruce Wood Stairs",
+          "Stained Clay",
+          "Stained Glass",
+          "Stained Glass Pane",
+          "Standing Banner",
+          "Stationary Lava",
+          "Stationary Water",
+          "Step",
+          "Stick",
+          "Stone",
+          "Stone Axe",
+          "Stone Button",
+          "Stone Hoe",
+          "Stone Pickaxe",
+          "Stone Plate",
+          "Stone Slab2",
+          "Stone Spade",
+          "Stone Sword",
+          "Storage Minecart",
+          "String",
+          "Structure Block",
+          "Structure Void",
+          "Sugar",
+          "Sugar Cane",
+          "Sugar Cane Block",
+          "Sulphur",
+          "Thin Glass",
+          "Tipped Arrow",
+          "Tnt",
+          "Torch",
+          "Totem",
+          "Trap Door",
+          "Trapped Chest",
+          "Tripwire",
+          "Tripwire Hook",
+          "Vine",
+          "Wall Banner",
+          "Wall Sign",
+          "Watch",
+          "Water",
+          "Water Bucket",
+          "Water Lily",
+          "Web",
+          "Wheat",
+          "White Glazed Terracotta",
+          "White Shulker Box",
+          "Wood",
+          "Wood Axe",
+          "Wood Button",
+          "Wood Door",
+          "Wood Double Step",
+          "Wood Hoe",
+          "Wood Pickaxe",
+          "Wood Plate",
+          "Wood Spade",
+          "Wood Stairs",
+          "Wood Step",
+          "Wood Sword",
+          "Wooden Door",
+          "Wool",
+          "Workbench",
+          "Written Book",
+          "Yellow Flower",
+          "Yellow Glazed Terracotta",
+          "Yellow Shulker Box"
+        ],
+        "tooltip": "[material] The type of block expected to be broken",
+        "labelZh": "材质",
+        "tooltipZh": "限定哪些方块才触发。留空或包含 Any 表示不限；否则把填写值里的空格换成下划线后与方块真实类型名做忽略大小写比较（如 Oak Log 匹配 OAK_LOG）。注意通配只认首字母大写的 Any，写成 any 会被当成方块名去匹配、结果永不触发。",
+        "optionsZh": [
+          {
+            "value": "Any",
+            "label": "任意"
+          },
+          {
+            "value": "Acacia Door",
+            "label": "金合欢木门"
+          },
+          {
+            "value": "Acacia Door Item",
+            "label": "金合欢木门物品"
+          },
+          {
+            "value": "Acacia Fence",
+            "label": "金合欢木栅栏"
+          },
+          {
+            "value": "Acacia Fence Gate",
+            "label": "金合欢木栅栏"
+          },
+          {
+            "value": "Acacia Stairs",
+            "label": "金合欢木楼梯"
+          },
+          {
+            "value": "Activator Rail",
+            "label": "其他材质"
+          },
+          {
+            "value": "Air",
+            "label": "其他材质"
+          },
+          {
+            "value": "Anvil",
+            "label": "其他材质"
+          },
+          {
+            "value": "Apple",
+            "label": "其他材质"
+          },
+          {
+            "value": "Armor Stand",
+            "label": "其他材质"
+          },
+          {
+            "value": "Arrow",
+            "label": "箭"
+          },
+          {
+            "value": "Baked Potato",
+            "label": "其他材质"
+          },
+          {
+            "value": "Banner",
+            "label": "其他材质"
+          },
+          {
+            "value": "Barrier",
+            "label": "其他材质"
+          },
+          {
+            "value": "Beacon",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bed",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bed Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bedrock",
+            "label": "其他材质"
+          },
+          {
+            "value": "Beetroot",
+            "label": "其他材质"
+          },
+          {
+            "value": "Beetroot Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Beetroot Seeds",
+            "label": "其他材质"
+          },
+          {
+            "value": "Beetroot Soup",
+            "label": "其他材质"
+          },
+          {
+            "value": "Birch Door",
+            "label": "桦木门"
+          },
+          {
+            "value": "Birch Door Item",
+            "label": "桦木门物品"
+          },
+          {
+            "value": "Birch Fence",
+            "label": "桦木栅栏"
+          },
+          {
+            "value": "Birch Fence Gate",
+            "label": "桦木栅栏"
+          },
+          {
+            "value": "Birch Wood Stairs",
+            "label": "桦木木头楼梯"
+          },
+          {
+            "value": "Black Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Black Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Blaze Powder",
+            "label": "其他材质"
+          },
+          {
+            "value": "Blaze Rod",
+            "label": "其他材质"
+          },
+          {
+            "value": "Blue Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Blue Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Boat",
+            "label": "其他材质"
+          },
+          {
+            "value": "Boat Acacia",
+            "label": "金合欢木"
+          },
+          {
+            "value": "Boat Birch",
+            "label": "桦木"
+          },
+          {
+            "value": "Boat Dark Oak",
+            "label": "深色橡木"
+          },
+          {
+            "value": "Boat Jungle",
+            "label": "丛林木"
+          },
+          {
+            "value": "Boat Spruce",
+            "label": "云杉"
+          },
+          {
+            "value": "Bone",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bone Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Book",
+            "label": "其他材质"
+          },
+          {
+            "value": "Book And Quill",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bookshelf",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bow",
+            "label": "弓"
+          },
+          {
+            "value": "Bowl",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bread",
+            "label": "其他材质"
+          },
+          {
+            "value": "Brewing Stand",
+            "label": "其他材质"
+          },
+          {
+            "value": "Brewing Stand Item",
+            "label": "物品"
+          },
+          {
+            "value": "Brick",
+            "label": "其他材质"
+          },
+          {
+            "value": "Brick Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Brown Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Brown Mushroom",
+            "label": "其他材质"
+          },
+          {
+            "value": "Brown Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Bucket",
+            "label": "其他材质"
+          },
+          {
+            "value": "Burning Furnace",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cactus",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cake",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cake Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Carpet",
+            "label": "其他材质"
+          },
+          {
+            "value": "Carrot",
+            "label": "其他材质"
+          },
+          {
+            "value": "Carrot Item",
+            "label": "物品"
+          },
+          {
+            "value": "Carrot Stick",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cauldron",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cauldron Item",
+            "label": "物品"
+          },
+          {
+            "value": "Chainmail Boots",
+            "label": "靴子"
+          },
+          {
+            "value": "Chainmail Chestplate",
+            "label": "胸甲"
+          },
+          {
+            "value": "Chainmail Helmet",
+            "label": "头盔"
+          },
+          {
+            "value": "Chainmail Leggings",
+            "label": "护腿"
+          },
+          {
+            "value": "Chest",
+            "label": "其他材质"
+          },
+          {
+            "value": "Chorus Flower",
+            "label": "其他材质"
+          },
+          {
+            "value": "Chorus Fruit",
+            "label": "其他材质"
+          },
+          {
+            "value": "Chorus Fruit Popped",
+            "label": "其他材质"
+          },
+          {
+            "value": "Chorus Plant",
+            "label": "其他材质"
+          },
+          {
+            "value": "Clay",
+            "label": "其他材质"
+          },
+          {
+            "value": "Clay Ball",
+            "label": "其他材质"
+          },
+          {
+            "value": "Clay Brick",
+            "label": "其他材质"
+          },
+          {
+            "value": "Coal",
+            "label": "其他材质"
+          },
+          {
+            "value": "Coal Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Coal Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cobble Wall",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cobblestone",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cobblestone Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Cocoa",
+            "label": "其他材质"
+          },
+          {
+            "value": "Command",
+            "label": "命令"
+          },
+          {
+            "value": "Command Chain",
+            "label": "其他材质"
+          },
+          {
+            "value": "Command Minecart",
+            "label": "其他材质"
+          },
+          {
+            "value": "Command Repeating",
+            "label": "其他材质"
+          },
+          {
+            "value": "Compass",
+            "label": "其他材质"
+          },
+          {
+            "value": "Concrete",
+            "label": "其他材质"
+          },
+          {
+            "value": "Concrete Powder",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cooked Beef",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cooked Chicken",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cooked Fish",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cooked Mutton",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cooked Rabbit",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cookie",
+            "label": "其他材质"
+          },
+          {
+            "value": "Crops",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cyan Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Cyan Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Dark Oak Door",
+            "label": "深色橡木门"
+          },
+          {
+            "value": "Dark Oak Door Item",
+            "label": "深色橡木门物品"
+          },
+          {
+            "value": "Dark Oak Fence",
+            "label": "深色橡木栅栏"
+          },
+          {
+            "value": "Dark Oak Fence Gate",
+            "label": "深色橡木栅栏"
+          },
+          {
+            "value": "Dark Oak Stairs",
+            "label": "深色橡木楼梯"
+          },
+          {
+            "value": "Daylight Detector",
+            "label": "其他材质"
+          },
+          {
+            "value": "Daylight Detector Inverted",
+            "label": "其他材质"
+          },
+          {
+            "value": "Dead Bush",
+            "label": "其他材质"
+          },
+          {
+            "value": "Detector Rail",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diamond",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diamond Axe",
+            "label": "斧"
+          },
+          {
+            "value": "Diamond Barding",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diamond Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diamond Boots",
+            "label": "靴子"
+          },
+          {
+            "value": "Diamond Chestplate",
+            "label": "胸甲"
+          },
+          {
+            "value": "Diamond Helmet",
+            "label": "头盔"
+          },
+          {
+            "value": "Diamond Hoe",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diamond Leggings",
+            "label": "护腿"
+          },
+          {
+            "value": "Diamond Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diamond Pickaxe",
+            "label": "镐"
+          },
+          {
+            "value": "Diamond Spade",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diamond Sword",
+            "label": "剑"
+          },
+          {
+            "value": "Diode",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diode Block Off",
+            "label": "其他材质"
+          },
+          {
+            "value": "Diode Block On",
+            "label": "其他材质"
+          },
+          {
+            "value": "Dirt",
+            "label": "泥土"
+          },
+          {
+            "value": "Dispenser",
+            "label": "其他材质"
+          },
+          {
+            "value": "Double Plant",
+            "label": "其他材质"
+          },
+          {
+            "value": "Double Step",
+            "label": "脚步"
+          },
+          {
+            "value": "Double Stone Slab2",
+            "label": "石头"
+          },
+          {
+            "value": "Dragon Egg",
+            "label": "其他材质"
+          },
+          {
+            "value": "Dragons Breath",
+            "label": "其他材质"
+          },
+          {
+            "value": "Dropper",
+            "label": "其他材质"
+          },
+          {
+            "value": "Egg",
+            "label": "其他材质"
+          },
+          {
+            "value": "Elytra",
+            "label": "其他材质"
+          },
+          {
+            "value": "Emerald",
+            "label": "其他材质"
+          },
+          {
+            "value": "Emerald Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Emerald Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Empty Map",
+            "label": "其他材质"
+          },
+          {
+            "value": "Enchanted Book",
+            "label": "其他材质"
+          },
+          {
+            "value": "Enchantment Table",
+            "label": "其他材质"
+          },
+          {
+            "value": "End Bricks",
+            "label": "其他材质"
+          },
+          {
+            "value": "End Crystal",
+            "label": "其他材质"
+          },
+          {
+            "value": "End Gateway",
+            "label": "其他材质"
+          },
+          {
+            "value": "End Rod",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ender Chest",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ender Pearl",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ender Portal",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ender Portal Frame",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ender Stone",
+            "label": "石头"
+          },
+          {
+            "value": "Exp Bottle",
+            "label": "其他材质"
+          },
+          {
+            "value": "Explosive Minecart",
+            "label": "其他材质"
+          },
+          {
+            "value": "Eye Of Ender",
+            "label": "其他材质"
+          },
+          {
+            "value": "Feather",
+            "label": "其他材质"
+          },
+          {
+            "value": "Fence",
+            "label": "栅栏"
+          },
+          {
+            "value": "Fence Gate",
+            "label": "栅栏"
+          },
+          {
+            "value": "Fermented Spider Eye",
+            "label": "其他材质"
+          },
+          {
+            "value": "Fire",
+            "label": "火焰"
+          },
+          {
+            "value": "Fireball",
+            "label": "其他材质"
+          },
+          {
+            "value": "Firework",
+            "label": "其他材质"
+          },
+          {
+            "value": "Firework Charge",
+            "label": "其他材质"
+          },
+          {
+            "value": "Fishing Rod",
+            "label": "其他材质"
+          },
+          {
+            "value": "Flint",
+            "label": "其他材质"
+          },
+          {
+            "value": "Flint And Steel",
+            "label": "其他材质"
+          },
+          {
+            "value": "Flower Pot",
+            "label": "其他材质"
+          },
+          {
+            "value": "Flower Pot Item",
+            "label": "物品"
+          },
+          {
+            "value": "Frosted Ice",
+            "label": "其他材质"
+          },
+          {
+            "value": "Furnace",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ghast Tear",
+            "label": "其他材质"
+          },
+          {
+            "value": "Glass",
+            "label": "玻璃"
+          },
+          {
+            "value": "Glass Bottle",
+            "label": "玻璃"
+          },
+          {
+            "value": "Glowing Redstone Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Glowstone",
+            "label": "其他材质"
+          },
+          {
+            "value": "Glowstone Dust",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Axe",
+            "label": "斧"
+          },
+          {
+            "value": "Gold Barding",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Boots",
+            "label": "靴子"
+          },
+          {
+            "value": "Gold Chestplate",
+            "label": "胸甲"
+          },
+          {
+            "value": "Gold Helmet",
+            "label": "头盔"
+          },
+          {
+            "value": "Gold Hoe",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Ingot",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Leggings",
+            "label": "护腿"
+          },
+          {
+            "value": "Gold Nugget",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Pickaxe",
+            "label": "镐"
+          },
+          {
+            "value": "Gold Plate",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Record",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Spade",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gold Sword",
+            "label": "剑"
+          },
+          {
+            "value": "Golden Apple",
+            "label": "其他材质"
+          },
+          {
+            "value": "Golden Carrot",
+            "label": "其他材质"
+          },
+          {
+            "value": "Grass",
+            "label": "草方块"
+          },
+          {
+            "value": "Grass Path",
+            "label": "草方块"
+          },
+          {
+            "value": "Gravel",
+            "label": "沙砾"
+          },
+          {
+            "value": "Gray Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Gray Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Green Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Green Record",
+            "label": "其他材质"
+          },
+          {
+            "value": "Green Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Grilled Pork",
+            "label": "其他材质"
+          },
+          {
+            "value": "Hard Clay",
+            "label": "其他材质"
+          },
+          {
+            "value": "Hay Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Hopper",
+            "label": "其他材质"
+          },
+          {
+            "value": "Hopper Minecart",
+            "label": "其他材质"
+          },
+          {
+            "value": "Huge Mushroom 1",
+            "label": "其他材质"
+          },
+          {
+            "value": "Huge Mushroom 2",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ice",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ink Sack",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Axe",
+            "label": "斧"
+          },
+          {
+            "value": "Iron Barding",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Boots",
+            "label": "靴子"
+          },
+          {
+            "value": "Iron Chestplate",
+            "label": "胸甲"
+          },
+          {
+            "value": "Iron Door",
+            "label": "门"
+          },
+          {
+            "value": "Iron Door Block",
+            "label": "门"
+          },
+          {
+            "value": "Iron Fence",
+            "label": "栅栏"
+          },
+          {
+            "value": "Iron Helmet",
+            "label": "头盔"
+          },
+          {
+            "value": "Iron Hoe",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Ingot",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Leggings",
+            "label": "护腿"
+          },
+          {
+            "value": "Iron Nugget",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Pickaxe",
+            "label": "镐"
+          },
+          {
+            "value": "Iron Plate",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Spade",
+            "label": "其他材质"
+          },
+          {
+            "value": "Iron Sword",
+            "label": "剑"
+          },
+          {
+            "value": "Iron Trapdoor",
+            "label": "其他材质"
+          },
+          {
+            "value": "Item Frame",
+            "label": "物品"
+          },
+          {
+            "value": "Jack O Lantern",
+            "label": "其他材质"
+          },
+          {
+            "value": "Jukebox",
+            "label": "其他材质"
+          },
+          {
+            "value": "Jungle Door",
+            "label": "丛林木门"
+          },
+          {
+            "value": "Jungle Door Item",
+            "label": "丛林木门物品"
+          },
+          {
+            "value": "Jungle Fence",
+            "label": "丛林木栅栏"
+          },
+          {
+            "value": "Jungle Fence Gate",
+            "label": "丛林木栅栏"
+          },
+          {
+            "value": "Jungle Wood Stairs",
+            "label": "丛林木木头楼梯"
+          },
+          {
+            "value": "Knowledge Book",
+            "label": "其他材质"
+          },
+          {
+            "value": "Ladder",
+            "label": "其他材质"
+          },
+          {
+            "value": "Lapis Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Lapis Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Lava",
+            "label": "熔岩"
+          },
+          {
+            "value": "Lava Bucket",
+            "label": "熔岩"
+          },
+          {
+            "value": "Leash",
+            "label": "其他材质"
+          },
+          {
+            "value": "Leather",
+            "label": "其他材质"
+          },
+          {
+            "value": "Leather Boots",
+            "label": "靴子"
+          },
+          {
+            "value": "Leather Chestplate",
+            "label": "胸甲"
+          },
+          {
+            "value": "Leather Helmet",
+            "label": "头盔"
+          },
+          {
+            "value": "Leather Leggings",
+            "label": "护腿"
+          },
+          {
+            "value": "Leaves",
+            "label": "其他材质"
+          },
+          {
+            "value": "Leaves 2",
+            "label": "其他材质"
+          },
+          {
+            "value": "Lever",
+            "label": "其他材质"
+          },
+          {
+            "value": "Light Blue Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Light Blue Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Lime Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Lime Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Lingering Potion",
+            "label": "药水"
+          },
+          {
+            "value": "Log",
+            "label": "其他材质"
+          },
+          {
+            "value": "Log 2",
+            "label": "其他材质"
+          },
+          {
+            "value": "Long Grass",
+            "label": "草方块"
+          },
+          {
+            "value": "Magenta Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Magenta Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Magma",
+            "label": "其他材质"
+          },
+          {
+            "value": "Magma Cream",
+            "label": "其他材质"
+          },
+          {
+            "value": "Map",
+            "label": "其他材质"
+          },
+          {
+            "value": "Melon",
+            "label": "其他材质"
+          },
+          {
+            "value": "Melon Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Melon Seeds",
+            "label": "其他材质"
+          },
+          {
+            "value": "Melon Stem",
+            "label": "其他材质"
+          },
+          {
+            "value": "Milk Bucket",
+            "label": "其他材质"
+          },
+          {
+            "value": "Minecart",
+            "label": "其他材质"
+          },
+          {
+            "value": "Mob Spawner",
+            "label": "其他材质"
+          },
+          {
+            "value": "Monster Egg",
+            "label": "其他材质"
+          },
+          {
+            "value": "Monster Eggs",
+            "label": "其他材质"
+          },
+          {
+            "value": "Mossy Cobblestone",
+            "label": "其他材质"
+          },
+          {
+            "value": "Mushroom Soup",
+            "label": "其他材质"
+          },
+          {
+            "value": "Mutton",
+            "label": "其他材质"
+          },
+          {
+            "value": "Mycel",
+            "label": "其他材质"
+          },
+          {
+            "value": "Name Tag",
+            "label": "其他材质"
+          },
+          {
+            "value": "Nether Brick",
+            "label": "其他材质"
+          },
+          {
+            "value": "Nether Brick Item",
+            "label": "物品"
+          },
+          {
+            "value": "Nether Brick Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Nether Fence",
+            "label": "栅栏"
+          },
+          {
+            "value": "Nether Stalk",
+            "label": "其他材质"
+          },
+          {
+            "value": "Nether Star",
+            "label": "其他材质"
+          },
+          {
+            "value": "Nether Wart Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Nether Warts",
+            "label": "其他材质"
+          },
+          {
+            "value": "Netherrack",
+            "label": "其他材质"
+          },
+          {
+            "value": "Note Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Observer",
+            "label": "其他材质"
+          },
+          {
+            "value": "Obsidian",
+            "label": "其他材质"
+          },
+          {
+            "value": "Orange Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Orange Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Packed Ice",
+            "label": "其他材质"
+          },
+          {
+            "value": "Painting",
+            "label": "其他材质"
+          },
+          {
+            "value": "Paper",
+            "label": "其他材质"
+          },
+          {
+            "value": "Pink Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Pink Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Piston Base",
+            "label": "其他材质"
+          },
+          {
+            "value": "Piston Extension",
+            "label": "其他材质"
+          },
+          {
+            "value": "Piston Moving Piece",
+            "label": "其他材质"
+          },
+          {
+            "value": "Piston Sticky Base",
+            "label": "其他材质"
+          },
+          {
+            "value": "Poisonous Potato",
+            "label": "其他材质"
+          },
+          {
+            "value": "Pork",
+            "label": "其他材质"
+          },
+          {
+            "value": "Portal",
+            "label": "其他材质"
+          },
+          {
+            "value": "Potato",
+            "label": "其他材质"
+          },
+          {
+            "value": "Potato Item",
+            "label": "物品"
+          },
+          {
+            "value": "Potion",
+            "label": "药水效果"
+          },
+          {
+            "value": "Powered Minecart",
+            "label": "其他材质"
+          },
+          {
+            "value": "Powered Rail",
+            "label": "其他材质"
+          },
+          {
+            "value": "Prismarine",
+            "label": "其他材质"
+          },
+          {
+            "value": "Prismarine Crystals",
+            "label": "其他材质"
+          },
+          {
+            "value": "Prismarine Shard",
+            "label": "其他材质"
+          },
+          {
+            "value": "Pumpkin",
+            "label": "其他材质"
+          },
+          {
+            "value": "Pumpkin Pie",
+            "label": "其他材质"
+          },
+          {
+            "value": "Pumpkin Seeds",
+            "label": "其他材质"
+          },
+          {
+            "value": "Pumpkin Stem",
+            "label": "其他材质"
+          },
+          {
+            "value": "Purple Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Purple Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Purpur Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Purpur Double Slab",
+            "label": "台阶"
+          },
+          {
+            "value": "Purpur Pillar",
+            "label": "其他材质"
+          },
+          {
+            "value": "Purpur Slab",
+            "label": "台阶"
+          },
+          {
+            "value": "Purpur Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Quartz",
+            "label": "其他材质"
+          },
+          {
+            "value": "Quartz Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Quartz Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Quartz Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Rabbit",
+            "label": "其他材质"
+          },
+          {
+            "value": "Rabbit Foot",
+            "label": "其他材质"
+          },
+          {
+            "value": "Rabbit Hide",
+            "label": "其他材质"
+          },
+          {
+            "value": "Rabbit Stew",
+            "label": "其他材质"
+          },
+          {
+            "value": "Rails",
+            "label": "其他材质"
+          },
+          {
+            "value": "Raw Beef",
+            "label": "其他材质"
+          },
+          {
+            "value": "Raw Chicken",
+            "label": "其他材质"
+          },
+          {
+            "value": "Raw Fish",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 10",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 11",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 12",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 3",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 4",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 5",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 6",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 7",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 8",
+            "label": "其他材质"
+          },
+          {
+            "value": "Record 9",
+            "label": "其他材质"
+          },
+          {
+            "value": "Red Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Red Mushroom",
+            "label": "其他材质"
+          },
+          {
+            "value": "Red Nether Brick",
+            "label": "其他材质"
+          },
+          {
+            "value": "Red Rose",
+            "label": "其他材质"
+          },
+          {
+            "value": "Red Sandstone",
+            "label": "其他材质"
+          },
+          {
+            "value": "Red Sandstone Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Red Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Comparator",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Comparator Off",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Comparator On",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Lamp Off",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Lamp On",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Ore",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Torch Off",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Torch On",
+            "label": "其他材质"
+          },
+          {
+            "value": "Redstone Wire",
+            "label": "其他材质"
+          },
+          {
+            "value": "Rotten Flesh",
+            "label": "其他材质"
+          },
+          {
+            "value": "Saddle",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sand",
+            "label": "沙子"
+          },
+          {
+            "value": "Sandstone",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sandstone Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Sapling",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sea Lantern",
+            "label": "其他材质"
+          },
+          {
+            "value": "Seeds",
+            "label": "其他材质"
+          },
+          {
+            "value": "Shears",
+            "label": "其他材质"
+          },
+          {
+            "value": "Shield",
+            "label": "其他材质"
+          },
+          {
+            "value": "Shulker Shell",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sign",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sign Post",
+            "label": "其他材质"
+          },
+          {
+            "value": "Silver Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Silver Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Skull",
+            "label": "其他材质"
+          },
+          {
+            "value": "Skull Item",
+            "label": "物品"
+          },
+          {
+            "value": "Slime Ball",
+            "label": "其他材质"
+          },
+          {
+            "value": "Slime Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Smooth Brick",
+            "label": "其他材质"
+          },
+          {
+            "value": "Smooth Stairs",
+            "label": "楼梯"
+          },
+          {
+            "value": "Snow",
+            "label": "其他材质"
+          },
+          {
+            "value": "Snow Ball",
+            "label": "其他材质"
+          },
+          {
+            "value": "Snow Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Soil",
+            "label": "其他材质"
+          },
+          {
+            "value": "Soul Sand",
+            "label": "沙子"
+          },
+          {
+            "value": "Speckled Melon",
+            "label": "其他材质"
+          },
+          {
+            "value": "Spectral Arrow",
+            "label": "箭"
+          },
+          {
+            "value": "Spider Eye",
+            "label": "其他材质"
+          },
+          {
+            "value": "Splash Potion",
+            "label": "药水"
+          },
+          {
+            "value": "Sponge",
+            "label": "其他材质"
+          },
+          {
+            "value": "Spruce Door",
+            "label": "云杉门"
+          },
+          {
+            "value": "Spruce Door Item",
+            "label": "云杉门物品"
+          },
+          {
+            "value": "Spruce Fence",
+            "label": "云杉栅栏"
+          },
+          {
+            "value": "Spruce Fence Gate",
+            "label": "云杉栅栏"
+          },
+          {
+            "value": "Spruce Wood Stairs",
+            "label": "云杉木头楼梯"
+          },
+          {
+            "value": "Stained Clay",
+            "label": "其他材质"
+          },
+          {
+            "value": "Stained Glass",
+            "label": "玻璃"
+          },
+          {
+            "value": "Stained Glass Pane",
+            "label": "玻璃"
+          },
+          {
+            "value": "Standing Banner",
+            "label": "其他材质"
+          },
+          {
+            "value": "Stationary Lava",
+            "label": "熔岩"
+          },
+          {
+            "value": "Stationary Water",
+            "label": "水"
+          },
+          {
+            "value": "Step",
+            "label": "脚步"
+          },
+          {
+            "value": "Stick",
+            "label": "其他材质"
+          },
+          {
+            "value": "Stone",
+            "label": "石头"
+          },
+          {
+            "value": "Stone Axe",
+            "label": "石头斧"
+          },
+          {
+            "value": "Stone Button",
+            "label": "石头"
+          },
+          {
+            "value": "Stone Hoe",
+            "label": "石头"
+          },
+          {
+            "value": "Stone Pickaxe",
+            "label": "石头镐"
+          },
+          {
+            "value": "Stone Plate",
+            "label": "石头"
+          },
+          {
+            "value": "Stone Slab2",
+            "label": "石头"
+          },
+          {
+            "value": "Stone Spade",
+            "label": "石头"
+          },
+          {
+            "value": "Stone Sword",
+            "label": "石头剑"
+          },
+          {
+            "value": "Storage Minecart",
+            "label": "其他材质"
+          },
+          {
+            "value": "String",
+            "label": "其他材质"
+          },
+          {
+            "value": "Structure Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Structure Void",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sugar",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sugar Cane",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sugar Cane Block",
+            "label": "其他材质"
+          },
+          {
+            "value": "Sulphur",
+            "label": "其他材质"
+          },
+          {
+            "value": "Thin Glass",
+            "label": "玻璃"
+          },
+          {
+            "value": "Tipped Arrow",
+            "label": "箭"
+          },
+          {
+            "value": "Tnt",
+            "label": "其他材质"
+          },
+          {
+            "value": "Torch",
+            "label": "其他材质"
+          },
+          {
+            "value": "Totem",
+            "label": "其他材质"
+          },
+          {
+            "value": "Trap Door",
+            "label": "门"
+          },
+          {
+            "value": "Trapped Chest",
+            "label": "其他材质"
+          },
+          {
+            "value": "Tripwire",
+            "label": "其他材质"
+          },
+          {
+            "value": "Tripwire Hook",
+            "label": "其他材质"
+          },
+          {
+            "value": "Vine",
+            "label": "其他材质"
+          },
+          {
+            "value": "Wall Banner",
+            "label": "其他材质"
+          },
+          {
+            "value": "Wall Sign",
+            "label": "其他材质"
+          },
+          {
+            "value": "Watch",
+            "label": "其他材质"
+          },
+          {
+            "value": "Water",
+            "label": "水"
+          },
+          {
+            "value": "Water Bucket",
+            "label": "水"
+          },
+          {
+            "value": "Water Lily",
+            "label": "水"
+          },
+          {
+            "value": "Web",
+            "label": "其他材质"
+          },
+          {
+            "value": "Wheat",
+            "label": "其他材质"
+          },
+          {
+            "value": "White Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "White Shulker Box",
+            "label": "其他材质"
+          },
+          {
+            "value": "Wood",
+            "label": "木头"
+          },
+          {
+            "value": "Wood Axe",
+            "label": "木头斧"
+          },
+          {
+            "value": "Wood Button",
+            "label": "木头"
+          },
+          {
+            "value": "Wood Door",
+            "label": "木头门"
+          },
+          {
+            "value": "Wood Double Step",
+            "label": "木头脚步"
+          },
+          {
+            "value": "Wood Hoe",
+            "label": "木头"
+          },
+          {
+            "value": "Wood Pickaxe",
+            "label": "木头镐"
+          },
+          {
+            "value": "Wood Plate",
+            "label": "木头"
+          },
+          {
+            "value": "Wood Spade",
+            "label": "木头"
+          },
+          {
+            "value": "Wood Stairs",
+            "label": "木头楼梯"
+          },
+          {
+            "value": "Wood Step",
+            "label": "木头脚步"
+          },
+          {
+            "value": "Wood Sword",
+            "label": "木头剑"
+          },
+          {
+            "value": "Wooden Door",
+            "label": "门"
+          },
+          {
+            "value": "Wool",
+            "label": "羊毛"
+          },
+          {
+            "value": "Workbench",
+            "label": "其他材质"
+          },
+          {
+            "value": "Written Book",
+            "label": "其他材质"
+          },
+          {
+            "value": "Yellow Flower",
+            "label": "其他材质"
+          },
+          {
+            "value": "Yellow Glazed Terracotta",
+            "label": "其他材质"
+          },
+          {
+            "value": "Yellow Shulker Box",
+            "label": "其他材质"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "TriggerBlockHarvested",
+    "key": "BLOCK_HARVESTED",
+    "name": "Block Harvested",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "收获方块时",
+    "descriptionZh": "玩家破坏可收获作物或植物时触发；保护插件取消破坏后不会触发。材质过滤仍沿用方块破坏入口的规则。",
     "fields": [
       {
         "kind": "MultiListValue",
@@ -4688,6 +7071,44 @@
     ]
   },
   {
+    "id": "TriggerClassXpGained",
+    "key": "CLASS_XP_GAINED",
+    "name": "ClassXpGained",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "职业经验增加后",
+    "descriptionZh": "事件在数值生效后触发，提供变化量。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerClassXpLost",
+    "key": "CLASS_XP_LOST",
+    "name": "ClassXpLost",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "职业经验减少后",
+    "descriptionZh": "事件在数值生效后触发，提供变化量。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
     "id": "TriggerCrouch",
     "key": "CROUCH",
     "name": "Crouch",
@@ -4744,6 +7165,17 @@
         "tooltipZh": "填 true 时把初始目标切换成击杀者，并且要求击杀者存在（必须是玩家造成的最后一击），否则整个技能不触发；填 false（默认）时初始目标是死亡者自己。该键只能手写进 YAML，编辑器面板里没有对应输入项。"
       }
     ]
+  },
+  {
+    "id": "TriggerEntitySheared",
+    "key": "ENTITY_SHEARED",
+    "name": "Entity Sheared",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "实体被剪毛时",
+    "descriptionZh": "玩家成功剪取可剪毛实体时触发，施法者是玩家、目标是被剪实体；已取消的剪毛请求不会进入该阶段。",
+    "fields": []
   },
   {
     "id": "TriggerEnvironmental",
@@ -4906,6 +7338,234 @@
     ]
   },
   {
+    "id": "TriggerFishBite",
+    "key": "FISH_BITE",
+    "name": "FishBite",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "鱼咬钩时",
+    "descriptionZh": "按原版钓鱼状态过滤，并写入钩位置与捕获对象信息。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "caught-type",
+        "label": "Caught Type",
+        "labelZh": "捕获实体类型",
+        "tooltipZh": "留空不限；仅捕获阶段使用。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerFishCaughtEntity",
+    "key": "FISH_CAUGHT_ENTITY",
+    "name": "FishCaughtEntity",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "钓到实体时",
+    "descriptionZh": "按原版钓鱼状态过滤，并写入钩位置与捕获对象信息。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "caught-type",
+        "label": "Caught Type",
+        "labelZh": "捕获实体类型",
+        "tooltipZh": "留空不限；仅捕获阶段使用。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerFishCaughtItem",
+    "key": "FISH_CAUGHT_ITEM",
+    "name": "FishCaughtItem",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "钓到物品时",
+    "descriptionZh": "按原版钓鱼状态过滤，并写入钩位置与捕获对象信息。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "caught-type",
+        "label": "Caught Type",
+        "labelZh": "捕获实体类型",
+        "tooltipZh": "留空不限；仅捕获阶段使用。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerFishFailed",
+    "key": "FISH_FAILED",
+    "name": "FishFailed",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "钓鱼失败时",
+    "descriptionZh": "按原版钓鱼状态过滤，并写入钩位置与捕获对象信息。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "caught-type",
+        "label": "Caught Type",
+        "labelZh": "捕获实体类型",
+        "tooltipZh": "留空不限；仅捕获阶段使用。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerFishReelEmpty",
+    "key": "FISH_REEL_EMPTY",
+    "name": "FishReelEmpty",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "空钩收线时",
+    "descriptionZh": "按原版钓鱼状态过滤，并写入钩位置与捕获对象信息。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "caught-type",
+        "label": "Caught Type",
+        "labelZh": "捕获实体类型",
+        "tooltipZh": "留空不限；仅捕获阶段使用。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerFlagEnded",
+    "key": "FLAG_ENDED",
+    "name": "Flag Ended",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "标记结束后",
+    "descriptionZh": "标记已移除；提供原因与标记名。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "flag",
+        "label": "Flag",
+        "labelZh": "标记名"
+      }
+    ]
+  },
+  {
+    "id": "TriggerFlagStarted",
+    "key": "FLAG_STARTED",
+    "name": "FlagStarted",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "标记生效后",
+    "descriptionZh": "提供标记名称和期限。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerFlightEnded",
+    "key": "FLIGHT_ENDED",
+    "name": "Flight Ended",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "结束飞行后",
+    "descriptionZh": "已确认结束飞行时触发。",
+    "fields": []
+  },
+  {
+    "id": "TriggerFlightStarted",
+    "key": "FLIGHT_STARTED",
+    "name": "Flight Started",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "开始飞行后",
+    "descriptionZh": "已确认开始飞行时触发。",
+    "fields": []
+  },
+  {
+    "id": "TriggerGlideEnded",
+    "key": "GLIDE_ENDED",
+    "name": "Glide Ended",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "结束滑翔后",
+    "descriptionZh": "已确认结束滑翔时触发。",
+    "fields": []
+  },
+  {
+    "id": "TriggerGlideStarted",
+    "key": "GLIDE_STARTED",
+    "name": "Glide Started",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "开始滑翔后",
+    "descriptionZh": "已确认开始滑翔时触发。",
+    "fields": []
+  },
+  {
+    "id": "TriggerGroupRoot",
+    "key": "GROUP",
+    "name": "GROUP",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "共享组",
+    "descriptionZh": "根级共享函数，可由 run group 节点或指向本卡片的连线调用。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "group",
+        "label": "Group Key",
+        "value": "group",
+        "labelZh": "共享组键"
+      }
+    ]
+  },
+  {
+    "id": "TriggerItemConsumeRequested",
+    "key": "ITEM_CONSUME_REQUESTED",
+    "name": "Item Consume Requested",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "请求消耗物品时",
+    "descriptionZh": "可取消的原版消耗请求；不代表物品已经消耗。",
+    "fields": []
+  },
+  {
+    "id": "TriggerItemDropRequested",
+    "key": "ITEM_DROP_REQUESTED",
+    "name": "Item Drop Requested",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "请求丢弃物品时",
+    "descriptionZh": "可取消的原版丢弃请求；不代表掉落已被接受。",
+    "fields": []
+  },
+  {
+    "id": "TriggerJumpTakeoff",
+    "key": "JUMP_TAKEOFF",
+    "name": "Jump Takeoff",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "跳跃起跳时",
+    "descriptionZh": "玩家从着地状态进入上升状态时触发一次；只使用移动事件的状态边界，不把空中持续移动重复算成跳跃。",
+    "fields": []
+  },
+  {
     "id": "TriggerKill",
     "key": "KILL",
     "name": "Kill",
@@ -4996,6 +7656,28 @@
         ]
       }
     ]
+  },
+  {
+    "id": "TriggerMobTargetAcquired",
+    "key": "MOB_TARGET_ACQUIRED",
+    "name": "Mob Target Acquired",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "生物获得目标时",
+    "descriptionZh": "生物获得一个有效仇恨目标时触发；初始目标为新目标，施法者是产生变化的生物。",
+    "fields": []
+  },
+  {
+    "id": "TriggerMobTargetLost",
+    "key": "MOB_TARGET_LOST",
+    "name": "Mob Target Lost",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "生物失去目标时",
+    "descriptionZh": "生物目标被清空时触发；由于 Bukkit 事件没有旧目标对象，初始目标回退为发生变化的生物。",
+    "fields": []
   },
   {
     "id": "TriggerMove",
@@ -5190,6 +7872,33 @@
         "tooltipZh": "允许触发的动作列表，需与 Bukkit 的 Action 枚举名完全一致且区分大小写（LEFT_CLICK_AIR、RIGHT_CLICK_BLOCK、PHYSICAL 等）。这里不支持留空当通配：列表为空或没有匹配项就永不触发，所以想全收就得把用到的动作逐个列出。"
       },
       {
+        "kind": "ListValue",
+        "key": "hand",
+        "label": "Hand",
+        "value": "any",
+        "options": [
+          "any",
+          "main",
+          "off"
+        ],
+        "labelZh": "交互手别",
+        "tooltipZh": "沿用现有交互入口；可只接收主手或副手。",
+        "optionsZh": [
+          {
+            "value": "any",
+            "label": "任意"
+          },
+          {
+            "value": "main",
+            "label": "主手"
+          },
+          {
+            "value": "off",
+            "label": "副手"
+          }
+        ]
+      },
+      {
         "kind": "StringValue",
         "key": "name",
         "label": "物品名",
@@ -5206,6 +7915,193 @@
         "tooltip": "[lore] 物品的描述中包含某个内容 all为全部都可以",
         "labelZh": "物品描述",
         "tooltipZh": "按 Lore 过滤，但判定是反的：填 all 表示不限；一旦填了别的值，只有当所有 Lore 行都“不含”该文本时才通过（比较前会去掉颜色代码），也就是它实际起的是排除作用而非包含作用。而且这条判定会直接决定返回值，写了非 all 的值就等于用它一票定生死。该键无代码级默认值，手写漏掉会抛空指针。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerPlayerWorldEntered",
+    "key": "PLAYER_WORLD_ENTERED",
+    "name": "Player World Entered",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "进入世界后",
+    "descriptionZh": "玩家跨世界完成后触发，写入原世界与目标世界名。",
+    "fields": []
+  },
+  {
+    "id": "TriggerProjectileHitBlock",
+    "key": "PROJECTILE_HIT_BLOCK",
+    "name": "Projectile Hit Block",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "投射物命中方块时",
+    "descriptionZh": "命中方块时触发；旧版 Bukkit 缺少命中方块 API 时该入口不触发。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "projectile-type",
+        "label": "Projectile Type",
+        "labelZh": "投射物类型"
+      }
+    ]
+  },
+  {
+    "id": "TriggerProjectileHitEntity",
+    "key": "PROJECTILE_HIT_ENTITY",
+    "name": "Projectile Hit Entity",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "投射物命中实体时",
+    "descriptionZh": "命中实体时触发；旧版 Bukkit 缺少命中对象 API 时该入口不触发。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "projectile-type",
+        "label": "Projectile Type",
+        "labelZh": "投射物类型"
+      }
+    ]
+  },
+  {
+    "id": "TriggerRiptideStarted",
+    "key": "RIPTIDE_STARTED",
+    "name": "Riptide Started",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "激流启动时",
+    "descriptionZh": "玩家使用激流三叉戟开始移动时触发；施法者与目标都是该玩家。事件若被其他插件取消则不执行。",
+    "fields": []
+  },
+  {
+    "id": "TriggerShieldEmpty",
+    "key": "SHIELD_EMPTY",
+    "name": "Shield Empty",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "护盾层耗尽时",
+    "descriptionZh": "某一层容量降至零后触发；同一伤害可同时触发 SHIELD_HIT。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "labelZh": "护盾键",
+        "tooltipZh": "留空监听任意护盾层。"
+      },
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "labelZh": "护盾键",
+        "tooltipZh": "留空监听任意护盾层。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerShieldHit",
+    "key": "SHIELD_HIT",
+    "name": "Shield Hit",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "护盾吸收伤害时",
+    "descriptionZh": "护盾实际扣减容量后触发；提供本层吸收量与剩余容量。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "labelZh": "护盾键",
+        "tooltipZh": "留空监听任意护盾层。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerSignalReceived",
+    "key": "SIGNAL_RECEIVED",
+    "name": "Signal Received",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "接收信号时",
+    "descriptionZh": "仅激活的技能所有者接收；参数只在本次同步执行期间有效。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "channel",
+        "label": "Channel",
+        "value": "signal",
+        "labelZh": "频道",
+        "tooltipZh": "同频道收发双方必须使用相同参数契约。"
+      },
+      {
+        "kind": "MapValue",
+        "key": "contract",
+        "label": "Contract",
+        "labelZh": "参数契约",
+        "tooltipZh": "参数名到 number、text、boolean 的映射；加载前检查同频道声明一致。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerSkillCastAccepted",
+    "key": "SKILL_CAST_ACCEPTED",
+    "name": "SkillCastAccepted",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "技能施放成功后",
+    "descriptionZh": "消耗和冷却已经提交。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerSkillCastRejected",
+    "key": "SKILL_CAST_REJECTED",
+    "name": "SkillCastRejected",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "技能施放被拒绝时",
+    "descriptionZh": "提供拒绝原因；不代表技能执行。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerSkillCooldownReady",
+    "key": "SKILL_COOLDOWN_READY",
+    "name": "SkillCooldownReady",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "技能冷却结束时",
+    "descriptionZh": "从冷却状态转为可用时触发。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
       }
     ]
   },
@@ -5272,6 +8168,63 @@
     ]
   },
   {
+    "id": "TriggerSkillHealApplied",
+    "key": "SKILL_HEAL_APPLIED",
+    "name": "SkillHealApplied",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "技能治疗生效后",
+    "descriptionZh": "提供实际生命变化量。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerSkillLevelRaised",
+    "key": "SKILL_LEVEL_RAISED",
+    "name": "SkillLevelRaised",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "技能等级增加后",
+    "descriptionZh": "包括强制升级，提供变更前后等级。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
+    "id": "TriggerSkillLevelReduced",
+    "key": "SKILL_LEVEL_REDUCED",
+    "name": "SkillLevelReduced",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "技能等级降低后",
+    "descriptionZh": "包括强制降级，提供变更前后等级。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
     "id": "TriggerSkillTaken",
     "key": "TOOK_SKILL_DAMAGE",
     "name": "Took Skill Damage",
@@ -5332,6 +8285,28 @@
         "tooltipZh": "限定技能伤害的分类，需与来源技能的分类字符串完全一致且区分大小写。列表为空或首项为空字符串时视为不限；插件默认分类为 default。"
       }
     ]
+  },
+  {
+    "id": "TriggerSprintEnded",
+    "key": "SPRINT_ENDED",
+    "name": "Sprint Ended",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "结束疾跑后",
+    "descriptionZh": "已确认结束疾跑时触发。",
+    "fields": []
+  },
+  {
+    "id": "TriggerSprintStarted",
+    "key": "SPRINT_STARTED",
+    "name": "Sprint Started",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "开始疾跑后",
+    "descriptionZh": "已确认开始疾跑时触发。",
+    "fields": []
   },
   {
     "id": "TriggerSwapHandItems",
@@ -5474,6 +8449,36 @@
     ]
   },
   {
+    "id": "TriggerTotemUsed",
+    "key": "TOTEM_USED",
+    "name": "Totem Used",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "图腾生效时",
+    "descriptionZh": "实体被不死图腾救回时触发；这是复活事件阶段，施法者与初始目标都是获救实体。取消复活的事件不会进入执行。",
+    "fields": []
+  },
+  {
+    "id": "TriggerVanillaXpChanged",
+    "key": "VANILLA_XP_CHANGED",
+    "name": "VanillaXpChanged",
+    "category": "trigger",
+    "container": true,
+    "description": "",
+    "displayNameZh": "原版经验改变后",
+    "descriptionZh": "事件在数值生效后触发，提供变化量。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "name",
+        "label": "Source Name",
+        "labelZh": "来源名称",
+        "tooltipZh": "留空匹配所有来源；非空时匹配技能名、标记名或属性名。"
+      }
+    ]
+  },
+  {
     "id": "TargetArea",
     "key": "area",
     "name": "Area",
@@ -5543,6 +8548,28 @@
         "tooltipZh": "扇形的最大距离，单位方块；先以该值为边长在目标周围取立方体范围内的生物，再做角度判定。数值随技能等级/属性变化。"
       }
     ]
+  },
+  {
+    "id": "TargetEventActor",
+    "key": "event actor",
+    "name": "Event Actor",
+    "category": "target",
+    "container": true,
+    "description": "",
+    "displayNameZh": "事件发起者",
+    "descriptionZh": "使用事件上下文中的发起者；缺失或失效时不产生目标。",
+    "fields": []
+  },
+  {
+    "id": "TargetEventImpactLocation",
+    "key": "event impact location",
+    "name": "Event Impact Location",
+    "category": "target",
+    "container": true,
+    "description": "",
+    "displayNameZh": "事件命中位置",
+    "descriptionZh": "读取投射物或方块事件记录的位置，不主动加载区块。",
+    "fields": []
   },
   {
     "id": "TargetLinear",
@@ -5698,6 +8725,17 @@
     "fields": []
   },
   {
+    "id": "TargetSignalSender",
+    "key": "signal sender",
+    "name": "Signal Sender",
+    "category": "target",
+    "container": true,
+    "description": "",
+    "displayNameZh": "信号发送者",
+    "descriptionZh": "仅在信号接收分支内有效，发送者失效时不产生目标。",
+    "fields": []
+  },
+  {
     "id": "TargetSingle",
     "key": "single",
     "name": "Single",
@@ -5772,6 +8810,52 @@
       ]
     },
     "fields": []
+  },
+  {
+    "id": "TargetWorldLoadedEntities",
+    "key": "world loaded entities",
+    "name": "World Loaded Entities",
+    "category": "target",
+    "container": true,
+    "description": "",
+    "displayNameZh": "世界已加载实体",
+    "descriptionZh": "只读取施法者世界中已加载实体；必须填写最多目标数，按阵营筛选。",
+    "fields": [
+      {
+        "kind": "IntValue",
+        "key": "limit",
+        "label": "Maximum Targets",
+        "value": "16",
+        "labelZh": "最多目标数",
+        "tooltipZh": "必填；必须在 1 到 256 之间，避免无界世界扫描。"
+      },
+      {
+        "kind": "ListValue",
+        "key": "group",
+        "label": "Group",
+        "value": "enemy",
+        "options": [
+          "enemy",
+          "ally",
+          "both"
+        ],
+        "labelZh": "阵营",
+        "optionsZh": [
+          {
+            "value": "enemy",
+            "label": "敌方"
+          },
+          {
+            "value": "ally",
+            "label": "友方"
+          },
+          {
+            "value": "both",
+            "label": "全部"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "ConditionArmor",
@@ -10570,6 +13654,557 @@
     ]
   },
   {
+    "id": "ConditionCheckAttackCharge",
+    "key": "check attack charge",
+    "name": "Check Attack Charge",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查攻击蓄力",
+    "descriptionZh": "按原版攻击冷却比值 0 至 1 判断玩家是否蓄满力。",
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "minimum",
+        "label": "Minimum",
+        "value": "1",
+        "labelZh": "最小比值"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckBlocking",
+    "key": "check blocking",
+    "name": "Check Blocking",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查格挡",
+    "descriptionZh": "检查目标玩家是否正在原版格挡。",
+    "fields": [
+      {
+        "kind": "BooleanValue",
+        "key": "expected",
+        "label": "Expected State",
+        "value": "True",
+        "labelZh": "期望状态"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckDistance",
+    "key": "check distance",
+    "name": "Check Distance",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查距离",
+    "descriptionZh": "施法者与目标须在同一世界；可只看水平距离。",
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "minimum",
+        "label": "Minimum",
+        "value": "0",
+        "labelZh": "最小距离"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "maximum",
+        "label": "Maximum",
+        "value": "16",
+        "labelZh": "最大距离"
+      },
+      {
+        "kind": "BooleanValue",
+        "key": "horizontal",
+        "label": "Horizontal",
+        "value": "False",
+        "labelZh": "只看水平距离"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckEconomy",
+    "key": "check economy",
+    "name": "Check Economy",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查经济余额",
+    "descriptionZh": "需要 Vault 及经济服务；缺失时条件不通过。",
+    "requires": {
+      "plugins": [
+        "Vault"
+      ]
+    },
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "minimum",
+        "label": "Minimum",
+        "value": "0",
+        "labelZh": "最低余额"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "maximum",
+        "label": "Maximum",
+        "value": "1000000",
+        "labelZh": "最高余额"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckFacingAngle",
+    "key": "check facing angle",
+    "name": "Check Facing Angle",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查面向角度",
+    "descriptionZh": "判断施法者是否朝向目标；可只计算水平夹角。",
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "maximum",
+        "label": "Maximum Degrees",
+        "value": "45",
+        "labelZh": "最大夹角"
+      },
+      {
+        "kind": "BooleanValue",
+        "key": "horizontal",
+        "label": "Horizontal",
+        "value": "True",
+        "labelZh": "只看水平面"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckFlying",
+    "key": "check flying",
+    "name": "Check Flying",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查飞行",
+    "descriptionZh": "检查目标玩家是否正在飞行，而非是否有飞行许可。",
+    "fields": [
+      {
+        "kind": "BooleanValue",
+        "key": "expected",
+        "label": "Expected State",
+        "value": "True",
+        "labelZh": "期望状态"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckGlide",
+    "key": "check glide",
+    "name": "Check Glide",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查滑翔",
+    "descriptionZh": "检查目标玩家当前是否滑翔。",
+    "fields": [
+      {
+        "kind": "BooleanValue",
+        "key": "expected",
+        "label": "Expected State",
+        "value": "True",
+        "labelZh": "期望状态"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckGroundClearance",
+    "key": "check ground clearance",
+    "name": "Check Ground Clearance",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查头顶净空",
+    "descriptionZh": "目标上方指定方块数内没有固体方块时满足，最多扫描三十二格。",
+    "fields": [
+      {
+        "kind": "IntValue",
+        "key": "blocks",
+        "label": "Blocks",
+        "value": "2",
+        "labelZh": "净空格数"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckItemColor",
+    "key": "check item color",
+    "name": "Check Item Color",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查物品颜色",
+    "descriptionZh": "检查主手皮革装备的 RGB 十六进制颜色；没有颜色属性时不通过。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "color",
+        "label": "RGB",
+        "value": "#FFFFFF",
+        "labelZh": "颜色 #RRGGBB"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckMoonPhase",
+    "key": "check moon phase",
+    "name": "Check Moon Phase",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查月相",
+    "descriptionZh": "按目标世界的八阶段月相检查；零为满月，四为新月。",
+    "fields": [
+      {
+        "kind": "IntValue",
+        "key": "phase",
+        "label": "Phase",
+        "value": "0",
+        "labelZh": "月相序号",
+        "tooltipZh": "零为满月，四为新月；范围零到七。"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckMythicKind",
+    "key": "check mythic kind",
+    "name": "Check Mythic Kind",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查 Mythic 怪物类型",
+    "descriptionZh": "匹配 MythicMobs 配置键；未安装依赖或目标不是 Mythic 怪物时不通过。",
+    "requires": {
+      "plugins": [
+        "MythicMobs"
+      ]
+    },
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "kind",
+        "label": "Mob Key",
+        "labelZh": "怪物配置键"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckNumber",
+    "key": "check number",
+    "name": "Check Number",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "精确检查数值",
+    "descriptionZh": "支持比较与开闭区间；缺值、非数字或非有限值均不满足。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Value Key",
+        "value": "value",
+        "labelZh": "数值键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "operator",
+        "label": "Operator",
+        "value": "gte",
+        "options": [
+          "lt",
+          "lte",
+          "eq",
+          "neq",
+          "gte",
+          "gt",
+          "between"
+        ],
+        "labelZh": "比较方式",
+        "optionsZh": [
+          {
+            "value": "lt",
+            "label": "小于"
+          },
+          {
+            "value": "lte",
+            "label": "小于等于"
+          },
+          {
+            "value": "eq",
+            "label": "等于"
+          },
+          {
+            "value": "neq",
+            "label": "不等于"
+          },
+          {
+            "value": "gte",
+            "label": "大于等于"
+          },
+          {
+            "value": "gt",
+            "label": "大于"
+          },
+          {
+            "value": "between",
+            "label": "区间"
+          }
+        ]
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "reference",
+        "label": "Reference",
+        "value": "0",
+        "labelZh": "比较值"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "minimum",
+        "label": "Minimum",
+        "value": "0",
+        "labelZh": "区间下限"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "maximum",
+        "label": "Maximum",
+        "value": "1",
+        "labelZh": "区间上限"
+      },
+      {
+        "kind": "BooleanValue",
+        "key": "include-minimum",
+        "label": "Include Minimum",
+        "value": "True",
+        "labelZh": "包含下限"
+      },
+      {
+        "kind": "BooleanValue",
+        "key": "include-maximum",
+        "label": "Include Maximum",
+        "value": "True",
+        "labelZh": "包含上限"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckOxygen",
+    "key": "check oxygen",
+    "name": "Check Oxygen",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查氧气",
+    "descriptionZh": "可按剩余刻数或最大氧气百分比检查。",
+    "fields": [
+      {
+        "kind": "ListValue",
+        "key": "unit",
+        "label": "Unit",
+        "value": "ticks",
+        "options": [
+          "ticks",
+          "percent"
+        ],
+        "labelZh": "单位",
+        "optionsZh": [
+          {
+            "value": "ticks",
+            "label": "刻数"
+          },
+          {
+            "value": "percent",
+            "label": "百分比"
+          }
+        ]
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "minimum",
+        "label": "Minimum",
+        "value": "0",
+        "labelZh": "下限"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "maximum",
+        "label": "Maximum",
+        "value": "300",
+        "labelZh": "上限"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckSignal",
+    "key": "check signal",
+    "name": "Check Signal",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查当前信号",
+    "descriptionZh": "只在信号接收执行期间满足；可检查参数是否存在。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "channel",
+        "label": "Channel",
+        "value": "signal",
+        "labelZh": "频道"
+      },
+      {
+        "kind": "StringValue",
+        "key": "parameter",
+        "label": "Parameter",
+        "labelZh": "参数名",
+        "tooltipZh": "留空只检查频道；非空时还要求参数存在。"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckSprint",
+    "key": "check sprint",
+    "name": "Check Sprint",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查疾跑",
+    "descriptionZh": "检查目标玩家当前是否疾跑。",
+    "fields": [
+      {
+        "kind": "BooleanValue",
+        "key": "expected",
+        "label": "Expected State",
+        "value": "True",
+        "labelZh": "期望状态"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckText",
+    "key": "check text",
+    "name": "Check Text",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查文本",
+    "descriptionZh": "支持全等、包含、前缀和后缀；缺值不满足。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Value Key",
+        "value": "text",
+        "labelZh": "文本键"
+      },
+      {
+        "kind": "StringValue",
+        "key": "text",
+        "label": "Expected Text",
+        "labelZh": "期望文本"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "equals",
+        "options": [
+          "equals",
+          "contains",
+          "prefix",
+          "suffix"
+        ],
+        "labelZh": "匹配方式",
+        "optionsZh": [
+          {
+            "value": "equals",
+            "label": "全等"
+          },
+          {
+            "value": "contains",
+            "label": "包含"
+          },
+          {
+            "value": "prefix",
+            "label": "前缀"
+          },
+          {
+            "value": "suffix",
+            "label": "后缀"
+          }
+        ]
+      },
+      {
+        "kind": "BooleanValue",
+        "key": "case-sensitive",
+        "label": "Case Sensitive",
+        "value": "True",
+        "labelZh": "区分大小写"
+      }
+    ]
+  },
+  {
+    "id": "ConditionCheckWorld",
+    "key": "check world",
+    "name": "Check World",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查世界与维度",
+    "descriptionZh": "同时按世界名与 Bukkit 维度筛选目标；留空的字段不限。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "world",
+        "label": "World Name",
+        "labelZh": "世界名"
+      },
+      {
+        "kind": "ListValue",
+        "key": "dimension",
+        "label": "Dimension",
+        "value": "any",
+        "options": [
+          "any",
+          "NORMAL",
+          "NETHER",
+          "THE_END"
+        ],
+        "labelZh": "维度",
+        "optionsZh": [
+          {
+            "value": "any",
+            "label": "不限"
+          },
+          {
+            "value": "NORMAL",
+            "label": "主世界"
+          },
+          {
+            "value": "NETHER",
+            "label": "下界"
+          },
+          {
+            "value": "THE_END",
+            "label": "末地"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "ConditionClass",
     "key": "class",
     "name": "Class",
@@ -11412,6 +15047,22 @@
             "label": "火焰"
           }
         ]
+      },
+      {
+        "kind": "IntValue",
+        "key": "min-ticks",
+        "label": "Minimum Ticks",
+        "value": "1",
+        "labelZh": "最少燃烧刻数",
+        "tooltipZh": "仅检查着火时使用；包含下限。"
+      },
+      {
+        "kind": "IntValue",
+        "key": "max-ticks",
+        "label": "Maximum Ticks",
+        "value": "2147483647",
+        "labelZh": "最多燃烧刻数",
+        "tooltipZh": "仅检查着火时使用；包含上限。"
       }
     ]
   },
@@ -13001,6 +16652,42 @@
     ]
   },
   {
+    "id": "ConditionShield",
+    "key": "check shield",
+    "name": "Check Shield",
+    "category": "condition",
+    "container": true,
+    "description": "",
+    "displayNameZh": "检查护盾",
+    "descriptionZh": "逐目标检查指定护盾键的当前总容量是否在闭区间内。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "value": "shield",
+        "labelZh": "护盾键",
+        "tooltipZh": "留空检查所有护盾层。"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "minimum",
+        "label": "Minimum",
+        "value": "1",
+        "labelZh": "下限",
+        "tooltipZh": "当前容量的闭区间下限。"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "maximum",
+        "label": "Maximum",
+        "value": "999999",
+        "labelZh": "上限",
+        "tooltipZh": "当前容量的闭区间上限。"
+      }
+    ]
+  },
+  {
     "id": "ConditionSkillLevel",
     "key": "skill level",
     "name": "Skill Level",
@@ -13367,6 +17054,44 @@
     "displayNameZh": "检查天气",
     "descriptionZh": "检查目标所在位置的天气，结合世界降水状态与当地气温判断。thunder=正在雷暴且气温 <= 1；rain=正在降水且气温在 (0.15, 1]；snow=正在降水且气温 <= 0.15；其他值（含未填）判为晴朗，即没有降水或气温 > 1。类型值比较时转小写。",
     "fields": []
+  },
+  {
+    "id": "MechanicAirModify",
+    "key": "air modify",
+    "name": "Air Modify",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "调整氧气",
+    "descriptionZh": "在当前剩余氧气上加减刻数，并钳制到零与最大值之间。",
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "delta",
+        "label": "Delta Ticks",
+        "value": "20",
+        "labelZh": "变化刻数"
+      }
+    ]
+  },
+  {
+    "id": "MechanicAirSet",
+    "key": "air set",
+    "name": "Air Set",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "设置氧气",
+    "descriptionZh": "按目标最大氧气值钳制剩余气泡刻数。",
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "ticks",
+        "label": "Air Ticks",
+        "value": "300",
+        "labelZh": "氧气刻数"
+      }
+    ]
   },
   {
     "id": "MechanicArmor",
@@ -18875,6 +22600,25 @@
     ]
   },
   {
+    "id": "MechanicClassExperienceAdjust",
+    "key": "class experience adjust",
+    "name": "Class Experience Adjust",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "调整职业经验",
+    "descriptionZh": "对目标主职业增加或减少指定点数，继续经过已有经验事件与升级逻辑。",
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "delta",
+        "label": "Delta",
+        "value": "1",
+        "labelZh": "经验变化"
+      }
+    ]
+  },
+  {
     "id": "MechanicCleanse",
     "key": "cleanse",
     "name": "Cleanse",
@@ -19266,6 +23010,14 @@
         ]
       },
       {
+        "kind": "BooleanValue",
+        "key": "ignore-shield",
+        "label": "Ignore Shield",
+        "value": "True",
+        "labelZh": "忽略护盾",
+        "tooltipZh": "仅真实伤害生效。默认忽略护盾；取消勾选后由多层护盾吸收。旧配置保持原行为。"
+      },
+      {
         "kind": "StringValue",
         "key": "classifier",
         "label": "Classifier",
@@ -19349,6 +23101,14 @@
             "label": "否"
           }
         ]
+      },
+      {
+        "kind": "BooleanValue",
+        "key": "ignore-shield",
+        "label": "Ignore Shield",
+        "value": "True",
+        "labelZh": "忽略护盾",
+        "tooltipZh": "仅真实伤害生效。默认忽略护盾；取消勾选后由多层护盾吸收。旧技能缺少此项时仍忽略护盾。"
       },
       {
         "kind": "StringValue",
@@ -20088,6 +23848,30 @@
     ]
   },
   {
+    "id": "MechanicEconomyAdjust",
+    "key": "economy adjust",
+    "name": "Economy Adjust",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "调整经济余额",
+    "descriptionZh": "正数存入，负数扣除；Vault 或经济服务缺失时不执行。",
+    "requires": {
+      "plugins": [
+        "Vault"
+      ]
+    },
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "delta",
+        "label": "Delta",
+        "value": "1",
+        "labelZh": "余额变化"
+      }
+    ]
+  },
+  {
     "id": "MechanicExplosion",
     "key": "explosion",
     "name": "Explosion",
@@ -20241,6 +24025,112 @@
         "tooltip": "[key] The unique string for the flag. Use the same key when checking it in a Flag Condition",
         "labelZh": "引用键",
         "tooltipZh": "标记的唯一字符串，检查标记的节点需使用相同的键。{uuid} 替换为施法者 UUID，{player} 替换为施法者名称（非玩家实体退回实体类型名）。此项为必填，缺失则整个节点不执行。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicFlightPermit",
+    "key": "flight permit",
+    "name": "Flight Permit",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "允许飞行",
+    "descriptionZh": "设置玩家能否开始飞行；撤销时同时结束正在进行的飞行。",
+    "fields": [
+      {
+        "kind": "BooleanValue",
+        "key": "permit",
+        "label": "Permit",
+        "value": "True",
+        "labelZh": "允许"
+      }
+    ]
+  },
+  {
+    "id": "MechanicFlowTerminate",
+    "key": "flow terminate",
+    "name": "Flow Terminate",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "终止执行",
+    "descriptionZh": "分支模式不执行子节点；技能模式使当前起点的其余节点停止。",
+    "fields": [
+      {
+        "kind": "ListValue",
+        "key": "scope",
+        "label": "Scope",
+        "value": "branch",
+        "options": [
+          "branch",
+          "skill"
+        ],
+        "labelZh": "终止范围",
+        "optionsZh": [
+          {
+            "value": "branch",
+            "label": "当前分支"
+          },
+          {
+            "value": "skill",
+            "label": "本次技能"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "MechanicFlowThrottle",
+    "key": "flow throttle",
+    "name": "Flow Throttle",
+    "category": "mechanic",
+    "container": true,
+    "description": "",
+    "displayNameZh": "流程限流",
+    "descriptionZh": "按施法者、目标或频道限流；仅通过的目标进入子节点。",
+    "fields": [
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Key Mode",
+        "value": "caster",
+        "options": [
+          "caster",
+          "target",
+          "channel"
+        ],
+        "labelZh": "限流维度",
+        "optionsZh": [
+          {
+            "value": "caster",
+            "label": "施法者"
+          },
+          {
+            "value": "target",
+            "label": "目标"
+          },
+          {
+            "value": "channel",
+            "label": "频道"
+          }
+        ]
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "seconds",
+        "label": "Seconds",
+        "value": "1",
+        "labelZh": "间隔秒数",
+        "tooltipZh": "每个限流键两次通过的最短间隔。"
+      },
+      {
+        "kind": "StringValue",
+        "key": "channel",
+        "label": "Channel",
+        "value": "default",
+        "labelZh": "频道",
+        "tooltipZh": "频道模式使用本字段分组。"
       }
     ]
   },
@@ -20567,6 +24457,32 @@
     "displayNameZh": "中断",
     "descriptionZh": "打断目标正在进行的引导（channel）：检测到目标带有引导状态标记时，同时移除 CHANNEL 与 CHANNELING 两个标记，使引导中的技能中止。只有至少打断了一个正在引导的目标才返回成功，对未引导的目标无效。",
     "fields": []
+  },
+  {
+    "id": "MechanicItemDrop",
+    "key": "item drop",
+    "name": "Item Drop",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "掉落物品",
+    "descriptionZh": "在目标位置生成物品实体；材质不存在时拒绝执行。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "material",
+        "label": "Material",
+        "value": "STONE",
+        "labelZh": "材质"
+      },
+      {
+        "kind": "IntValue",
+        "key": "amount",
+        "label": "Amount",
+        "value": "1",
+        "labelZh": "数量"
+      }
+    ]
   },
   {
     "id": "MechanicItem",
@@ -25570,6 +29486,28 @@
             "label": "可选值3"
           }
         ]
+      },
+      {
+        "kind": "ListValue",
+        "key": "velocity-mode",
+        "label": "Velocity Mode",
+        "value": "replace",
+        "options": [
+          "replace",
+          "add"
+        ],
+        "labelZh": "速度模式",
+        "tooltipZh": "覆盖保留旧行为；叠加会在目标现有速度上增加发射矢量。",
+        "optionsZh": [
+          {
+            "value": "replace",
+            "label": "覆盖"
+          },
+          {
+            "value": "add",
+            "label": "叠加"
+          }
+        ]
       }
     ]
   },
@@ -27646,6 +31584,208 @@
     ]
   },
   {
+    "id": "MechanicRunGroup",
+    "key": "run group",
+    "name": "Run Group",
+    "category": "mechanic",
+    "container": true,
+    "description": "",
+    "displayNameZh": "运行共享组",
+    "descriptionZh": "执行一个根级 GROUP 的子树，返回后继续执行本节点的子节点。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "group",
+        "label": "Group Key",
+        "labelZh": "共享组键"
+      }
+    ]
+  },
+  {
+    "id": "MechanicShieldAdjust",
+    "key": "shield adjust",
+    "name": "Shield Adjust",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "调整护盾",
+    "descriptionZh": "对匹配键的护盾层增加或减少当前容量；结果限制在零到各层最大容量。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "value": "shield",
+        "labelZh": "护盾键",
+        "tooltipZh": "留空修改所有层。"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "delta",
+        "label": "Delta",
+        "value": "1",
+        "labelZh": "容量变化",
+        "tooltipZh": "正数恢复容量，负数消耗容量。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicShieldGrant",
+    "key": "shield grant",
+    "name": "Shield Grant",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "施加护盾",
+    "descriptionZh": "为目标增加独立护盾层；先按优先级和创建顺序消耗，过期或死亡时清理。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "value": "shield",
+        "labelZh": "护盾键",
+        "tooltipZh": "用于后续读取、调整和移除同类护盾。"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "capacity",
+        "label": "Capacity",
+        "value": "10",
+        "labelZh": "容量",
+        "tooltipZh": "护盾可吸收的生命伤害，必须大于零。"
+      },
+      {
+        "kind": "AttributeValue",
+        "key": "duration",
+        "label": "Duration",
+        "value": "10",
+        "labelZh": "持续秒数",
+        "tooltipZh": "-1 表示持续到实体失效或被移除。"
+      },
+      {
+        "kind": "IntValue",
+        "key": "priority",
+        "label": "Priority",
+        "value": "0",
+        "labelZh": "优先级",
+        "tooltipZh": "数值越大越先承受伤害。"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "ratio",
+        "label": "Absorb Ratio",
+        "value": "1",
+        "labelZh": "吸收比例",
+        "tooltipZh": "0 到 1；每层按剩余伤害的这一比例吸收。"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "per-hit-limit",
+        "label": "Per Hit Limit",
+        "value": "0",
+        "labelZh": "单次上限",
+        "tooltipZh": "0 表示只受剩余容量限制。"
+      },
+      {
+        "kind": "ListValue",
+        "key": "stacking",
+        "label": "Stacking",
+        "value": "stack",
+        "options": [
+          "stack",
+          "refresh",
+          "replace"
+        ],
+        "labelZh": "重复施加",
+        "tooltipZh": "叠加独立层、刷新剩余容量或替换旧层。",
+        "optionsZh": [
+          {
+            "value": "stack",
+            "label": "叠加"
+          },
+          {
+            "value": "refresh",
+            "label": "刷新"
+          },
+          {
+            "value": "replace",
+            "label": "替换"
+          }
+        ]
+      },
+      {
+        "kind": "StringListValue",
+        "key": "damage-kinds",
+        "label": "Damage Kinds",
+        "labelZh": "伤害大类",
+        "tooltipZh": "留空匹配全部；可填 physical、skill、environment、true。"
+      },
+      {
+        "kind": "StringListValue",
+        "key": "damage-causes",
+        "label": "Damage Causes",
+        "labelZh": "伤害原因",
+        "tooltipZh": "留空匹配全部；填写 Bukkit DamageCause 名。"
+      },
+      {
+        "kind": "StringListValue",
+        "key": "classifications",
+        "label": "Classifications",
+        "labelZh": "技能分类",
+        "tooltipZh": "留空匹配全部；仅对有分类的技能伤害生效。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicShieldRead",
+    "key": "shield read",
+    "name": "Shield Read",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取护盾",
+    "descriptionZh": "读取第一个目标的当前护盾容量和层数，供后续数值或信号节点使用。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "value": "shield",
+        "labelZh": "护盾键",
+        "tooltipZh": "留空统计全部层。"
+      },
+      {
+        "kind": "StringValue",
+        "key": "value-key",
+        "label": "Value Key",
+        "value": "shield",
+        "labelZh": "数值键",
+        "tooltipZh": "容量写入此键，层数写入此键加 -count。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicShieldRemove",
+    "key": "shield remove",
+    "name": "Shield Remove",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "移除护盾",
+    "descriptionZh": "按护盾键移除当前目标的护盾；空键移除全部。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Layer Key",
+        "value": "shield",
+        "labelZh": "护盾键",
+        "tooltipZh": "留空移除全部护盾。"
+      }
+    ]
+  },
+  {
     "id": "MechanicShuffleThreat",
     "key": "shuffle threat",
     "name": "Shuffle Threat",
@@ -27660,6 +31800,89 @@
       ]
     },
     "fields": []
+  },
+  {
+    "id": "MechanicSignalEmit",
+    "key": "signal emit",
+    "name": "Signal Emit",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "发送信号",
+    "descriptionZh": "按作用域向已加载实体投递一次信号，允许其它技能的接收起点响应。参数契约由参数行的文本、数字或布尔类型自动推导；旧技能仍可保留 contract 字段。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "channel",
+        "label": "Channel",
+        "value": "signal",
+        "labelZh": "频道"
+      },
+      {
+        "kind": "MapValue",
+        "key": "contract",
+        "label": "Contract",
+        "labelZh": "参数契约（自动）",
+        "tooltipZh": "由 arguments 的值类型自动推导；仅用于兼容旧配置，编辑器中只读展示。"
+      },
+      {
+        "kind": "ListValue",
+        "key": "scope",
+        "label": "Scope",
+        "value": "self",
+        "options": [
+          "self",
+          "target",
+          "world",
+          "server"
+        ],
+        "labelZh": "投递范围",
+        "optionsZh": [
+          {
+            "value": "self",
+            "label": "自身"
+          },
+          {
+            "value": "target",
+            "label": "当前目标"
+          },
+          {
+            "value": "world",
+            "label": "当前世界"
+          },
+          {
+            "value": "server",
+            "label": "本服务器"
+          }
+        ]
+      },
+      {
+        "kind": "MapValue",
+        "key": "arguments",
+        "label": "Arguments",
+        "labelZh": "参数",
+        "tooltipZh": "填写与契约同名的值；{键} 引用施法数据，缺值将拒绝投递。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicSkillInvoke",
+    "key": "skill invoke",
+    "name": "Skill Invoke",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "调用技能",
+    "descriptionZh": "玩家按正常施法规则调用；非玩家使用当前等级，结果写入 invoke-result。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "skill",
+        "label": "Skill",
+        "labelZh": "目标技能",
+        "tooltipZh": "必须填写已注册技能名。"
+      }
+    ]
   },
   {
     "id": "MechanicSnowStorm",
@@ -30833,6 +35056,212 @@
     ]
   },
   {
+    "id": "MechanicValueAngle",
+    "key": "value angle",
+    "name": "Value Angle",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "最短角度差",
+    "descriptionZh": "计算从角度 A 到 B 的有符号最短旋转。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueAttackCharge",
+    "key": "value attack charge",
+    "name": "Value Attack Charge",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取攻击蓄力",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
     "id": "MechanicValueAttribute",
     "key": "value attribute",
     "name": "Value Attribute",
@@ -30859,6 +35288,193 @@
         "tooltip": "[attribute] The name of the attribute you are loading the value of",
         "labelZh": "属性",
         "tooltipZh": "要读取的属性名，需与服务器属性配置里的键一致（如 Vitality、Intelligence）。属性系统未启用或属性名不存在时读到 0。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueClamp",
+    "key": "value clamp",
+    "name": "Value Clamp",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "数值钳制",
+    "descriptionZh": "把 A 限制在 B 与 C 的闭区间。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
+          }
+        ]
       }
     ]
   },
@@ -30921,6 +35537,31 @@
     ]
   },
   {
+    "id": "MechanicValueDataLoad",
+    "key": "value data load",
+    "name": "Value Data Load",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取存储数据",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "data-key",
+        "label": "Data Key",
+        "labelZh": "数据键"
+      },
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
     "id": "MechanicValueDistance",
     "key": "value distance",
     "name": "Value Distance",
@@ -30928,7 +35569,7 @@
     "container": false,
     "description": "Stores the distance between the target and the caster into a value",
     "displayNameZh": "数值距离",
-    "descriptionZh": "把第一个目标与施法者之间的直线距离（方块数）存入施法者 cast data。要求施法者是玩家，否则返回 false。两者不在同一世界时存入 -1，且该值以 Integer 装箱写入（其余数值节点写的是 Double），被 Value Condition 读取时可能抛 ClassCastException，跨世界场景建议先用其他方式过滤。",
+    "descriptionZh": "把第一个目标与施法者之间的距离存入施法数据；可只算水平距离。跨世界沿用 -1 哨兵值。",
     "fields": [
       {
         "kind": "StringValue",
@@ -30938,6 +35579,431 @@
         "tooltip": "[key] The unique key to store the value under. This key can be used in place of attribute values to use the stored value.",
         "labelZh": "引用键",
         "tooltipZh": "cast data 里的键名，支持 {uuid} 替换为施法者 UUID。正常情况存 Double 距离，跨世界时存 Integer 的 -1。"
+      },
+      {
+        "kind": "BooleanValue",
+        "key": "horizontal",
+        "label": "Horizontal",
+        "value": "False",
+        "labelZh": "只看水平距离",
+        "tooltipZh": "忽略 Y 轴高度差；旧配置默认使用三维距离。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueDivide",
+    "key": "value divide",
+    "name": "Value Divide",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "数值相除",
+    "descriptionZh": "计算 A 除以 B，B 为零时不执行。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueEconomy",
+    "key": "value economy",
+    "name": "Value Economy",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取经济余额",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "requires": {
+      "plugins": [
+        "Vault"
+      ]
+    },
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueExperience",
+    "key": "value experience",
+    "name": "Value Experience",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取原版经验",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueExtremum",
+    "key": "value extremum",
+    "name": "Value Extremum",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "数值极值",
+    "descriptionZh": "根据模式选出 A 与 B 的最小值或最大值。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
+          }
+        ]
       }
     ]
   },
@@ -30990,6 +36056,193 @@
           {
             "value": "Percent",
             "label": "可选值4"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueInterpolate",
+    "key": "value interpolate",
+    "name": "Value Interpolate",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "数值插值",
+    "descriptionZh": "按 C 在 A 与 B 之间线性插值，C 必须在零到一之间。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
           }
         ]
       }
@@ -31257,6 +36510,25 @@
     ]
   },
   {
+    "id": "MechanicValueOxygen",
+    "key": "value oxygen",
+    "name": "Value Oxygen",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取氧气",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
     "id": "MechanicValuePlaceholder",
     "key": "value placeholder",
     "name": "Value Placeholder",
@@ -31375,6 +36647,380 @@
     ]
   },
   {
+    "id": "MechanicValueRemainder",
+    "key": "value remainder",
+    "name": "Value Remainder",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "数值取余",
+    "descriptionZh": "计算 A 对 B 的余数，B 为零时不执行。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueRound",
+    "key": "value round",
+    "name": "Value Round",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "数值取整",
+    "descriptionZh": "按 B 指定的小数位数取整；支持四舍五入、向上与向下。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "MechanicValueScript",
     "key": "value script",
     "name": "Value Script",
@@ -31435,6 +37081,281 @@
         "tooltip": "[value] The value to store under the key",
         "labelZh": "数值",
         "tooltipZh": "要写入的数值，随技能等级缩放（base + scale×(等级-1)）。默认 1。"
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueShield",
+    "key": "value shield",
+    "name": "Value Shield",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取护盾余量",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "shield-key",
+        "label": "Shield Key",
+        "labelZh": "护盾键"
+      },
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueSignalParameter",
+    "key": "value signal parameter",
+    "name": "Value Signal Parameter",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取信号参数",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "parameter",
+        "label": "Parameter",
+        "labelZh": "参数名"
+      },
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueSubtract",
+    "key": "value subtract",
+    "name": "Value Subtract",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "数值相减",
+    "descriptionZh": "计算 A 减 B 并写入施法数据。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "结果键"
+      },
+      {
+        "kind": "ListValue",
+        "key": "a-source",
+        "label": "A Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 A 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "a-key",
+        "label": "A Key",
+        "labelZh": "输入 A 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "a-value",
+        "label": "A Literal",
+        "value": "0",
+        "labelZh": "输入 A 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "b-source",
+        "label": "B Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 B 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "b-key",
+        "label": "B Key",
+        "labelZh": "输入 B 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "b-value",
+        "label": "B Literal",
+        "value": "0",
+        "labelZh": "输入 B 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "c-source",
+        "label": "C Source",
+        "value": "literal",
+        "options": [
+          "literal",
+          "attribute",
+          "cast-data",
+          "signal"
+        ],
+        "labelZh": "输入 C 来源",
+        "optionsZh": [
+          {
+            "value": "literal",
+            "label": "字面值"
+          },
+          {
+            "value": "attribute",
+            "label": "属性"
+          },
+          {
+            "value": "cast-data",
+            "label": "施法数据"
+          },
+          {
+            "value": "signal",
+            "label": "信号参数"
+          }
+        ]
+      },
+      {
+        "kind": "StringValue",
+        "key": "c-key",
+        "label": "C Key",
+        "labelZh": "输入 C 键"
+      },
+      {
+        "kind": "DoubleValue",
+        "key": "c-value",
+        "label": "C Literal",
+        "value": "0",
+        "labelZh": "输入 C 数值"
+      },
+      {
+        "kind": "ListValue",
+        "key": "mode",
+        "label": "Mode",
+        "value": "nearest",
+        "options": [
+          "minimum",
+          "maximum",
+          "nearest",
+          "floor",
+          "ceiling"
+        ],
+        "labelZh": "运算模式",
+        "optionsZh": [
+          {
+            "value": "minimum",
+            "label": "最小值"
+          },
+          {
+            "value": "maximum",
+            "label": "最大值"
+          },
+          {
+            "value": "nearest",
+            "label": "四舍五入"
+          },
+          {
+            "value": "floor",
+            "label": "向下取整"
+          },
+          {
+            "value": "ceiling",
+            "label": "向上取整"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "MechanicValueWorldTime",
+    "key": "value world time",
+    "name": "Value World Time",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "读取世界时刻",
+    "descriptionZh": "来源不存在时不覆盖输出引用键；只读取第一个目标。",
+    "fields": [
+      {
+        "kind": "StringValue",
+        "key": "key",
+        "label": "Output Key",
+        "value": "value",
+        "labelZh": "输出引用键"
+      }
+    ]
+  },
+  {
+    "id": "MechanicVanillaExperienceAdjust",
+    "key": "vanilla experience adjust",
+    "name": "Vanilla Experience Adjust",
+    "category": "mechanic",
+    "container": false,
+    "description": "",
+    "displayNameZh": "调整原版经验",
+    "descriptionZh": "对玩家增减原版经验点；不会修改职业经验。",
+    "fields": [
+      {
+        "kind": "AttributeValue",
+        "key": "points",
+        "label": "Points",
+        "value": "1",
+        "labelZh": "经验点变化"
       }
     ]
   },

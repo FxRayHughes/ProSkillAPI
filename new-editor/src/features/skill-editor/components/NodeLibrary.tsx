@@ -42,6 +42,14 @@ export function NodeLibrary({ onAdd }: { onAdd: (definition: NodeDefinition) => 
       nodes: nodes.filter((node) => node.kind === 'action' && !node.id.startsWith('Target')),
     },
   ];
+  const grouped = (items: NodeDefinition[]) => {
+    const result = new Map<string, NodeDefinition[]>();
+    for (const node of items) {
+      const group = node.group ?? '其他节点';
+      result.set(group, [...(result.get(group) ?? []), node]);
+    }
+    return [...result.entries()].sort(([a], [b]) => a.localeCompare(b, 'zh-CN'));
+  };
   return (
     <Stack gap="sm">
       <Text fw={600} size="sm">
@@ -65,8 +73,11 @@ export function NodeLibrary({ onAdd }: { onAdd: (definition: NodeDefinition) => 
               </Text>
             </Accordion.Control>
             <Accordion.Panel>
-              <Stack gap={2}>
-                {folder.nodes.map((node) => (
+              <Accordion multiple variant="separated">
+                {grouped(folder.nodes).map(([group, groupNodes]) => (
+                  <Accordion.Item key={`${folder.id}-${group}`} value={`${folder.id}-${group}`}>
+                    <Accordion.Control>{group}<Text span size="xs" c="dimmed" ml="xs">{groupNodes.length}</Text></Accordion.Control>
+                    <Accordion.Panel><Stack gap={2}>{groupNodes.map((node) => (
                   // 列表只放得下节点名，说明与生效前提放在悬浮详情里。
                   // 开合留一点延迟，避免快速划过列表时闪烁。
                   <Tooltip
@@ -97,8 +108,10 @@ export function NodeLibrary({ onAdd }: { onAdd: (definition: NodeDefinition) => 
                       </Group>
                     </UnstyledButton>
                   </Tooltip>
+                ))}</Stack></Accordion.Panel>
+                  </Accordion.Item>
                 ))}
-              </Stack>
+              </Accordion>
             </Accordion.Panel>
           </Accordion.Item>
         ))}

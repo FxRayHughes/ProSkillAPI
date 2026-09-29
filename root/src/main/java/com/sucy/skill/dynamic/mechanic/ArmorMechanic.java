@@ -2,12 +2,12 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.nms.NmsProvider;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
@@ -156,10 +156,10 @@ public class ArmorMechanic extends MechanicComponent {
             item.setItemMeta(meta);
             item.setDurability((short) durability);
         } else {
-            if (meta instanceof Damageable) {
-                ((Damageable) meta).setDamage(durability);
-            }
+            // The selected version module applies modern Damageable damage or
+            // legacy durability; this class never links the absent 1.12 type.
             item.setItemMeta(meta);
+            NmsProvider.bridge().setItemDamage(item, durability);
         }
         boolean success = false;
         for (LivingEntity target : targets) {

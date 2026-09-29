@@ -78,6 +78,10 @@ public class LaunchMechanic extends MechanicComponent {
             optionsZh = {"可选值1", "可选值2", "可选值3"},
             defaultValue = "Target")
     private static final String RELATIVE = "relative";
+    @SkillField(kind = FieldKind.ListValue, label = "Velocity Mode", labelZh = "速度模式",
+            tooltipZh = "覆盖保留旧行为；叠加会在目标现有速度上增加发射矢量。",
+            options = {"replace", "add"}, optionsZh = {"覆盖", "叠加"}, defaultValue = "replace")
+    private static final String MODE = "velocity-mode";
 
     @Override
     public String getKey() {
@@ -117,7 +121,11 @@ public class LaunchMechanic extends MechanicComponent {
             dir.multiply(forward);
             dir.add(nor.multiply(right)).setY(upward);
 
-            target.setVelocity(dir);
+            // Preserve inertia only when the author explicitly opts into additive velocity.
+            if ("add".equalsIgnoreCase(settings.getString(MODE, "replace")))
+                dir.add(target.getVelocity());
+            if (Double.isFinite(dir.getX()) && Double.isFinite(dir.getY()) && Double.isFinite(dir.getZ()))
+                target.setVelocity(dir);
         }
         return targets.size() > 0;
     }

@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -21,6 +22,63 @@ public interface NmsBridge {
      */
     default String id() {
         return getClass().getSimpleName();
+    }
+
+    /**
+     * Applies the configured item wear value using the API contract owned by
+     * the selected server generation. The default implementation is the
+     * pre-1.13 Bukkit durability field, which is the only representation
+     * available to the 1.12 bridge. Modern bridges override this method in
+     * their own module and call {@code Damageable#setDamage} directly; keeping
+     * that type out of this shared interface is what lets 1.12 load it safely.
+     *
+     * @param item item whose metadata or legacy durability is changed
+     * @param damage configured wear value
+     */
+    default void setItemDamage(ItemStack item, int damage) {
+        if (item != null) {
+            item.setDurability((short) damage);
+        }
+    }
+
+    /**
+     * Reads the item wear value using the selected server generation's native
+     * representation. Legacy servers read the short durability field; modern
+     * bridges read {@code Damageable#getDamage} from their isolated module.
+     * Returning zero for a null item preserves the historical icon fallback.
+     *
+     * @param item item whose wear value is requested
+     * @return configured wear value, or zero when no item is available
+     */
+    default int getItemDamage(ItemStack item) {
+        return item == null ? 0 : item.getDurability();
+    }
+
+    /**
+     * Applies an integer custom-model identifier through the server generation
+     * that owns the corresponding Bukkit API. The method is deliberately a
+     * no-op by default because the property did not exist on 1.12/1.13; those
+     * generations must remain loadable without resolving a newer ItemMeta
+     * method. The 1.14 bridge overrides it with a direct call.
+     *
+     * @param meta item metadata to modify
+     * @param data custom-model identifier requested by the skill configuration
+     * @return true when the running generation accepted the identifier
+     */
+    default boolean setCustomModelData(ItemMeta meta, int data) {
+        return false;
+    }
+
+    /**
+     * Reads the custom-model identifier through the version-specific bridge.
+     * Returning {@code null} means either that the metadata is absent or that
+     * the selected server generation has no CustomModelData API.
+     *
+     * @param meta item metadata to inspect
+     * @return configured identifier, or {@code null} when unsupported/unset
+     */
+    default Integer getCustomModelData(ItemMeta meta) {
+        return null;
     }
 
     /**

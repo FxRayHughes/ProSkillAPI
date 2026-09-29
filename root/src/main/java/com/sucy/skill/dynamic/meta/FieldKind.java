@@ -17,6 +17,10 @@ public enum FieldKind {
     /** 小数输入。 */
     DoubleValue,
 
+    /** A checkbox whose wire value is a YAML boolean. */
+    BooleanValue,
+    MapValue,
+
     /** 随技能等级缩放的数值，导出为 base/scale 两个输入。 */
     AttributeValue,
 

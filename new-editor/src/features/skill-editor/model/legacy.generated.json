@@ -43986,8 +43986,8 @@
           }
         ],
         "tooltip": "[-particle-type] The type of particle to use.",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -46796,7 +46796,7 @@
         },
         {
           "key": "-particle-type",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "-particle-material",
@@ -49952,8 +49952,8 @@
           "Water Wake"
         ],
         "tooltip": "[particle] The type of particle to display. Particle effects that show the DX, DY, and DZ options are not compatible with Cauldron",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -52760,7 +52760,7 @@
         },
         {
           "key": "particle",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "material",
@@ -53032,8 +53032,8 @@
           "Water Wake"
         ],
         "tooltip": "[particle] The type of particle to display. Particle effects that show the DX, DY, and DZ options are not compatible with Cauldron",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -55880,7 +55880,7 @@
         },
         {
           "key": "particle",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "material",
@@ -56142,8 +56142,8 @@
           "Water Wake"
         ],
         "tooltip": "[particle] The type of particle to display. Particle effects that show the DX, DY, and DZ options are not compatible with Cauldron",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -58986,7 +58986,7 @@
         },
         {
           "key": "particle",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "material",
@@ -59284,8 +59284,8 @@
           "Water Wake"
         ],
         "tooltip": "[-particle-type] The type of particle to use.",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -62000,7 +62000,7 @@
         },
         {
           "key": "-particle-type",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "-particle-material",
@@ -62415,8 +62415,8 @@
           "Water Wake"
         ],
         "tooltip": "[particle] The type of particle to display. Particle effects that show the DX, DY, and DZ options are not compatible with Cauldron",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -65467,8 +65467,8 @@
           }
         ],
         "tooltip": "[-particle-type] The type of particle to use.",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -68237,7 +68237,7 @@
         },
         {
           "key": "particle",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "material",
@@ -68345,7 +68345,7 @@
         },
         {
           "key": "-particle-type",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "-particle-material",
@@ -69661,8 +69661,8 @@
           }
         ],
         "tooltip": "[-particle-type] The type of particle to use.",
-        "labelZh": "粒子",
-        "tooltipZh": "配置“粒子”，该值会按技能等级传入节点执行逻辑。",
+        "labelZh": "粒子类型",
+        "tooltipZh": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。",
         "optionsZh": [
           {
             "value": "Barrier",
@@ -72483,7 +72483,7 @@
         },
         {
           "key": "-particle-type",
-          "description": "配置“粒子”，该值会按技能等级传入节点执行逻辑。"
+          "description": "配置“粒子类型”，该值会按技能等级传入节点执行逻辑。"
         },
         {
           "key": "-particle-material",

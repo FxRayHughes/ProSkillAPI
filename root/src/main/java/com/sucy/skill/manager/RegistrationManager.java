@@ -34,6 +34,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.ComponentRegistry;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.signal.SignalManager;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.serialization.GsonConfig;
@@ -270,6 +271,15 @@ public class RegistrationManager {
         // Load individual dynamic skills
         Logger.log(LogType.REGISTRATION, 1, "Loading individual dynamic skill files...");
         loadSkills();
+        // A receiver may sort before its sender on disk; resolve deferred
+        // contracts only after both dynamic skill sources have been scanned.
+        try {
+            SignalManager.validatePending();
+        } catch (IllegalArgumentException ex) {
+            // Keep one malformed signal from preventing unrelated classes and
+            // skills from registering; the offending receiver remains inert.
+            Logger.invalid("Invalid deferred signal contract: " + ex.getMessage());
+        }
 
         Logger.log(LogType.REGISTRATION, 1, "Loading classes...");
 

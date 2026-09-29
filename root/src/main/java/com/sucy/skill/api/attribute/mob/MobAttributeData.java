@@ -39,12 +39,22 @@ public class MobAttributeData {
             return;
         }
         AttributeEntityAddEvent event = AttributeAPI.attributeEntityAdd(livingEntity, attribute, value);
+        if (event.isCancelled()) return;
         if (map.containsKey(event.getAttribute())) {
             double old = map.get(event.getAttribute());
             map.put(event.getAttribute(), event.getValue() + old);
+            // Publish after the direct mob attribute map has been updated.
+            Bukkit.getPluginManager().callEvent(new com.sucy.skill.api.event.SkillOutcomeEvent(
+                    com.sucy.skill.api.event.SkillOutcomeEvent.Phase.ATTRIBUTE_DELTA_APPLIED,
+                    livingEntity, livingEntity, event.getAttribute(), "mob", event.getValue(),
+                    old, map.get(event.getAttribute())));
             return;
         }
         map.put(event.getAttribute(), Double.valueOf(event.getValue()));
+        Bukkit.getPluginManager().callEvent(new com.sucy.skill.api.event.SkillOutcomeEvent(
+                com.sucy.skill.api.event.SkillOutcomeEvent.Phase.ATTRIBUTE_DELTA_APPLIED,
+                livingEntity, livingEntity, event.getAttribute(), "mob", event.getValue(),
+                0, map.get(event.getAttribute())));
     }
 
     public void tempAddAttribute(String taskID, String string, double value) {

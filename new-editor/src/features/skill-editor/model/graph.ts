@@ -17,7 +17,7 @@ export function createNode(definition: NodeDefinition, position: XYPosition): Sk
   };
 }
 
-/** Enforce declared pins and an acyclic execution graph before accepting a wire. */
+/** Enforce pins and cycles; incoming GROUP wires are calls, not tree parents. */
 export function canConnect(connection: Connection | SkillEdge, project: SkillProject): boolean {
   const source = project.nodes.find((node) => node.id === connection.source);
   const target = project.nodes.find((node) => node.id === connection.target);
@@ -28,6 +28,7 @@ export function canConnect(connection: Connection | SkillEdge, project: SkillPro
     !to?.inputs.some((port) => port.id === connection.targetHandle)
   )
     return false;
+  if (to?.kind === 'entry' && to.legacy?.name !== 'GROUP') return false;
   if (
     project.edges.some(
       (edge) =>

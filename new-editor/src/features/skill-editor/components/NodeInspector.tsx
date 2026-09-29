@@ -1,6 +1,6 @@
 import { Divider, Paper, Stack, Text, TextInput } from '@mantine/core';
 import { nodeRegistry } from '../model/registry';
-import { changeField, isFieldVisible, normalizeValues } from '../model/fieldValues';
+import { changeField, deriveSignalContract, isFieldVisible, normalizeValues } from '../model/fieldValues';
 import type { NodeData, SkillNode } from '../model/types';
 import { NodeField } from './NodeField';
 import { NodeRequirements } from './NodeRequirements';
@@ -64,9 +64,14 @@ export function NodeInspector({
           field={field}
           serverVersion={serverVersion}
           value={values[field.key] ?? field.default}
-          onChange={(value) =>
-            onChange(node.id, { values: changeField(definition, values, field.key, value) })
-          }
+          readOnly={definition.id === 'MechanicSignalEmit' && field.key === 'contract'}
+          onChange={(value) => {
+            let next = changeField(definition, values, field.key, value);
+            if (definition.id === 'MechanicSignalEmit' && field.key === 'arguments') {
+              next = changeField(definition, next, 'contract', deriveSignalContract(value));
+            }
+            onChange(node.id, { values: next });
+          }}
         />
       ))}
     </Stack>

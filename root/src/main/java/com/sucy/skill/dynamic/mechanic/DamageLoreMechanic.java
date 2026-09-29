@@ -85,6 +85,13 @@ public class DamageLoreMechanic extends MechanicComponent {
             defaultValue = "False")
     private static final String TRUE       = "true";
     @SkillField(
+            kind = FieldKind.BooleanValue,
+            label = "Ignore Shield",
+            labelZh = "忽略护盾",
+            tooltipZh = "仅真实伤害生效。默认忽略护盾；取消勾选后由多层护盾吸收。旧配置保持原行为。",
+            defaultValue = "True")
+    private static final String IGNORE_SHIELD = "ignore-shield";
+    @SkillField(
             kind = FieldKind.StringValue,
             label = "Classifier",
             labelZh = "伤害分类",
@@ -117,6 +124,7 @@ public class DamageLoreMechanic extends MechanicComponent {
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
                 && settings.getString(HAND, "mainhand").equalsIgnoreCase("offhand");
         boolean trueDmg = settings.getBool(TRUE, false);
+        boolean ignoreShield = settings.getBool(IGNORE_SHIELD, true);
         String classification = settings.getString(CLASSIFIER, "default");
 
         if (caster.getEquipment() == null) { return false; }
@@ -140,7 +148,7 @@ public class DamageLoreMechanic extends MechanicComponent {
                         for (LivingEntity target : targets) {
                             if (target.isDead()) { continue; }
 
-                            if (trueDmg) { skill.trueDamage(target, base * m, caster); } else {
+                            if (trueDmg) { skill.trueDamage(target, base * m, caster, ignoreShield); } else {
                                 skill.damage(target, base * m, caster, classification);
                             }
                         }

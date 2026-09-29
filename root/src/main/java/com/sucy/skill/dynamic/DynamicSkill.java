@@ -35,6 +35,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.trigger.TriggerComponent;
+import com.sucy.skill.dynamic.signal.SignalManager;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -54,6 +55,9 @@ import static com.sucy.skill.dynamic.ComponentRegistry.getTrigger;
  */
 public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener {
     private final List<TriggerHandler> triggers = new ArrayList<>();
+    /** Named roots are loaded once but execute only through goto group calls. */
+    private final Map<String, TriggerComponent> groups = new HashMap<>();
+    private final ThreadLocal<List<String>> groupCalls = ThreadLocal.withInitial(ArrayList::new);
     private final Map<String, EffectComponent> attribKeys = new HashMap<>();
     private final Map<Integer, Integer> active = new HashMap<>();
 
@@ -233,6 +237,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         }
         cleanup(user, castTrigger);
         cleanup(user, initializeTrigger);
+        for (TriggerComponent group : groups.values()) cleanup(user, group);
 
         trigger(user, user, 1, cleanupTrigger);
     }
@@ -341,6 +346,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      */
     @Override
     public void load(final DataSection config) {
+        // Scan the original v1 forest before any trigger subscribes to Bukkit.
+        // Reject a conflicting contract as one skill load instead of half a tree.
+        SignalManager.scan(getName(), config.getSection("components"));
+        GroupScanner.scan(getName(), config.getSection("components"));
         super.load(config);
 
         final DataSection triggers = config.getSection("components");
@@ -358,6 +367,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                     initializeTrigger = loadComponent(settings);
                 } else if (modified.equalsIgnoreCase("CLEANUP")) {
                     cleanupTrigger = loadComponent(settings);
+                } else if (modified.equalsIgnoreCase("GROUP")) {
+                    // GROUP is a declaration, not an event subscription.
+                    String name = settings.getSection("data").getString("group", "").trim();
+                    groups.put(name, loadComponent(settings));
                 } else {
                     this.triggers.add(new TriggerHandler(this, key, getTrigger(modified), loadComponent(settings)));
                 }
@@ -373,6 +386,20 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         final TriggerComponent component = new TriggerComponent();
         component.load(this, data);
         return component;
+    }
+
+    /** Runtime guard also covers cross-skill and dynamic calls not visible to prescan. */
+    public boolean executeGroup(String name, LivingEntity caster, int level, List<LivingEntity> targets) {
+        TriggerComponent group = groups.get(name);
+        if (group == null || caster == null || targets.isEmpty()) return false;
+        List<String> stack = groupCalls.get();
+        if (stack.size() >= 16 || stack.contains(name)) return false;
+        stack.add(name);
+        try { return group.executeShared(caster, level, targets); }
+        finally {
+            stack.remove(stack.size() - 1);
+            if (stack.isEmpty()) groupCalls.remove();
+        }
     }
 
     /**
@@ -392,6 +419,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         save(triggers, castTrigger, "Cast");
         save(triggers, initializeTrigger, "Initialize");
         save(triggers, cleanupTrigger, "Cleanup");
+        for (Map.Entry<String, TriggerComponent> group : groups.entrySet()) {
+            group.getValue().save(triggers.createSection("GROUP-" + group.getKey()));
+        }
     }
 
     private void save(final DataSection triggers, final TriggerComponent component, final String key) {

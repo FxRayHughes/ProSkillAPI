@@ -36,6 +36,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.api.util.ConfigValues;
 import com.sucy.skill.api.util.MaterialCompat;
+import com.sucy.skill.nms.NmsProvider;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
@@ -45,7 +46,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
@@ -169,8 +169,10 @@ public class GUITool implements ToolMenu
             item.setItemMeta(meta);
             item.setDurability(data.getShort("durability"));
         } else {
-            ((Damageable) meta).setDamage(data.getInt("durability"));
+            // The selected version module owns the modern Damageable API;
+            // keeping this call on NmsBridge prevents a 1.12.2 class link.
             item.setItemMeta(meta);
+            NmsProvider.bridge().setItemDamage(item, data.getInt("durability"));
         }
         return DamageLoreRemover.removeAttackDmg(item);
     }

@@ -1,11 +1,11 @@
 package com.sucy.skill.api.util;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.sucy.skill.nms.NmsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
-import java.lang.reflect.Method;
 import java.util.Locale;
 
 /** Resolves config materials using the server's own flattening table and legacy data. */
@@ -90,31 +90,30 @@ public final class MaterialCompat {
     }
 
     /**
-     * Applies modern custom-model metadata without linking the method into the
-     * main plugin class on 1.12.2, where ItemMeta does not declare it.
+     * Applies custom-model metadata through the selected version bridge. The
+     * main plugin never calls the 1.14+ ItemMeta methods directly, so loading
+     * this utility on 1.12.2 does not require reflective lookup or a newer
+     * Bukkit symbol. Unsupported generations return false and keep the old
+     * material-data path available to callers.
+     *
+     * @param meta metadata to update
+     * @param data custom-model identifier
+     * @return true when the selected bridge supports and applied the value
      */
     public static boolean setCustomModelData(ItemMeta meta, int data) {
-        if (meta == null) return false;
-        try {
-            Method method = ItemMeta.class.getMethod("setCustomModelData", Integer.class);
-            method.invoke(meta, data);
-            return true;
-        } catch (ReflectiveOperationException | LinkageError ignored) {
-            return false;
-        }
+        return NmsProvider.bridge().setCustomModelData(meta, data);
     }
 
-    /** Reads custom-model metadata when supported by the running server. */
+    /**
+     * Reads custom-model metadata through the selected version bridge. This
+     * keeps API differences in version modules and gives callers one stable
+     * nullable result for both unsupported and unset metadata.
+     *
+     * @param meta metadata to inspect
+     * @return configured identifier, or {@code null} when unavailable
+     */
     public static Integer getCustomModelData(ItemMeta meta) {
-        if (meta == null) return null;
-        try {
-            Method has = ItemMeta.class.getMethod("hasCustomModelData");
-            if (!Boolean.TRUE.equals(has.invoke(meta))) return null;
-            Method get = ItemMeta.class.getMethod("getCustomModelData");
-            Object value = get.invoke(meta);
-            return value instanceof Number ? ((Number) value).intValue() : null;
-        } catch (ReflectiveOperationException | LinkageError ignored) {
-            return null;
-        }
+        return NmsProvider.bridge().getCustomModelData(meta);
     }
+
 }

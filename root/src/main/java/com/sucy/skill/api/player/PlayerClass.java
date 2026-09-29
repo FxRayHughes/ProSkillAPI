@@ -356,6 +356,11 @@ public class PlayerClass
 
             exp += rounded;
             checkLevelUp();
+            // Report the committed amount after level-up logic consumes any overflow.
+            Bukkit.getPluginManager().callEvent(new com.sucy.skill.api.event.SkillOutcomeEvent(
+                    com.sucy.skill.api.event.SkillOutcomeEvent.Phase.CLASS_XP_GAINED,
+                    player.getPlayer(), player.getPlayer(), classData.getName(), source.name(),
+                    rounded, Double.NaN, exp));
         }
     }
 
@@ -379,6 +384,10 @@ public class PlayerClass
         {
             amount = Math.min(event.getExp(), exp);
             exp = exp - amount;
+            if (amount > 0) Bukkit.getPluginManager().callEvent(new com.sucy.skill.api.event.SkillOutcomeEvent(
+                    com.sucy.skill.api.event.SkillOutcomeEvent.Phase.CLASS_XP_LOST,
+                    player.getPlayer(), player.getPlayer(), classData.getName(), "penalty",
+                    amount, exp + amount, exp));
 
             // Exp loss message
             if (SkillAPI.getSettings().isShowLossMessages() && (int) amount > 0)

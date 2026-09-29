@@ -11,6 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
@@ -86,6 +87,31 @@ public class V1_13Bridge implements NmsBridge {
         } catch (Throwable ignored) {
             // Titles are cosmetic; never let them interrupt a skill.
         }
+    }
+
+    /**
+     * 1.13 introduced Damageable as the authoritative wear representation.
+     * This implementation lives in the 1.13 module so the 1.12 bridge and
+     * shared plugin classes never resolve that newer Bukkit type.
+     */
+    @Override
+    public void setItemDamage(ItemStack item, int damage) {
+        if (item == null) return;
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof Damageable) {
+            ((Damageable) meta).setDamage(damage);
+            item.setItemMeta(meta);
+        } else {
+            item.setDurability((short) damage);
+        }
+    }
+
+    /** Reads the 1.13+ metadata wear field while preserving a legacy fallback. */
+    @Override
+    public int getItemDamage(ItemStack item) {
+        if (item == null) return 0;
+        ItemMeta meta = item.getItemMeta();
+        return meta instanceof Damageable ? ((Damageable) meta).getDamage() : item.getDurability();
     }
 
     @Override

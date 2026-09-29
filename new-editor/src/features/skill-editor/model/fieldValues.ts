@@ -1,6 +1,22 @@
 import type { FieldDefinition, FieldValue, NodeDefinition } from './types';
 import { isParticleAst, isParticleField, makeParticleAst } from './particleCatalog';
 
+/**
+ * Signal senders persist ordinary scalar rows. Their contract is a projection of
+ * those rows, so the editor and runtime agree without asking authors to maintain
+ * two independent maps. References remain text until the runtime resolves them.
+ */
+export function deriveSignalContract(value: FieldValue): Record<string, string> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  const contract: Record<string, string> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    if (typeof entry === 'number' && Number.isFinite(entry)) contract[key] = 'number';
+    else if (typeof entry === 'boolean') contract[key] = 'boolean';
+    else if (typeof entry === 'string') contract[key] = 'text';
+  }
+  return contract;
+}
+
 /** Legacy option names are case-insensitive on import, but saved spelling stays canonical. */
 export const normalizeOption = (value: unknown): string =>
   String(isParticleAst(value) ? value.value : value)

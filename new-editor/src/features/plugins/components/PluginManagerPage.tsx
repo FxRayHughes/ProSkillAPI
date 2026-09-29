@@ -8,7 +8,7 @@ import { readPlugins, writePlugins } from '../model/pluginStore';
 import { builtinPlugin } from '../builtin';
 import { downloadText } from '../../../shared/lib/download';
 
-/** JSON plugins are declarative and safe: importing never executes arbitrary code. */
+/** 节点包只携带声明式节点定义；导入不会执行脚本或加载代码。 */
 export function PluginManagerPage() {
   const [plugins, setPlugins] = useState(readPlugins);
   const [error, setError] = useState('');
@@ -44,7 +44,7 @@ export function PluginManagerPage() {
         <div>
           <Title order={2}>插件管理</Title>
           <Text c="dimmed" size="sm">
-            使用 JSON 注册节点或覆盖已有节点定义。
+            导入节点包，注册节点或覆盖已有节点定义。
           </Text>
         </div>
         <Button
@@ -56,7 +56,7 @@ export function PluginManagerPage() {
         <FileButton accept="application/json,.json" onChange={importPlugin}>
           {(props) => (
             <Button {...props} leftSection={<PlugZap size={16} />}>
-              导入插件 JSON
+              导入节点包
             </Button>
           )}
         </FileButton>
@@ -137,4 +137,4 @@ export function PluginManagerPage() {
   );
 }
 
-const pluginDevelopmentDoc = `# ProSkillAPI 插件节点开发\n\n请参阅项目中的 PLUGIN_DEVELOPMENT.md，了解 JSON 插件结构、节点字段、覆盖规则和安全边界。\n`;
+const pluginDevelopmentDoc = `# ProSkillAPI 节点包开发\n\n节点包文件由工具生成和导入。节点字段、端口、功能分组和依赖说明都在编辑器中以控件维护，JSON 仅作为交换格式，不要求用户直接编辑。\n`;

@@ -11,6 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
@@ -90,6 +91,60 @@ public class V1_17Bridge implements NmsBridge {
         } catch (Throwable ignored) {
             // Titles are cosmetic; never let them interrupt a skill.
         }
+    }
+
+    /**
+     * Keeps the modern wear API inside this version module; the common bridge
+     * contract remains loadable by the legacy 1.12 server class loader.
+     */
+    @Override
+    public void setItemDamage(ItemStack item, int damage) {
+        if (item == null) return;
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof Damageable) {
+            ((Damageable) meta).setDamage(damage);
+            item.setItemMeta(meta);
+        } else {
+            item.setDurability((short) damage);
+        }
+    }
+
+    /** Reads Damageable damage and falls back for patched cores with unusual metadata. */
+    @Override
+    public int getItemDamage(ItemStack item) {
+        if (item == null) return 0;
+        ItemMeta meta = item.getItemMeta();
+        return meta instanceof Damageable ? ((Damageable) meta).getDamage() : item.getDurability();
+    }
+
+    /**
+     * Writes the model identifier introduced in 1.14 through Bukkit metadata.
+     * Keeping this direct call in the version module prevents common code from
+     * linking a method that is absent on the 1.12 API. The caller must attach
+     * the edited metadata to its ItemStack after all metadata changes.
+     *
+     * @param meta metadata to modify
+     * @param data custom-model identifier from the skill or GUI configuration
+     * @return true when metadata was present and accepted the value
+     */
+    @Override
+    public boolean setCustomModelData(ItemMeta meta, int data) {
+        if (meta == null) return false;
+        meta.setCustomModelData(data);
+        return true;
+    }
+
+    /**
+     * Reads the model identifier only when Bukkit reports that one is stored.
+     * A nullable result keeps the valid identifier zero distinct from an unset
+     * field when an item icon is serialized.
+     *
+     * @param meta metadata to inspect
+     * @return configured identifier, or {@code null} when unset/unavailable
+     */
+    @Override
+    public Integer getCustomModelData(ItemMeta meta) {
+        return meta != null && meta.hasCustomModelData() ? meta.getCustomModelData() : null;
     }
 
     @Override

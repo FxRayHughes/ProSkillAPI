@@ -29,6 +29,7 @@ package com.sucy.skill.dynamic.mechanic;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.attribute.AttributeAPI;
 import com.sucy.skill.api.event.SkillHealEvent;
+import com.sucy.skill.api.event.SkillOutcomeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -113,11 +114,17 @@ public class HealMechanic extends MechanicComponent {
             SkillHealEvent event = new SkillHealEvent(other , target, skill, amount);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
+                final double before = target.getHealth();
                 // SX-Attribute 开启时在 Bukkit 写入前接管治疗，关闭或不兼容则保持原生路径。
                 if (!(other instanceof org.bukkit.entity.Player)
                         || !com.sucy.skill.SkillAPI.handleExternalHeal((org.bukkit.entity.Player) other, target, event.getAmount())) {
                     VersionManager.heal(target, event.getAmount());
                 }
+                // The applied phase reports the observed health delta, including max-health clamping.
+                final double after = target.getHealth();
+                if (after > before) Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                        SkillOutcomeEvent.Phase.HEAL_APPLIED, other, target, skill.getName(),
+                        "skill", after - before, before, after));
             }
         }
         return targets.size() > 0;

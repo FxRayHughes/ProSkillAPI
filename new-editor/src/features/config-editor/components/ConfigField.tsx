@@ -1,6 +1,6 @@
 import { NumberInput, Switch, Textarea, TextInput } from '@mantine/core';
 import { NodeField } from '../../skill-editor/components/NodeField';
-import { makeParticleAst, particleOptions } from '../../skill-editor/model/particleCatalog';
+import { isParticleAst, makeParticleAst, particleOptions } from '../../skill-editor/model/particleCatalog';
 import type { ConfigField as Field } from '../model/configDocument';
 import type { ConfigValue } from '../model/configDocument';
 
@@ -27,7 +27,8 @@ export function ConfigField({
           options: particleOptions,
         }}
         value={field.value}
-        onChange={onChange}
+        // This reused selector can only produce a particle AST for config fields.
+        onChange={(value) => { if (isParticleAst(value)) onChange(value); }}
         serverVersion={serverVersion}
         particleDescription="保存时写入跨版本粒子 AST"
       />

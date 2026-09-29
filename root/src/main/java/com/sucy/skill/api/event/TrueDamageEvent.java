@@ -43,6 +43,7 @@ public class TrueDamageEvent extends Event implements Cancellable
     private Skill        skill;
     private double       damage;
     private boolean      cancelled;
+    private boolean      ignoreShield;
 
     /**
      * Initializes a new event
@@ -53,12 +54,22 @@ public class TrueDamageEvent extends Event implements Cancellable
      */
     public TrueDamageEvent(Skill skill, LivingEntity damager, LivingEntity target, double damage)
     {
+        this(skill, damager, target, damage, true);
+    }
+
+    /** Explicit shield policy; older constructors keep bypassing shields. */
+    public TrueDamageEvent(Skill skill, LivingEntity damager, LivingEntity target, double damage, boolean ignoreShield)
+    {
         this.skill = skill;
         this.damager = damager;
         this.target = target;
         this.damage = damage;
         this.cancelled = false;
+        this.ignoreShield = ignoreShield;
     }
+
+    public boolean isIgnoringShield() { return ignoreShield; }
+    public void setIgnoringShield(boolean ignoreShield) { this.ignoreShield = ignoreShield; }
 
     /**
      * @return skill used to deal the damage

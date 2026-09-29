@@ -75,6 +75,13 @@ public class DamageMechanic extends MechanicComponent {
             defaultValue = "False")
     private static final String TRUE = "true";
     @SkillField(
+            kind = FieldKind.BooleanValue,
+            label = "Ignore Shield",
+            labelZh = "忽略护盾",
+            tooltipZh = "仅真实伤害生效。默认忽略护盾；取消勾选后由多层护盾吸收。旧技能缺少此项时仍忽略护盾。",
+            defaultValue = "True")
+    private static final String IGNORE_SHIELD = "ignore-shield";
+    @SkillField(
             kind = FieldKind.StringValue,
             label = "Classifier",
             labelZh = "伤害分类",
@@ -113,6 +120,7 @@ public class DamageMechanic extends MechanicComponent {
         boolean missing = pString.equals("percent missing");
         boolean left = pString.equals("percent left");
         boolean trueDmg = settings.getBool(TRUE, false);
+        boolean ignoreShield = settings.getBool(IGNORE_SHIELD, true);
         double damage = 0;
         LivingEntity other = caster;
 
@@ -146,7 +154,7 @@ public class DamageMechanic extends MechanicComponent {
                 amount = damage * target.getHealth() / 100;
             }
             if (trueDmg) {
-                skill.trueDamage(target, amount, other);
+                skill.trueDamage(target, amount, other, ignoreShield);
             } else {
                 skill.damage(target, amount, other, classification, knockback);
             }

@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AppShell,
+  Badge,
   Drawer,
   Group,
   ScrollArea,
@@ -10,11 +11,12 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { ArrowLeft, Download, PanelLeft, PanelRight, Save } from 'lucide-react';
+import { ArrowLeft, Download, PanelLeft, PanelRight, Save, Timer } from 'lucide-react';
 import { notifications } from '@mantine/notifications';
 import { useReactFlow } from '@xyflow/react';
 import { ToolButton } from '../../../shared/ui/ToolButton';
 import { downloadText } from '../../../shared/lib/download';
+import { enqueueSerial } from '../../../shared/lib/serialQueue';
 import { parseLegacySkill, serializeLegacySkill } from '../io/legacySkill';
 import { particleFallbackIssues } from '../io/particleDiagnostics';
 import { useSkillEditor } from '../model/useSkillEditor';
@@ -23,9 +25,23 @@ import { NodeInspector } from './NodeInspector';
 import { NodeLibrary } from './NodeLibrary';
 import { SkillMetadata } from './SkillMetadata';
 import classes from './Editor.module.css';
+import type { AutoSavePreferences } from '../../../shared/lib/preferences';
 
 function describe(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
+}
+
+interface FileSignature {
+  lastModified: number;
+  size: number;
+}
+
+function signatureOf(file: File): FileSignature {
+  return { lastModified: file.lastModified, size: file.size };
+}
+
+function changedSince(before: FileSignature, after: FileSignature): boolean {
+  return before.lastModified !== after.lastModified || before.size !== after.size;
 }
 
 /** Page composes feature panels; narrow screens reuse them in independent drawers. */
@@ -33,6 +49,8 @@ export function EditorPage({
   initialFile,
   themeControl,
   serverVersion,
+  autoSave,
+  onAutoSaveChange,
   onBack,
 }: {
   initialFile?: import('../../workspace/model/types').WorkspaceFile;
@@ -40,35 +58,141 @@ export function EditorPage({
   themeControl?: React.ReactNode;
   /** 主页设置的预览版本；服务端运行时独立选择 AST 映射。 */
   serverVersion: string;
+  /** Auto-save is app-wide so the settings page and the editor button stay synchronized. */
+  autoSave: AutoSavePreferences;
+  onAutoSaveChange: (value: AutoSavePreferences) => void;
   onBack?: () => void;
 }) {
   const editor = useSkillEditor();
-  const { setProject } = editor;
+  const { loadProject, markSaved } = editor;
   const standaloneImport = useRef(false);
   useEffect(() => {
     if (initialFile?.project) {
-      setProject(initialFile.project);
+      loadProject(initialFile.project);
       standaloneImport.current = false;
     }
-  }, [initialFile, setProject]);
+  }, [initialFile, loadProject]);
+  const projectRef = useRef(editor.project);
+  const dirtyRef = useRef(editor.dirty);
+  useEffect(() => {
+    projectRef.current = editor.project;
+    dirtyRef.current = editor.dirty;
+  }, [editor.project, editor.dirty]);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [lastSavedAt, setLastSavedAt] = useState<number>();
+  const [saveError, setSaveError] = useState('');
+  const saveQueue = useRef<{ current: Promise<unknown> }>({ current: Promise.resolve() });
+  const fileHandleRef = useRef<FileSystemFileHandle | undefined>(undefined);
+  const fileSignatureRef = useRef<FileSignature | undefined>(undefined);
   const previewIssues = particleFallbackIssues(editor.project, serverVersion);
-  const saveToFolder = async () => {
-    // A manually imported file must be exported, never written over the previously opened file.
-    if (!initialFile?.handle || standaloneImport.current) return false;
-    // Serialization validates the graph, so a rejected structure never truncates the file.
-    const content = serializeLegacySkill(editor.project);
-    const writable = await initialFile.handle.createWritable();
-    await writable.write(content);
-    await writable.close();
-    // Only report success after close commits the write to the underlying file.
-    notifications.show({
-      color: 'teal',
-      title: '保存成功',
-      message: `已按 SkillAPI 原生格式写回 ${initialFile.fileName}`,
-      closeButtonProps: { 'aria-label': '关闭提示' },
-    });
-    return true;
-  };
+  useEffect(() => {
+    let active = true;
+    fileHandleRef.current = initialFile?.handle;
+    fileSignatureRef.current = undefined;
+    if (!initialFile?.handle) return () => undefined;
+    // Capture a baseline so automatic saves can refuse to overwrite changes made
+    // by another editor or process after this skill was opened.
+    void initialFile.handle
+      .getFile()
+      .then((file) => {
+        if (active) fileSignatureRef.current = signatureOf(file);
+      })
+      .catch(() => {
+        // A later save will retry the metadata read; editing must remain usable
+        // when a browser denies file metadata access temporarily.
+      });
+    return () => {
+      active = false;
+    };
+  }, [initialFile]);
+  const saveToFolder = useCallback(
+    async ({
+      silent = false,
+      onlyIfDirty = false,
+    }: { silent?: boolean; onlyIfDirty?: boolean } = {}) =>
+      enqueueSerial(saveQueue.current, async () => {
+        // A manually imported file must be exported, never written over the previously opened file.
+        if (!initialFile?.handle || standaloneImport.current) return false;
+        if (onlyIfDirty && !dirtyRef.current) return false;
+        const projectToSave = projectRef.current;
+        setSaveStatus('saving');
+        setSaveError('');
+        try {
+          const currentFile = await initialFile.handle.getFile();
+          const currentSignature = signatureOf(currentFile);
+          if (
+            fileHandleRef.current === initialFile.handle &&
+            fileSignatureRef.current &&
+            changedSince(fileSignatureRef.current, currentSignature)
+          ) {
+            throw new Error('技能文件已被其他窗口或程序修改，请重新加载后再保存。');
+          }
+          fileHandleRef.current = initialFile.handle;
+          fileSignatureRef.current = currentSignature;
+          // Serialization validates the graph, so a rejected structure never truncates the file.
+          const content = serializeLegacySkill(projectToSave);
+          const writable = await initialFile.handle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          // Refresh the baseline after our own atomic close so the next save does
+          // not mistake this write for an external modification.
+          try {
+            fileSignatureRef.current = signatureOf(await initialFile.handle.getFile());
+          } catch {
+            fileSignatureRef.current = undefined;
+          }
+          const stillCurrent = projectRef.current === projectToSave;
+          if (stillCurrent) {
+            markSaved();
+            setLastSavedAt(Date.now());
+          }
+          setSaveStatus(stillCurrent ? 'saved' : 'idle');
+          // Automatic saves avoid a notification for every timer tick; the header still shows time.
+          if (!silent) {
+            notifications.show({
+              color: 'teal',
+              title: '保存成功',
+              message: `已按 SkillAPI 原生格式写回 ${initialFile.fileName}`,
+              closeButtonProps: { 'aria-label': '关闭提示' },
+            });
+          }
+          return true;
+        } catch (error) {
+          const message = describe(error, '无法写入技能文件');
+          setSaveStatus('error');
+          setSaveError(message);
+          if (silent) {
+            notifications.show({
+              color: 'red',
+              title: '自动保存失败',
+              message,
+              autoClose: false,
+              closeButtonProps: { 'aria-label': '关闭提示' },
+            });
+          }
+          throw error;
+        }
+      }),
+    [markSaved, initialFile],
+  );
+
+  // The interval is a safety net for long editing sessions; it never writes a clean project.
+  useEffect(() => {
+    if (!autoSave.enabled || autoSave.intervalMs <= 0) return undefined;
+    const timer = window.setInterval(() => {
+      void saveToFolder({ silent: true, onlyIfDirty: true }).catch(() => undefined);
+    }, autoSave.intervalMs);
+    return () => window.clearInterval(timer);
+  }, [autoSave.enabled, autoSave.intervalMs, saveToFolder]);
+
+  // Debounce graph edits so dragging or typing produces one write after the user pauses.
+  useEffect(() => {
+    if (!autoSave.enabled || !autoSave.saveAfterEdit || !editor.dirty) return undefined;
+    const timer = window.setTimeout(() => {
+      void saveToFolder({ silent: true, onlyIfDirty: true }).catch(() => undefined);
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [autoSave.enabled, autoSave.saveAfterEdit, editor.dirty, editor.project, saveToFolder]);
   const { screenToFlowPosition } = useReactFlow();
   const [drawer, setDrawer] = useState<'library' | 'inspector' | null>(null);
   // Share tab selection between the desktop sidebar and mobile drawer.
@@ -95,7 +219,7 @@ export function EditorPage({
     if (!file) return;
     try {
       const project = parseLegacySkill(await file.text());
-      editor.setProject(project);
+      editor.loadProject(project);
       standaloneImport.current = true;
       const issues = particleFallbackIssues(project, serverVersion);
       notifications.show({
@@ -118,6 +242,16 @@ export function EditorPage({
     }
     event.target.value = '';
   };
+  const statusLabel =
+    saveStatus === 'saving'
+      ? '保存中'
+      : saveStatus === 'error'
+        ? `保存失败：${saveError}`
+        : editor.dirty
+          ? '有未保存修改'
+          : lastSavedAt
+            ? `已保存 ${new Date(lastSavedAt).toLocaleTimeString()}`
+            : '尚未保存';
   const library = (
     <Tabs value={libraryTab} onChange={setLibraryTab}>
       <Tabs.List grow>
@@ -187,6 +321,20 @@ export function EditorPage({
                 <PanelRight size={18} />
               </ToolButton>
             </Group>
+            <ToolButton
+              label={autoSave.enabled ? '关闭自动保存' : '开启自动保存'}
+              onClick={() => onAutoSaveChange({ ...autoSave, enabled: !autoSave.enabled })}
+            >
+              <Timer size={18} />
+            </ToolButton>
+            <Badge
+              color={saveStatus === 'error' ? 'red' : autoSave.enabled ? 'teal' : 'gray'}
+              variant="light"
+              size="sm"
+              title={saveStatus === 'error' ? saveError : undefined}
+            >
+              {autoSave.enabled ? `自动保存 · ${statusLabel}` : statusLabel}
+            </Badge>
             <ToolButton
               label="保存并写回技能文件"
               onClick={async () => {

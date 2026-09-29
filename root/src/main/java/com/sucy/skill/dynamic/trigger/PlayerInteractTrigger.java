@@ -30,6 +30,11 @@ public class PlayerInteractTrigger implements Trigger<PlayerInteractEvent> {
             defaultValue = "LEFT_CLICK_AIR,LEFT_CLICK_BLOCK,PHYSICAL,RIGHT_CLICK_AIR,RIGHT_CLICK_BLOCK")
     private static final String ACTION = "action";
 
+    @SkillField(kind = FieldKind.ListValue, label = "Hand", labelZh = "交互手别",
+            tooltipZh = "沿用现有交互入口；可只接收主手或副手。", options = {"any", "main", "off"},
+            optionsZh = {"任意", "主手", "副手"}, defaultValue = "any")
+    private static final String HAND = "hand";
+
     @SkillField(
             kind = FieldKind.StringValue,
             label = "物品名",
@@ -68,6 +73,14 @@ public class PlayerInteractTrigger implements Trigger<PlayerInteractEvent> {
         List<String> list = settings.getStringList(ACTION);
         if (!list.contains(event.getAction().name())) {
             return false;
+        }
+        String hand = settings.getString(HAND, "any");
+        if (!"any".equalsIgnoreCase(hand)) {
+            if (event.getHand() == null) return false;
+            if ("main".equalsIgnoreCase(hand) && event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND)
+                return false;
+            if ("off".equalsIgnoreCase(hand) && event.getHand() != org.bukkit.inventory.EquipmentSlot.OFF_HAND)
+                return false;
         }
         String name = settings.getString(NAME, "");
         if (!name.equals("all")) {

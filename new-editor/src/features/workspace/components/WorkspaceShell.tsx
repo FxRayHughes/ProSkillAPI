@@ -8,11 +8,20 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core';
-import { BriefcaseBusiness, FolderOpen, Home, Menu, PlugZap, Sliders, Swords } from 'lucide-react';
+import {
+  BriefcaseBusiness,
+  FolderOpen,
+  Home,
+  Menu,
+  PlugZap,
+  Settings,
+  Sliders,
+  Swords,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useWorkspace } from '../model/workspaceContext';
 
-export type WorkspacePage = 'home' | 'skills' | 'classes' | 'config' | 'plugins';
+export type WorkspacePage = 'home' | 'skills' | 'classes' | 'config' | 'plugins' | 'settings';
 
 const PAGES: { id: WorkspacePage; label: string; description: string; icon: React.ReactNode }[] = [
   { id: 'home', label: '主页', description: '工程总览', icon: <Home size={17} /> },
@@ -25,6 +34,7 @@ const PAGES: { id: WorkspacePage; label: string; description: string; icon: Reac
   },
   { id: 'config', label: '配置管理', description: '插件配置项', icon: <Sliders size={17} /> },
   { id: 'plugins', label: '插件管理', description: '扩展节点', icon: <PlugZap size={17} /> },
+  { id: 'settings', label: '编辑器设置', description: '保存与预览', icon: <Settings size={17} /> },
 ];
 
 export function WorkspaceShell({

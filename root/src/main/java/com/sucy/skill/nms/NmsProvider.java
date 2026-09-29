@@ -44,6 +44,7 @@ public final class NmsProvider {
             "com.sucy.skill.nms.v1_20.V1_20BridgeFactory",
             "com.sucy.skill.nms.v1_17.V1_17BridgeFactory",
             "com.sucy.skill.nms.v1_16.V1_16BridgeFactory",
+            "com.sucy.skill.nms.v1_14.V1_14BridgeFactory",
             "com.sucy.skill.nms.v1_13.V1_13BridgeFactory",
             "com.sucy.skill.nms.v1_12.V1_12BridgeFactory",
             "com.sucy.skill.nms.v1_11.V1_11BridgeFactory",

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { load } from 'js-yaml';
 import catalog from './legacy.generated.json';
 import { NodeRegistry, nodeRegistry } from './registry';
-import { changeField, isFieldVisible, normalizeValues } from './fieldValues';
+import { changeField, deriveSignalContract, isFieldVisible, normalizeValues } from './fieldValues';
 import { createNode, createProject } from './graph';
 import { serializeLegacySkill, parseLegacySkill } from '../io/legacySkill';
 import { fieldLabel } from './fieldLabels';
@@ -17,6 +17,13 @@ registerLegacyCatalog();
 registerBuiltinPlugin();
 
 describe('complete old-node parameter forms', () => {
+  it('derives signal contracts from visual argument values', () => {
+    expect(deriveSignalContract({ label: 'hello', amount: 2.5, enabled: true })).toEqual({
+      label: 'text',
+      amount: 'number',
+      enabled: 'boolean',
+    });
+  });
   it('keeps annotation prerequisites and complete inherited particle fields', () => {
     expect(nodeRegistry.get('MechanicParticle')!.fields.length).toBeGreaterThan(15);
     expect(nodeRegistry.get('MechanicParticleRing')!.fields.length).toBeGreaterThan(15);
@@ -112,11 +119,29 @@ describe('complete old-node parameter forms', () => {
       const expected = entry.fields.flatMap((field) =>
         field.kind === 'AttributeValue' ? [`${field.key}-base`, `${field.key}-scale`] : [field.key],
       );
+      // The extracted catalog predates this server-side policy; its sole extra
+      // editor field is deliberately inserted immediately before classifier.
+      if (['Damage', 'Damage Lore'].includes(entry.name) && !expected.includes('ignore-shield')) {
+        expected.splice(expected.indexOf('classifier'), 0, 'ignore-shield');
+      }
       expect(definition.fields.map((field) => field.key)).toEqual(expected);
       expect(definition.fields.length).toBeGreaterThan(0);
       for (const field of entry.fields) expect(fieldLabel(field.label)).toMatch(/[\u3400-\u9fff]/);
     });
   }
+  it('exposes the true-damage shield policy on both damage nodes', () => {
+    for (const id of ['MechanicDamage', 'MechanicDamageLore']) {
+      const definition = nodeRegistry.get(id)!;
+      const policy = definition.fields.find((field) => field.key === 'ignore-shield')!;
+      expect(policy.type).toBe('boolean');
+      expect(policy.default).toBe(true);
+      const ordinary = normalizeValues(definition);
+      expect(isFieldVisible(policy, ordinary)).toBe(false);
+      const trueDamage = changeField(definition, ordinary, 'true', 'True');
+      expect(isFieldVisible(policy, trueDamage)).toBe(true);
+      expect(trueDamage['ignore-shield']).toBe(true);
+    }
+  });
   it('switches trigger-specific type options while preserving ordinary parameters', () => {
     const def = nodeRegistry.get('MechanicTrigger')!;
     let values = normalizeValues(def);

@@ -20,6 +20,14 @@ import java.util.List;
  */
 public class MythicV4Provider implements MythicProvider {
 
+    /** Compare the configured mob key, not the vanilla Bukkit entity type. */
+    @Override public String getMobKind(LivingEntity target) {
+        try {
+            ActiveMob mob = MythicMobs.inst().getAPIHelper().getMythicMobInstance(target);
+            return mob == null || mob.getType() == null ? null : mob.getType().getInternalName();
+        } catch (Exception ex) { return null; }
+    }
+
     @Override
     public int getMajorVersion() {
         return 4;

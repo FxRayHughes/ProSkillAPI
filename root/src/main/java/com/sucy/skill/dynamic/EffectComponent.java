@@ -223,6 +223,8 @@ public abstract class EffectComponent {
 
         boolean worked = false;
         for (EffectComponent child : children) {
+            // A terminating child stops later siblings at every ancestor level.
+            if (FlowControl.isStopped()) break;
             boolean counts = !child.settings.getString(COUNTS_KEY, "true").toLowerCase().equals("false");
             passed = child.execute(caster, level, targets);
             worked = (passed && counts) || worked;

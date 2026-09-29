@@ -718,6 +718,7 @@ public class PlayerData {
      * @param skill skill to forcefully upgrade
      */
     public void forceUpSkill(PlayerSkill skill) {
+        final int previousLevel = skill.getLevel();
         skill.addLevels(1);
 
         // Passive calls
@@ -737,6 +738,11 @@ public class PlayerData {
                 this.autoLevel();
             }
         }
+        // Fire after both level storage and passive updates, including forced upgrades.
+        Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                SkillOutcomeEvent.Phase.LEVEL_RAISED, getPlayer(), getPlayer(),
+                skill.getData().getName(), "skill", skill.getLevel() - previousLevel,
+                previousLevel, skill.getLevel()));
     }
 
     /**
@@ -800,6 +806,7 @@ public class PlayerData {
      * @param skill skill to forcefully downgrade
      */
     public void forceDownSkill(PlayerSkill skill) {
+        final int previousLevel = skill.getLevel();
         skill.addLevels(-1);
 
         // Passive calls
@@ -816,6 +823,11 @@ public class PlayerData {
         if (skill.getLevel() == 0) {
             clearBinds(skill.getData());
         }
+        // The outcome is emitted after bindings and passive effects are updated.
+        Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                SkillOutcomeEvent.Phase.LEVEL_REDUCED, getPlayer(), getPlayer(),
+                skill.getData().getName(), "skill", skill.getLevel() - previousLevel,
+                previousLevel, skill.getLevel()));
     }
 
     /**
@@ -1890,6 +1902,10 @@ public class PlayerData {
             useMana(manaCost, ManaCost.SKILL_CAST);
         }
         skillTimer = System.currentTimeMillis() + SkillAPI.getSettings().getCastCooldown();
+        // A successful cast event must follow the committed cooldown and mana cost.
+        Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                SkillOutcomeEvent.Phase.CAST_ACCEPTED, player, player,
+                skill.getData().getName(), "skill", manaCost, skill.getLevel(), skill.getLevel()));
         return true;
     }
 

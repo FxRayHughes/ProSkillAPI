@@ -30,10 +30,10 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.cryptomorin.xseries.XMaterial;
+import com.sucy.skill.nms.NmsProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
@@ -75,10 +75,11 @@ public class Data {
                 item.setItemMeta(meta);
                 item.setDurability(dur);
             } else {
-                if (meta instanceof Damageable) {
-                    ((Damageable) meta).setDamage(dur);
-                }
+                // The selected NMS bridge owns the version-specific item API.
+                // This class therefore stays linkable on 1.12.2 while modern
+                // modules can use Damageable directly without reflection.
                 item.setItemMeta(meta);
+                NmsProvider.bridge().setItemDamage(item, dur);
             }
             // Legacy non-tools use durability as their variant, not wear damage.
             if (!MaterialCompat.isFlattened() && material.getMaxDurability() == 0) {
@@ -113,8 +114,7 @@ public class Data {
         if (SkillAPI.getSettings().useOldDurability()) {
             config.set(DURABILITY, item.getDurability());
         } else {
-            if (meta instanceof Damageable) config.set(DURABILITY, ((Damageable) meta).getDamage());
-            else config.set(DURABILITY, 0);
+            config.set(DURABILITY, NmsProvider.bridge().getItemDamage(item));
         }
 
         if (meta != null && meta.hasDisplayName()) {

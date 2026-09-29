@@ -34,6 +34,11 @@ public class PlayerSkillCastFailedEvent extends Event {
 
     public static boolean invoke(final PlayerSkill skill, final Cause cause) {
         Bukkit.getPluginManager().callEvent(new PlayerSkillCastFailedEvent(skill, cause));
+        // Rejection is observable only after the existing failure event has run.
+        Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                SkillOutcomeEvent.Phase.CAST_REJECTED, skill.getPlayerData().getPlayer(),
+                skill.getPlayerData().getPlayer(), skill.getData().getName(), cause.name(), 0,
+                skill.getLevel(), skill.getLevel()));
         return false;
     }
 

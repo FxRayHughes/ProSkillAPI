@@ -90,6 +90,12 @@ public class MythicMobsHook {
         return p != null && p.isMonster(target);
     }
 
+    /** Missing integration and non-Mythic entities have no configured kind. */
+    public static String getMobKind(final LivingEntity target) {
+        final MythicProvider p = getProvider();
+        return p == null ? null : p.getMobKind(target);
+    }
+
     public static boolean hasThreatTable(final LivingEntity entity) {
         final MythicProvider p = getProvider();
         return p != null && p.hasThreatTable(entity);

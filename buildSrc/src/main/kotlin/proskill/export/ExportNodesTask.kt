@@ -114,7 +114,12 @@ abstract class ExportNodesTask : DefaultTask() {
                 if (requires.size() > 0) entry.add("requires", requires)
 
                 val fields = JsonArray()
-                for (field in type.declaredFields) {
+                // Shared operation bases own common fields; inherited declarations
+                // must be exported for every concrete node the registry exposes.
+                val fieldsInHierarchy = generateSequence(type) { it.superclass }
+                    .takeWhile { it != Any::class.java }
+                    .flatMap { it.declaredFields.asSequence() }
+                for (field in fieldsInHierarchy) {
                     if (!Modifier.isStatic(field.modifiers)) continue
                     @Suppress("UNCHECKED_CAST")
                     val meta = field.getAnnotation(fieldAnnotation as Class<Annotation>) ?: continue

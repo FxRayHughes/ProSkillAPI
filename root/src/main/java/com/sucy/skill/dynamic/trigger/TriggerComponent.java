@@ -2,6 +2,7 @@ package com.sucy.skill.dynamic.trigger;
 
 import com.sucy.skill.dynamic.ComponentType;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.FlowControl;
 import com.sucy.skill.util.Lists;
 import org.bukkit.entity.LivingEntity;
 
@@ -23,6 +24,12 @@ public class TriggerComponent extends EffectComponent {
         return execute(caster, level, Lists.asList(target));
     }
 
+    /** A shared group executes inside its caller's flow frame, including termination. */
+    public boolean executeShared(final LivingEntity caster, final int level,
+                                 final List<LivingEntity> targets) {
+        return executeChildren(caster, level, targets);
+    }
+
     @Override
     public String getKey() {
         return "trigger";
@@ -35,11 +42,13 @@ public class TriggerComponent extends EffectComponent {
 
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        FlowControl.enter();
         try {
             running = true;
             return executeChildren(caster, level, targets);
         } finally {
             running = false;
+            FlowControl.leave();
         }
     }
 }

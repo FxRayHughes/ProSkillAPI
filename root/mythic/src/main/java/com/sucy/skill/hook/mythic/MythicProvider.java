@@ -20,6 +20,9 @@ public interface MythicProvider {
 
     boolean isMonster(LivingEntity target);
 
+    /** Returns the configured Mythic mob key; null distinguishes an ordinary mob. */
+    String getMobKind(LivingEntity target);
+
     /**
      * 按正负增减仇恨；MythicMobs 侧的写入接口只认正数，因此负值走 reduce。
      */

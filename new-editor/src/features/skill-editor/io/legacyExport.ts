@@ -23,25 +23,33 @@ interface ExportResult {
 
 /**
  * Converts the editor graph back into the ordered nested map the server loads.
- * Native components form a forest of triggers, so structures the format cannot express
- * are reported instead of being silently dropped.
+ * Shared graph branches become named GROUP roots plus run group references.
+ * The server still receives an ordinary v1 components forest.
  */
 export function exportLegacyComponents(project: SkillProject): ExportResult {
   const byId = new Map(project.nodes.map((node) => [node.id, node]));
   const indegree = new Map(project.nodes.map((node) => [node.id, 0]));
   for (const edge of project.edges) {
     if (!byId.has(edge.source) || !byId.has(edge.target)) continue;
+    // A wire into GROUP is a call edge; the declaration remains a root.
+    if (isGroup(byId.get(edge.target)!)) continue;
     indegree.set(edge.target, (indegree.get(edge.target) ?? 0) + 1);
   }
-  for (const [id, count] of indegree) {
-    if (count > 1)
-      throw new Error(
-        `节点“${label(byId.get(id)!)}”被多个父节点连接，原生格式不支持共享子树，请复制一份节点。`,
-      );
-  }
+  const shared = new Map(
+    [...indegree].filter(([, count]) => count > 1).map(([id]) => {
+      const node = byId.get(id)!;
+      return [id, node.data.sharedGroupKey ?? `shared/${id}`];
+    }),
+  );
+  const namedGroups = new Set<string>();
   for (const node of project.nodes) {
     const definition = nodeRegistry.get(node.data.definitionId);
     if (!definition) throw new Error(`未注册的技能节点：${node.data.definitionId}`);
+    if (isGroup(node)) {
+      const name = String(node.data.values.group ?? '').trim();
+      if (!name || namedGroups.has(name)) throw new Error(`共享组键不能为空或重复：${name}`);
+      namedGroups.add(name);
+    }
     if (definition.kind === 'condition' && hasEdge(project, node.id, 'false'))
       throw new Error(
         `节点“${label(node)}”使用了“不满足”分支，原生格式的条件节点没有否定分支，请改用取反条件。`,
@@ -55,17 +63,37 @@ export function exportLegacyComponents(project: SkillProject): ExportResult {
   const used = new Set<string>();
   const roots = project.nodes.filter((node) => indegree.get(node.id) === 0);
   // A skill with no trigger cannot run; an empty components section is the honest result.
-  for (const root of order(roots)) emit(root, components, '', new Set());
+  for (const root of order(roots)) emit(root, components, '', new Set(), isGroup(root));
+  // A shared node has one body. Every incoming wire instead writes a small goto.
+  for (const [id, name] of shared) {
+    if (namedGroups.has(name)) throw new Error(`共享组键冲突：${name}`);
+    const rootKey = allocateKey('GROUP');
+    const rootPath = layoutPath('', rootKey);
+    const body: Record<string, unknown> = {};
+    const node = byId.get(id)!;
+    positions.set(rootPath, { x: node.position.x - 280, y: node.position.y });
+    emit(node, body, rootPath, new Set(), true);
+    components[rootKey] = { type: 'trigger', indicator: '3D', data: { group: name }, children: body };
+  }
 
   function emit(
     node: SkillNode,
     parent: Record<string, unknown>,
     parentPath: string,
     ancestors: Set<string>,
+    body = false,
   ): void {
     if (ancestors.has(node.id))
       throw new Error(`节点“${label(node)}”形成了循环连接，无法写出为嵌套结构。`);
     const definition = nodeRegistry.get(node.data.definitionId)!;
+    const reference = !body && (shared.get(node.id) ?? (isGroup(node) ? String(node.data.values.group) : undefined));
+    if (reference) {
+      const key = allocateKey('Run Group');
+      const path = layoutPath(parentPath, key);
+      positions.set(path, node.position);
+      parent[key] = { type: 'mechanic', indicator: '3D', data: { group: reference }, children: {} };
+      return;
+    }
     const key = allocate(node);
     const path = layoutPath(parentPath, key);
     positions.set(path, node.position);
@@ -80,7 +108,21 @@ export function exportLegacyComponents(project: SkillProject): ExportResult {
         )
       : [];
     const next = new Set(ancestors).add(node.id);
-    for (const target of targets) emit(target, children, path, next);
+    for (const target of targets) {
+      if (isGroup(target)) {
+        // A direct wire to a GROUP is a call edge. Persist it as the same
+        // runtime mechanic used by the explicit "run group" node so both
+        // editor forms retain identical execution semantics in v1 YAML.
+        const group = String(target.data.values.group ?? '').trim();
+        if (!group) throw new Error(`共享组“${label(target)}”缺少组键。`);
+        const key = allocateKey('Run Group');
+        const callPath = layoutPath(path, key);
+        positions.set(callPath, target.position);
+        children[key] = { type: 'mechanic', indicator: '3D', data: { group }, children: {} };
+      } else {
+        emit(target, children, path, next);
+      }
+    }
     parent[key] = {
       type: definition.legacy?.category ?? 'mechanic',
       // Kept because the legacy editor writes it and addons may read it.
@@ -117,7 +159,20 @@ export function exportLegacyComponents(project: SkillProject): ExportResult {
     }
   }
 
+  /** Synthetic references use the same sibling-key uniqueness contract. */
+  function allocateKey(base: string): string {
+    if (!used.has(base)) { used.add(base); return base; }
+    for (let index = 0; ; index++) {
+      const candidate = `${base}-${suffix(index)}`;
+      if (!used.has(candidate)) { used.add(candidate); return candidate; }
+    }
+  }
+
   return { components, positions };
+}
+
+function isGroup(node: SkillNode): boolean {
+  return nodeRegistry.get(node.data.definitionId)?.legacy?.name === 'GROUP';
 }
 
 /** Sibling order is execution order; vertical position is the visible ordering in the canvas. */

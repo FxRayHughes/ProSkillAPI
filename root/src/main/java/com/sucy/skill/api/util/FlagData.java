@@ -28,6 +28,7 @@ package com.sucy.skill.api.util;
 
 import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.FlagExpireEvent;
+import com.sucy.skill.api.event.SkillOutcomeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
@@ -66,6 +67,7 @@ public class FlagData
      */
     public void addFlag(String flag, int ticks)
     {
+        final boolean newlyStarted = !flags.containsKey(flag);
         FlagApplyEvent event = new FlagApplyEvent(entity, flag, ticks);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
@@ -77,6 +79,7 @@ public class FlagData
             if (task != null)
                 task.cancel();
             flags.put(flag, Long.MAX_VALUE);
+            if (newlyStarted) started(flag, ticks);
             return;
         }
 
@@ -94,6 +97,13 @@ public class FlagData
         }
         flags.put(flag, System.currentTimeMillis() + ticks * 50);
         tasks.put(flag, new FlagTask(flag).runTaskLater(plugin, ticks));
+        if (newlyStarted) started(flag, ticks);
+    }
+
+    /** Refreshing an existing flag is not another start transition. */
+    private void started(String flag, int ticks) {
+        Bukkit.getPluginManager().callEvent(new SkillOutcomeEvent(
+                SkillOutcomeEvent.Phase.FLAG_STARTED, entity, entity, flag, "flag", ticks, 0, ticks));
     }
 
     /**

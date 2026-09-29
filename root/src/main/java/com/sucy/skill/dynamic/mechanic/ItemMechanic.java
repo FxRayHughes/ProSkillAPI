@@ -28,11 +28,11 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.nms.NmsProvider;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
@@ -168,10 +168,11 @@ public class ItemMechanic extends MechanicComponent
             item.setItemMeta(meta);
             item.setDurability((short) durability);
         } else {
-            if (meta instanceof Damageable) {
-                ((Damageable) meta).setDamage(durability);
-            }
+            // The selected version module applies modern Damageable damage or
+            // legacy durability, so this shared mechanic has no high-version
+            // type link or reflection fallback.
             item.setItemMeta(meta);
+            NmsProvider.bridge().setItemDamage(item, durability);
         }
 
         // Pre-flattening non-tools store their variant in the durability field;

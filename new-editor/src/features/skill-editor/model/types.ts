@@ -18,6 +18,7 @@ export type FieldDefinition = FieldBase &
     | { type: 'text'; default: string }
     | { type: 'number'; default: number; integer?: boolean }
     | { type: 'boolean'; default: boolean }
+    | { type: 'map'; default: Record<string, string | number | boolean> }
     | {
         type: 'select';
         default: string | number | ParticleAstValue;
@@ -41,7 +42,14 @@ export interface ParticleAstValue {
   versions: Record<string, string>;
 }
 
-export type FieldValue = string | number | boolean | string[] | ParticleAstValue;
+/** Signal contracts and arguments are native YAML maps, not JSON encoded strings. */
+export type FieldValue =
+  | string
+  | number
+  | boolean
+  | string[]
+  | ParticleAstValue
+  | Record<string, string | number | boolean>;
 
 /** Definitions describe editor UI only; server execution requires a corresponding handler. */
 export interface NodeDefinition {
@@ -50,6 +58,8 @@ export interface NodeDefinition {
   kind: 'entry' | 'action' | 'condition';
   description: string;
   color: string;
+  /** Functional subgroup used inside the broad entry/condition/action folders. */
+  group?: string;
   inputs: readonly PortDefinition[];
   outputs: readonly PortDefinition[];
   fields: readonly FieldDefinition[];
@@ -81,6 +91,8 @@ export type NodeData = {
   values: Record<string, FieldValue>;
   /** Original component key from the imported file, e.g. "Damage-g"; reused on export. */
   legacyKey?: string;
+  /** Restores the synthetic group key when a shared subtree is round-tripped. */
+  sharedGroupKey?: string;
 };
 export type SkillNode = Node<NodeData, 'skill'>;
 export type SkillEdge = Edge;

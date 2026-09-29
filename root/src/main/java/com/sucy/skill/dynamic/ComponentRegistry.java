@@ -168,6 +168,46 @@ public class ComponentRegistry {
         register(new SkillTakenTrigger());
         register(new PlayerInteractTrigger());
         register(new SwapHandItemsTrigger());
+        register(new SignalReceivedTrigger());
+        register(new ShieldHitTrigger());
+        register(new ShieldEmptyTrigger());
+        register(new SprintStartedTrigger());
+        register(new SprintEndedTrigger());
+        register(new GlideStartedTrigger());
+        register(new GlideEndedTrigger());
+        register(new FlightStartedTrigger());
+        register(new FlightEndedTrigger());
+        register(new JumpTakeoffTrigger());
+        register(new AirThresholdCrossedTrigger());
+        register(new ItemConsumeRequestedTrigger());
+        register(new ItemDropRequestedTrigger());
+        register(new PlayerWorldEnteredTrigger());
+        register(new GroupRootTrigger());
+        register(new SkillCastAcceptedTrigger());
+        register(new SkillCastRejectedTrigger());
+        register(new SkillLevelRaisedTrigger());
+        register(new SkillLevelReducedTrigger());
+        register(new SkillCooldownReadyTrigger());
+        register(new SkillHealAppliedTrigger());
+        register(new AttributeDeltaAppliedTrigger());
+        register(new FlagStartedTrigger());
+        register(new FlagEndedTrigger());
+        register(new ClassXpGainedTrigger());
+        register(new ClassXpLostTrigger());
+        register(new VanillaXpChangedTrigger());
+        register(new FishBiteTrigger());
+        register(new FishCaughtItemTrigger());
+        register(new FishCaughtEntityTrigger());
+        register(new FishReelEmptyTrigger());
+        register(new FishFailedTrigger());
+        register(new ProjectileHitEntityTrigger());
+        register(new ProjectileHitBlockTrigger());
+        register(new BlockHarvestedTrigger());
+        register(new EntityShearedTrigger());
+        register(new TotemUsedTrigger());
+        register(new RiptideStartedTrigger());
+        register(new MobTargetAcquiredTrigger());
+        register(new MobTargetLostTrigger());
 
         // Targets
         register(new AreaTarget());
@@ -184,6 +224,10 @@ public class ComponentRegistry {
         register(new ThreatHighestTarget());
         register(new ThreatLowestTarget());
         register(new ThreatRandomTarget());
+        register(new SignalSenderTarget());
+        register(new WorldLoadedEntitiesTarget());
+        register(new EventActorTarget());
+        register(new EventImpactLocationTarget());
 
         // Conditions
         register(new ArmorCondition());
@@ -228,6 +272,26 @@ public class ComponentRegistry {
         register(new WaterCondition());
         register(new WeatherCondition());
         register(new DataCondition());
+        // Shield conditions read the transient layer pool, not vanilla absorption hearts.
+        register(new ShieldCondition());
+        // These focused predicates preserve missing-value semantics and distinct dimensions.
+        register(new CheckNumberCondition());
+        register(new CheckTextCondition());
+        register(new CheckWorldCondition());
+        register(new CheckDistanceCondition());
+        register(new CheckSignalCondition());
+        register(new CheckSprintCondition());
+        register(new CheckGlideCondition());
+        register(new CheckFlyingCondition());
+        register(new CheckBlockingCondition());
+        register(new CheckOxygenCondition());
+        register(new CheckMoonPhaseCondition());
+        register(new CheckFacingAngleCondition());
+        register(new CheckGroundClearanceCondition());
+        register(new CheckAttackChargeCondition());
+        register(new CheckItemColorCondition());
+        register(new CheckEconomyCondition());
+        register(new CheckMythicKindCondition());
 
         // Mechanics
         register(new DataSetMechanic());
@@ -327,5 +391,40 @@ public class ComponentRegistry {
         register(new MythicCastMechanic());
         register(new MythicCastTargetMechanic());
         register(new SnowStormMechanic());
+        // Register shield mutations together so the editor and YAML loader share keys.
+        register(new ShieldGrantMechanic());
+        register(new ShieldAdjustMechanic());
+        register(new ShieldRemoveMechanic());
+        register(new ShieldReadMechanic());
+        register(new SignalEmitMechanic());
+        register(new SkillInvokeMechanic());
+        register(new FlowThrottleMechanic());
+        register(new FlowTerminateMechanic());
+        // Shared numeric parsing keeps divide-by-zero and non-finite rules uniform.
+        register(new ValueSubtractMechanic());
+        register(new ValueDivideMechanic());
+        register(new ValueRemainderMechanic());
+        register(new ValueExtremumMechanic());
+        register(new ValueClampMechanic());
+        register(new ValueRoundMechanic());
+        register(new ValueInterpolateMechanic());
+        register(new ValueAngleMechanic());
+        register(new AirSetMechanic());
+        register(new AirModifyMechanic());
+        register(new FlightPermitMechanic());
+        register(new VanillaExperienceAdjustMechanic());
+        register(new ItemDropMechanic());
+        // Value readers share missing-value handling and one cast-data output protocol.
+        register(new ValueOxygenMechanic());
+        register(new ValueExperienceMechanic());
+        register(new ValueWorldTimeMechanic());
+        register(new ValueAttackChargeMechanic());
+        register(new ValueEconomyMechanic());
+        register(new ValueShieldMechanic());
+        register(new ValueSignalParameterMechanic());
+        register(new ValueDataLoadMechanic());
+        register(new EconomyAdjustMechanic());
+        register(new ClassExperienceAdjustMechanic());
+        register(new RunGroupMechanic());
     }
 }

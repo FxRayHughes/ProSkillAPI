@@ -53,6 +53,11 @@ export function convertLegacyFields(fields: readonly LegacyField[]): FieldDefini
             default: Number(field.value ?? 0),
           },
         ];
+      case 'BooleanValue':
+        return [{ ...common, type: 'boolean', default: String(field.value).toLowerCase() === 'true' }];
+      case 'MapValue':
+        // The editor keeps this as an object so YAML import/export stays native.
+        return [{ ...common, type: 'map', default: {} }];
       case 'ListValue':
         return [
           {

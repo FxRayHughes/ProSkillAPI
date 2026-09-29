@@ -39,7 +39,14 @@ function assertFieldValues(key: string, values: unknown): Record<string, FieldVa
     const list =
       Array.isArray(value) &&
       value.every((entry) => typeof entry === 'string' || typeof entry === 'number');
-    if (!scalar && !list) throw new Error(`节点参数类型不支持：${key}.${name}`);
+    const map =
+      value !== null &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      Object.values(value).every((entry) =>
+        ['string', 'number', 'boolean'].includes(typeof entry),
+      );
+    if (!scalar && !list && !map) throw new Error(`节点参数类型不支持：${key}.${name}`);
     normalized[name] = value as FieldValue;
   }
   return normalized;
@@ -84,5 +91,41 @@ export function importLegacyComponents(
     }
   };
   walk(components, 0, '');
-  return { nodes, edges };
+  // A run-group call with no continuation can be rendered as a direct wire. Synthetic
+  // shared groups collapse back into the original multi-parent graph.
+  const groups = new Map<string, SkillNode>();
+  for (const node of nodes) if (nodeRegistry.get(node.data.definitionId)?.legacy?.name === 'GROUP') {
+    const name = String(node.data.values.group ?? '');
+    if (name) groups.set(name, node);
+  }
+  const removed = new Set<string>();
+  const sharedBody = new Map<string, SkillNode>();
+  for (const [name, group] of groups) {
+    if (!name.startsWith('shared/')) continue;
+    const children = edges.filter((edge) => edge.source === group.id);
+    if (children.length !== 1) continue;
+    const body = nodes.find((node) => node.id === children[0].target);
+    if (!body) continue;
+    body.data.sharedGroupKey = name;
+    sharedBody.set(name, body);
+    removed.add(group.id);
+    removed.add(children[0].id);
+  }
+  for (const node of nodes) {
+    if (nodeRegistry.get(node.data.definitionId)?.legacy?.name !== 'Run Group') continue;
+    if (edges.some((edge) => edge.source === node.id)) continue;
+    const name = String(node.data.values.group ?? '');
+    const target = sharedBody.get(name) ?? groups.get(name);
+    const incoming = edges.filter((edge) => edge.target === node.id);
+    if (!target || incoming.length !== 1) continue;
+    const duplicate = edges.some((edge) => edge.source === incoming[0].source && edge.target === target.id);
+    if (duplicate) continue;
+    incoming[0].target = target.id;
+    incoming[0].targetHandle = sharedBody.has(name) ? 'flow' : 'invoke';
+    removed.add(node.id);
+  }
+  return {
+    nodes: nodes.filter((node) => !removed.has(node.id)),
+    edges: edges.filter((edge) => !removed.has(edge.id) && !removed.has(edge.source) && !removed.has(edge.target)),
+  };
 }

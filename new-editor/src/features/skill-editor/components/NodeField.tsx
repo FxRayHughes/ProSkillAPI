@@ -18,6 +18,7 @@ import {
   particlePreview,
 } from '../model/particleCatalog';
 import type { FieldDefinition, FieldValue } from '../model/types';
+import { MapField } from './MapField';
 
 /** Numeric drafts allow clearing and negative/decimal edits without forcing an immediate reset. */
 function NumericField({
@@ -56,6 +57,7 @@ export function NodeField({
   onChange,
   serverVersion = '1.16',
   particleDescription,
+  readOnly = false,
 }: {
   field: FieldDefinition;
   value: FieldValue;
@@ -64,6 +66,7 @@ export function NodeField({
   serverVersion?: string;
   /** Config files reuse this selector but use a different persistence description. */
   particleDescription?: string;
+  readOnly?: boolean;
 }) {
   const label = (
     <Tooltip label={field.tooltip || field.label} multiline w={260} withArrow>
@@ -84,6 +87,8 @@ export function NodeField({
         onChange={(event) => onChange(event.currentTarget.checked)}
       />
     );
+  if (field.type === 'map')
+    return <MapField key={field.id ?? field.key} label={field.label} value={value} onChange={onChange} mode={field.key === 'contract' ? 'contract' : 'scalar'} readOnly={readOnly} />;
   if (field.type === 'select') {
     const particle = isParticleField(field.key) && isParticleAst(value) ? value : undefined;
     const current = particle?.value ?? String(value);
