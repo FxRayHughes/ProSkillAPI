@@ -96,7 +96,9 @@ public class SkillBridgeImpl implements SkillBridge {
 
     @Override
     public void applyMobAttribute(final UUID entityId, final String attributeLine) {
-        // 怪物属性是可关闭的特性，保留原 MobListener 的开关语义。
+        // Combat.modules.attributes 只控制伤害数值缩放，不能阻止属性数据写入：
+        // 技能条件、技能公式和暴击模块仍可能读取 MythicMobs 的 SkillAPI 属性。
+        // 需要完全停用怪物属性时，使用原有的 Attributes.mob-enabled 开关。
         if (!SkillAPI.getSettings().isAttributeMobEnabled()) return;
         final MobAttributeData data = MobAttribute.getData(entityId, true);
         if (data == null) return;

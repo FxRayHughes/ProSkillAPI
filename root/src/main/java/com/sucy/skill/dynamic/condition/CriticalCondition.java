@@ -28,7 +28,11 @@ public class CriticalCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        if (caster == null) return false;
+        // The marker is produced only by SkillAPI's critical module. Returning
+        // false while that module is disabled prevents a stale metadata value
+        // from a previous reload from making the condition pass.
+        if (caster == null
+                || !SkillAPI.getSettings().isCombatCriticalEnabled()) return false;
         final Object meta = SkillAPI.getMeta(caster, CombatListener.META_CRIT);
         return meta instanceof Boolean && (Boolean) meta;
     }

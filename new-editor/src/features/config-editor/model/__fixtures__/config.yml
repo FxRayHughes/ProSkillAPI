@@ -75,6 +75,23 @@ Classes:
 #              战斗属性设置                        #
 # ---------------------------------------------- #
 Combat:
+  # 各战斗小模块独立开关；关闭某项只停止该项的监听器或数值结算，技能施法、
+  # 技能事件和其他未关闭的模块继续工作。
+  modules:
+    # 普通/技能/自然伤害的属性增伤和减伤；Classes.attributes-enabled
+    # 仍独立控制属性数据、法力、经验和 Bukkit 实体属性同步
+    attributes: 'true'
+    # 暴击、闪避、吸血、韧性和对应战斗提示；没有可用属性值时不会强行触发
+    critical: 'true'
+    # DAMAGE、DEFENSE、SKILL_DAMAGE、SKILL_DEFENSE、HEALING Buff 数值修正
+    buffs: 'true'
+    # 同职业组之间的普通攻击友伤限制
+    friendly-fire: 'true'
+    # SkillAPI 仇恨表及向 MythicMobs ThreatTable 的同步
+    threat: 'true'
+    # 技能护盾对普通伤害、技能伤害和真实伤害的吸收
+    shields: 'true'
+
   # 暴击基础倍率（1.75 = 175%伤害）
   base-crit-damage: '1.75'
 

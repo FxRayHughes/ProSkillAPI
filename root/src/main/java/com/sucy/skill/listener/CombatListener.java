@@ -7,7 +7,9 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.hook.MythicMobsHook;
 import com.sucy.skill.hook.PluginChecker;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -103,6 +105,15 @@ public class CombatListener extends SkillAPIListener {
 
     @Override
     public void cleanup() {
+        // Metadata is attached to entities rather than this listener instance;
+        // clear it during reload so the critical/dodge conditions cannot observe
+        // a result produced by an earlier combat-module configuration.
+        for (World world : Bukkit.getWorlds()) {
+            for (LivingEntity entity : world.getLivingEntities()) {
+                SkillAPI.removeMeta(entity, META_CRIT);
+                SkillAPI.removeMeta(entity, META_DODGE);
+            }
+        }
     }
 
     private String colorize(String msg) {

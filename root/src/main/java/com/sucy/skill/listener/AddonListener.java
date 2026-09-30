@@ -28,12 +28,20 @@ public class AddonListener extends SkillAPIListener {
     private static final Set<UUID> IGNORE_CASTING = new HashSet<>();
 
     /**
-     * Cancels damage between friendly classes
+     * Cancels ordinary entity damage between players in the same friendly class
+     * group. The {@code Combat.modules.friendly-fire} switch is checked inside
+     * this method because the listener also owns unrelated skill-cast and
+     * world-guard hooks that must remain registered when friendly-fire is off.
      *
-     * @param event damage event
+     * @param event ordinary Bukkit entity damage event
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerHit(final EntityDamageByEntityEvent event) {
+        // 职业友伤限制是独立的 SkillAPI 战斗策略；关闭该模块后让外部系统
+        // 决定 PvP/PvE 是否允许伤害，技能施法相关的监听仍继续工作。
+        if (!SkillAPI.getSettings().isCombatFriendlyFireEnabled()) {
+            return;
+        }
         if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld())) {
             return;
         }

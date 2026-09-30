@@ -33,7 +33,12 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * Event for when true damage is dealt (damage ignoring armor)
+ * Event for when true damage is dealt (damage ignoring armor).
+ *
+ * <p>External combat systems can use this cancellable event to replace or
+ * adjust the armor-bypassing result. The event is published even when
+ * SkillAPI's optional combat modules are disabled, so disabling a module does
+ * not remove the skill damage integration point.</p>
  */
 public class TrueDamageEvent extends Event implements Cancellable
 {

@@ -53,6 +53,7 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.MythicMobsHook;
 import com.sucy.skill.combat.shield.ShieldListener;
 import com.sucy.skill.combat.shield.ShieldManager;
+import com.sucy.skill.combat.threat.ThreatManager;
 import com.sucy.skill.dynamic.signal.SignalManager;
 import com.sucy.skill.dynamic.trigger.StateTransitionListener;
 import com.sucy.skill.hook.SkillBridgeImpl;
@@ -193,16 +194,24 @@ public class SkillAPI extends JavaPlugin {
         listen(new BindListener(), true);
         // Lore 技能槽绑定只在配置启用且技能栏可用时注册，避免无关服务器事件开销。
         listen(new ArmorBindListener(), settings.isSkillBarEnabled() && settings.isArmorAutoBindEnabled());
-        listen(new BuffListener(), true);
+        // 伤害/防御/治疗增益单独受 buffs 模块控制；关闭时外部战斗插件可以
+        // 独占普通攻击与技能伤害的数值修改权，但技能本身仍继续施放。
+        listen(new BuffListener(), settings.isCombatBuffsEnabled());
         // Confirm toggles on the next tick before exposing completed movement phases.
         listen(new StateTransitionListener(), true);
         listen(new MainListener(), true);
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
-        // Register after our status rules so invulnerable or absorbed hits do not
-        // consume a finite shield layer. The listener commits only surviving hits.
-        ShieldManager.start(this);
-        listen(new ShieldListener(), true);
+        // 护盾是独立的技能防护模块。只有启用时才启动定时清理任务和伤害监听器，
+        // 关闭后 ShieldManager 也会拒绝新的护盾并跳过已有护盾的吸收。
+        if (settings.isCombatShieldsEnabled()) {
+            // Register after our status rules so invulnerable or absorbed hits do not
+            // consume a finite shield layer. The listener commits only surviving hits.
+            ShieldManager.start(this);
+            listen(new ShieldListener(), true);
+        } else {
+            ShieldManager.clear();
+        }
         listen(new ToolListener(), true);
         listen(new KillListener(), true);
         listen(new AddonListener(), true);
@@ -217,9 +226,13 @@ public class SkillAPI extends JavaPlugin {
             listen(new ClickListener(), settings.isCombosEnabled());
         }
         listen(new ComboListener(), settings.isCombosEnabled());
+        // AttributeListener 还负责法力、经验、饥饿和实体属性同步，因此只受
+        // Classes.attributes-enabled 控制；其中的伤害缩放方法再单独检查
+        // Combat.modules.attributes，避免关闭战斗属性时误停技能基础功能。
         listen(new AttributeListener(), settings.isAttributesEnabled());
-        // 暴击/闪避/吸血的数值全部来自属性系统，属性关闭时这些判定恒为 0，挂载没有意义。
-        listen(new CombatListener(), settings.isAttributesEnabled());
+        // 暴击/闪避/吸血是独立模块。即使 SkillAPI 属性模板关闭，监听器仍可注册；
+        // 此时没有 SkillAPI 属性值时判定自然为 0，外部插件仍可通过事件接管伤害。
+        listen(new CombatListener(), settings.isCombatCriticalEnabled());
         listen(new CastListener(), settings.isUsingBars());
         listen(
                 new CastOffhandListener(),
@@ -232,7 +245,9 @@ public class SkillAPI extends JavaPlugin {
         listen(new PluginChecker(), true);
         // 怪物属性依赖 MythicMobs 的生成事件，其监听器已随 registerListeners 一并注册。
         // 仇恨表同样只对 MythicMobs 怪物有意义，没有该插件时监听器与任务都不必挂载。
-        if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
+        if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null
+                && settings.isCombatThreatEnabled()
+                && ThreatManager.isEnabled()) {
             listen(new ThreatListener(), true);
             MainThread.register(new ThreatTask());
         }

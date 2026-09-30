@@ -215,6 +215,17 @@ public class MobThreatData {
     }
 
     /**
+     * Returns the player that received this data object's SkillAPI taunt marker.
+     * The UUID is exposed so shutdown cleanup can subtract only the taunt value
+     * SkillAPI itself added to MythicMobs, without clearing a shared threat table.
+     *
+     * @return taunted player UUID, or null when no taunt is active
+     */
+    public UUID getTauntTarget() {
+        return tauntTarget;
+    }
+
+    /**
      * taunt 是否仍然有效（定时器到期时调用：true=去 MM 减那个超大值；false=什么也不做）
      */
     public boolean isTauntValid() {

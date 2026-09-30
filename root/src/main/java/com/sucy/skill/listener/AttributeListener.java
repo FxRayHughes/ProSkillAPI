@@ -194,6 +194,11 @@ public class AttributeListener extends SkillAPIListener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPhysicalDamage(PhysicalDamageEvent event) {
+        // 这是战斗属性模块的边界。AttributeListener 的其他处理仍需保留，
+        // 因为它还负责法力、经验、饥饿和 Bukkit 实体属性同步。
+        if (!SkillAPI.getSettings().isCombatAttributesEnabled()) {
+            return;
+        }
         // Physical Damage
         double newAmount = AttributeAPI.scaleStat(event.getDamager(), AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
         if (event.isProjectile()) {
@@ -225,6 +230,9 @@ public class AttributeListener extends SkillAPIListener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSkillDamage(final SkillDamageEvent event) {
+        if (!SkillAPI.getSettings().isCombatAttributesEnabled()) {
+            return;
+        }
         // Skill Damage
         if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
             event.setDamage(AttributeAPI.scaleStat(event.getDamager(), AttributeManager.PHYSICAL_DAMAGE, event.getDamage()));
@@ -247,6 +255,9 @@ public class AttributeListener extends SkillAPIListener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onDamage(final EntityDamageEvent event) {
+        if (!SkillAPI.getSettings().isCombatAttributesEnabled()) {
+            return;
+        }
         if (!(event.getEntity() instanceof Player))
             return;
 

@@ -46,11 +46,28 @@ public class ThreatManager {
     private static double healMultiplier = 0.5;
     private static long combatTimeoutMs = 5000L;
 
+    /**
+     * 更新仇恨模块配置，并在模块关闭时清空 SkillAPI 的本地仇恨快照。
+     * 模块关闭后不再修改 MythicMobs 的外部 ThreatTable，因为该表可能已经
+     * 被其他战斗插件接管；外部系统应自行决定是否清理自己的目标数据。
+     *
+     * @param enabled 是否允许 SkillAPI 接收和写入仇恨
+     * @param healRange 治疗仇恨生效的最大距离，单位为方块
+     * @param healMultiplier 治疗量转换为仇恨值时使用的倍率
+     * @param combatTimeoutMs 怪物脱战后保留仇恨的时长，单位为毫秒
+     */
     public static void configure(boolean enabled, double healRange, double healMultiplier, long combatTimeoutMs) {
         ThreatManager.enabled = enabled;
         ThreatManager.healRange = healRange;
         ThreatManager.healMultiplier = healMultiplier;
         ThreatManager.combatTimeoutMs = combatTimeoutMs;
+        if (!enabled) {
+            // 本地快照属于 SkillAPI；模块关闭后 MythicMobs 表可能已经由其他
+            // 战斗插件接管，因此这里只撤销 SkillAPI 自己记录的在线嘲讽增量。
+            releaseSkillApiTaunts();
+            for (MobThreatData data : threats.values()) data.invalidateTaunt();
+            threats.clear();
+        }
     }
 
     public static boolean isEnabled() {
@@ -237,6 +254,7 @@ public class ThreatManager {
      * 目标选择器接口：从怪物的仇恨表中选仇恨最高的玩家
      */
     public static Player getHighestThreatTarget(LivingEntity mob) {
+        if (!enabled || mob == null) return null;
         MobThreatData data = threats.get(mob.getUniqueId());
         if (data == null) return null;
         UUID id = data.getTopTarget();
@@ -244,6 +262,7 @@ public class ThreatManager {
     }
 
     public static Player getLowestThreatTarget(LivingEntity mob) {
+        if (!enabled || mob == null) return null;
         MobThreatData data = threats.get(mob.getUniqueId());
         if (data == null) return null;
         UUID id = data.getLowestTarget();
@@ -251,6 +270,7 @@ public class ThreatManager {
     }
 
     public static Player getRandomThreatTarget(LivingEntity mob) {
+        if (!enabled || mob == null) return null;
         MobThreatData data = threats.get(mob.getUniqueId());
         if (data == null) return null;
         UUID id = data.getRandomTarget();
@@ -258,6 +278,7 @@ public class ThreatManager {
     }
 
     public static List<Player> getAllThreatTargets(LivingEntity mob) {
+        if (!enabled || mob == null) return java.util.Collections.emptyList();
         MobThreatData data = threats.get(mob.getUniqueId());
         if (data == null) return java.util.Collections.emptyList();
         List<Player> result = new ArrayList<>();
@@ -272,6 +293,7 @@ public class ThreatManager {
      * 找怪物周围最近的玩家（作为仇恨表为空时的降级目标选择）
      */
     public static Player findNearestPlayer(LivingEntity mob) {
+        if (!enabled) return null;
         if (mob == null || !mob.isValid()) return null;
         Player nearest = null;
         double nearestDistSq = Double.MAX_VALUE;
@@ -393,9 +415,35 @@ public class ThreatManager {
     }
 
     /**
-     * 清理所有数据
+     * 清理 SkillAPI 保存的所有本地数据。
+     *
+     * <p>这里不清空 MythicMobs 的共享 ThreatTable：插件关闭后该表可能由其他
+     * 战斗系统继续使用，贸然清空会删除不属于 SkillAPI 的仇恨记录。</p>
      */
     public static void clearAll() {
+        releaseSkillApiTaunts();
+        for (MobThreatData data : threats.values()) data.invalidateTaunt();
         threats.clear();
+    }
+
+    /**
+     * Removes only the temporary taunt amount that SkillAPI explicitly added.
+     * Normal damage and healing entries are intentionally left untouched because
+     * MythicMobs may share the same table with another combat implementation.
+     * Offline taunt targets cannot be addressed through the provider API and are
+     * left for that provider or the next combat system to reconcile.
+     */
+    private static void releaseSkillApiTaunts() {
+        if (!PluginChecker.isMythicMobsActive()) return;
+        for (MobThreatData data : threats.values()) {
+            UUID playerId = data.getTauntTarget();
+            LivingEntity mob = data.getMob();
+            if (!data.isTauntValid() || playerId == null || mob == null
+                    || !MythicMobsHook.isMonster(mob)) continue;
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                MythicMobsHook.addThreatToMM(mob, player, -data.getTauntThreatAmount());
+            }
+        }
     }
 }

@@ -34,6 +34,11 @@ import org.bukkit.event.HandlerList;
 /**
  * An event for when an entity is damaged by another entity without the
  * use of skills such as melee attacks or projectiles.
+ *
+ * <p>SkillAPI emits this event before copying the final value back to Bukkit,
+ * allowing an external combat system to apply its own attributes, critical
+ * hits, defenses, or cancellation rules without replacing SkillAPI's skill
+ * casting pipeline.</p>
  */
 public class PhysicalDamageEvent extends Event implements Cancellable
 {

@@ -26,10 +26,29 @@ public final class ShieldManager {
     private static final Map<UUID, List<Layer>> LAYERS = new HashMap<>();
     private static BukkitTask sweepTask;
     private static long sequence;
+    private static boolean enabled = true;
 
     private ShieldManager() { }
 
-    /** A stable snapshot of a single layer's configuration and live capacity. */
+    /**
+     * Applies the independent shield-module switch. Disabling the module also
+     * drops live layers so direct true-damage calls cannot consume stale shields
+     * after the shield listener has been removed.
+     *
+     * @param value whether SkillAPI shields may mutate or absorb damage
+     */
+    public static void configure(boolean value) {
+        enabled = value;
+        if (!value) {
+            clear();
+        }
+    }
+
+    /**
+     * A stable snapshot of one shield layer's configuration and live capacity.
+     * The layer is intentionally immutable to callers; only the manager may
+     * consume or adjust its remaining amount so preview/commit stays atomic.
+     */
     public static final class Layer {
         public final UUID id = UUID.randomUUID();
         public final UUID sourceId;
@@ -104,6 +123,7 @@ public final class ShieldManager {
                             long durationTicks, int priority, double ratio, double perHitLimit,
                             String stacking, Set<String> kinds, Set<String> causes,
                             Set<String> classifications) {
+        if (!enabled) return null;
         if (target == null || key == null || key.trim().isEmpty()
                 || !Double.isFinite(capacity) || capacity <= 0
                 || !Double.isFinite(ratio) || ratio <= 0 || ratio > 1
@@ -140,6 +160,7 @@ public final class ShieldManager {
     public static Resolution preview(LivingEntity target, double damage, String kind,
                                      String cause, String classification) {
         Map<UUID, Double> allocations = new HashMap<>();
+        if (!enabled) return new Resolution(target, damage, allocations);
         if (target == null || !Double.isFinite(damage) || damage <= 0)
             return new Resolution(target, Double.isFinite(damage) ? Math.max(0, damage) : 0, allocations);
         List<Layer> list = LAYERS.get(target.getUniqueId());
@@ -163,6 +184,7 @@ public final class ShieldManager {
     }
 
     public static void commit(Resolution resolution) {
+        if (!enabled) return;
         if (resolution == null || resolution.target == null) return;
         List<Layer> list = LAYERS.get(resolution.target.getUniqueId());
         if (list == null) return;
@@ -193,6 +215,7 @@ public final class ShieldManager {
     }
 
     public static double remaining(LivingEntity target, String key) {
+        if (!enabled) return 0;
         if (target == null) return 0;
         List<Layer> list = LAYERS.get(target.getUniqueId());
         if (list == null) return 0;
@@ -205,6 +228,7 @@ public final class ShieldManager {
 
     /** Adjusts live capacity of matching layers without changing their original maximum. */
     public static int adjust(LivingEntity target, String key, double delta) {
+        if (!enabled) return 0;
         if (target == null || !Double.isFinite(delta)) return 0;
         List<Layer> list = LAYERS.get(target.getUniqueId());
         if (list == null) return 0;
@@ -231,6 +255,7 @@ public final class ShieldManager {
     }
 
     public static int count(LivingEntity target, String key) {
+        if (!enabled) return 0;
         if (target == null) return 0;
         List<Layer> list = LAYERS.get(target.getUniqueId());
         if (list == null) return 0;
@@ -241,6 +266,7 @@ public final class ShieldManager {
     }
 
     public static int remove(LivingEntity target, String key) {
+        if (!enabled) return 0;
         if (target == null) return 0;
         List<Layer> list = LAYERS.get(target.getUniqueId());
         if (list == null) return 0;

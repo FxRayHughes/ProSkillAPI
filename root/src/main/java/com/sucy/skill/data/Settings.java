@@ -274,7 +274,14 @@ public class Settings {
    private Set<String> skillDisabledRegions;
    private Set<String> expDisabledRegions;
 
-   // 战斗属性设置
+   // 战斗模块设置。每个模块独立控制自己的监听器和数据写入，避免关闭一个
+   // 外部战斗系统适配项时连带停用技能施法或其他仍需要的技能效果。
+   private boolean combatAttributesEnabled = true;
+   private boolean combatCriticalEnabled = true;
+   private boolean combatBuffsEnabled = true;
+   private boolean combatFriendlyFireEnabled = true;
+   private boolean combatThreatEnabled = true;
+   private boolean combatShieldsEnabled = true;
    private double baseCritDamage = 1.75;
    private double critRateBase = 100.0;
    private double critDamageBase = 100.0;
@@ -301,6 +308,14 @@ public class Settings {
     * 仅当字段缺失时才设置默认值；已有值不会被覆盖。
     */
    private static void ensureDefaults(com.rit.sucy.config.parse.DataSection cfg) {
+      // 战斗模块全部独立开关；缺失时保持各模块的历史行为。
+      setIfAbsent(cfg, "Combat.modules.attributes", true);
+      setIfAbsent(cfg, "Combat.modules.critical", true);
+      setIfAbsent(cfg, "Combat.modules.buffs", true);
+      setIfAbsent(cfg, "Combat.modules.friendly-fire", true);
+      setIfAbsent(cfg, "Combat.modules.threat", true);
+      setIfAbsent(cfg, "Combat.modules.shields", true);
+
       // Combat.threat 段（仇恨系统）
       setIfAbsent(cfg, "Combat.threat.enabled", true);
       setIfAbsent(cfg, "Combat.threat.heal-range", 25.0);
@@ -733,6 +748,70 @@ public class Settings {
    public double getBaseCritDamage() {
       return this.baseCritDamage;
    }
+
+   /**
+    * 查询属性战斗模块是否启用。
+    *
+    * <p>该开关只控制普通伤害、技能伤害和自然伤害的 SkillAPI 属性增伤与减伤。
+    * {@code Classes.attributes-enabled} 仍决定属性数据、法力、经验、饥饿以及
+    * Bukkit 实体属性同步是否可用；关闭本开关不会停用这些非战斗属性功能。</p>
+    *
+    * @return true 表示 SkillAPI 参与战斗属性缩放，false 表示交给外部系统
+    */
+   public boolean isCombatAttributesEnabled() { return this.combatAttributesEnabled; }
+
+   /**
+    * 查询暴击模块是否启用。
+    *
+    * <p>该模块负责暴击、闪避、韧性、吸血及其战斗提示，并通过技能和物理伤害
+    * 事件工作。关闭后不会取消技能事件，也不会阻止外部插件继续修改事件中的伤害。</p>
+    *
+    * @return true 表示启用 SkillAPI 暴击/闪避/吸血结算
+    */
+   public boolean isCombatCriticalEnabled() { return this.combatCriticalEnabled; }
+
+   /**
+    * 查询战斗 Buff 模块是否启用。
+    *
+    * <p>该模块决定 {@code BuffManager} 是否修改 DAMAGE、DEFENSE、SKILL_DAMAGE、
+    * SKILL_DEFENSE 和 HEALING 事件数值。关闭后 Buff 数据仍可由技能创建和保存，
+    * 但不会自动改变伤害或治疗结果。</p>
+    *
+    * @return true 表示启用 SkillAPI Buff 数值修正
+    */
+   public boolean isCombatBuffsEnabled() { return this.combatBuffsEnabled; }
+
+   /**
+    * 查询职业友伤模块是否启用。
+    *
+    * <p>启用时，同一职业组中被标记为友好的玩家之间的普通实体伤害会被
+    * SkillAPI 取消。关闭后 SkillAPI 不再干预 PvP 友伤判定，由外部战斗插件决定。</p>
+    *
+    * @return true 表示启用 SkillAPI 职业友伤限制
+    */
+   public boolean isCombatFriendlyFireEnabled() { return this.combatFriendlyFireEnabled; }
+
+   /**
+    * 查询仇恨模块是否启用。
+    *
+    * <p>该开关与 {@code Combat.threat.enabled} 共同决定 SkillAPI 本地仇恨表、治疗
+    * 仇恨、目标选择器和向 MythicMobs 写入新仇恨是否运行；任一开关关闭都会清空
+    * SkillAPI 的本地快照，并停止新的写入，不会清空可能由外部插件共享的表。</p>
+    *
+    * @return true 表示允许 SkillAPI 仇恨模块运行
+    */
+   public boolean isCombatThreatEnabled() { return this.combatThreatEnabled; }
+
+   /**
+    * 查询护盾模块是否启用。
+    *
+    * <p>启用时，技能护盾可以预览并吸收 Bukkit 普通/技能伤害以及
+    * {@link com.sucy.skill.api.skills.Skill#trueDamage} 的真实伤害。关闭时会
+    * 清空现有护盾，新的护盾机制调用返回空结果，伤害按原始流程继续处理。</p>
+    *
+    * @return true 表示启用 SkillAPI 护盾吸收逻辑
+    */
+   public boolean isCombatShieldsEnabled() { return this.combatShieldsEnabled; }
 
    public boolean hasLevelUpEffect() {
       return this.getLevelUpSkill() != null;// 636
@@ -1382,6 +1461,12 @@ public class Settings {
    }// 1639
 
    private void loadCombatSettings() {
+      this.combatAttributesEnabled = this.config.getBoolean("Combat.modules.attributes", true);
+      this.combatCriticalEnabled = this.config.getBoolean("Combat.modules.critical", true);
+      this.combatBuffsEnabled = this.config.getBoolean("Combat.modules.buffs", true);
+      this.combatFriendlyFireEnabled = this.config.getBoolean("Combat.modules.friendly-fire", true);
+      this.combatThreatEnabled = this.config.getBoolean("Combat.modules.threat", true);
+      this.combatShieldsEnabled = this.config.getBoolean("Combat.modules.shields", true);
       this.baseCritDamage = this.config.getDouble("Combat.base-crit-damage", 1.75);
       this.critRateBase = this.config.getDouble("Combat.base-values.crit-rate", 100.0);
       this.critDamageBase = this.config.getDouble("Combat.base-values.crit-damage", 100.0);
@@ -1418,7 +1503,12 @@ public class Settings {
       double healRange = this.config.getDouble("Combat.threat.heal-range", 25.0);
       double healMultiplier = this.config.getDouble("Combat.threat.heal-multiplier", 0.5);
       long combatTimeout = (long) (this.config.getDouble("Combat.threat.combat-timeout", 5.0) * 1000);
-      com.sucy.skill.combat.threat.ThreatManager.configure(threatEnabled, healRange, healMultiplier, combatTimeout);
+      com.sucy.skill.combat.threat.ThreatManager.configure(
+            this.combatThreatEnabled && threatEnabled,
+            healRange,
+            healMultiplier,
+            combatTimeout);
+      com.sucy.skill.combat.shield.ShieldManager.configure(this.combatShieldsEnabled);
 
       // 越级作战曲线
       this.levelGapDamageEnabled = this.config.getBoolean("Combat.level-gap.damage.enabled", true);

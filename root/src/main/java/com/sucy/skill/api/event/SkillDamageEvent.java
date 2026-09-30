@@ -35,6 +35,12 @@ import org.bukkit.event.HandlerList;
 /**
  * An event for when an entity is damaged by
  * another entity with the use of a skill.
+ *
+ * <p>The event is also the integration point for external combat systems. A
+ * listener may change the damage, cancel the hit, or leave it untouched before
+ * SkillAPI applies the resulting amount to Bukkit. When a SkillAPI combat
+ * module is disabled, the event remains available so another plugin can own
+ * critical-hit, attribute, defense, or other numeric calculations.</p>
  */
 public class SkillDamageEvent extends Event implements Cancellable
 {
